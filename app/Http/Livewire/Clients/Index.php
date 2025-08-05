@@ -8,7 +8,7 @@ use Livewire\WithPagination;
 class Index extends Component
 {
     use WithPagination;
-
+ protected $paginationTheme = 'bootstrap'; // إضافة إذا كنت تستخدم Bootstrap للتبويب
     public $search = '';
 public function confirmDelete($id)
 {

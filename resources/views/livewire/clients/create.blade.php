@@ -8,12 +8,8 @@
     @endif
 
     <form wire:submit.prevent="save">
-
-
         @foreach ($clients as $index => $client)
             <div class="card shadow-sm mb-4 border-primary" wire:key="client-{{ $index }}">
-
-
                 <div class="card-header d-flex justify-content-between align-items-center bg-light">
                     <h5 class="mb-0 d-flex align-items-center">
                         <i class="mdi mdi-account-{{ $client['type'] === 'full' ? 'edit' : 'tie' }} me-2"></i>

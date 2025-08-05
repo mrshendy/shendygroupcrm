@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers\Shendy;
-
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -15,6 +14,8 @@ class EmployeesController extends Controller
     public function index()
     {
         //
+        return view('employees.index');
+
     }
 
     /**
@@ -25,6 +26,7 @@ class EmployeesController extends Controller
     public function create()
     {
         //
+         return view('employees.create');
     }
 
     /**
@@ -47,6 +49,9 @@ class EmployeesController extends Controller
     public function show($id)
     {
         //
+                return view('employees.show', compact('id'));
+
+
     }
 
     /**
@@ -58,6 +63,8 @@ class EmployeesController extends Controller
     public function edit($id)
     {
         //
+        return view('employees.edit', compact('id'));
+
     }
 
     /**

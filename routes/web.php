@@ -3,13 +3,9 @@
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
-use App\Http\Livewire\Offers\Show;
-use App\Http\Controllers\OfferController;
-use App\Http\Livewire\Offers\OfferStatus;
 
 
-
-Auth::routes(['verify'=>true]);
+Auth::routes(['verify' => true]);
 
 /*
 |--------------------------------------------------------------------------
@@ -21,19 +17,17 @@ Auth::routes(['verify'=>true]);
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::group(['middleware'=>['guest']],function(){
-    Route::get('/', function()
-     {
-         return view('auth.login');
-       
-         
-     });
- 
- });
- Route::group(
+Route::group(['middleware' => ['guest']], function () {
+    Route::get('/', function () {
+        return view('auth.login');
+
+    });
+
+});
+Route::group(
     [
         'prefix' => LaravelLocalization::setLocale(),
-        'middleware' => [ 'localeSessionRedirect', 'localizationRedirect', 'localeViewPath','auth','verified' ]
+        'middleware' => ['localeSessionRedirect', 'localizationRedirect', 'localeViewPath', 'auth', 'verified'],
     ],
     function () {
 
@@ -54,17 +48,20 @@ Route::group(['middleware'=>['guest']],function(){
         Route::group(['namespace' => 'Shendy'], function () {
             Route::resource('clients', 'ClientsController');
             Route::resource('projects', 'ProjectsController');
-            Route::resource('offers', 'OffersController');
 
-            Route::get('/offers/show/{id}', 'OffersController@show')->name('offers.show');
-            Route::get('/offers/edit/{id}', 'OffersController@edit')->name('offers.edit');
+            Route::resource('offers', 'OffersController');
+           
             Route::get('/offers/followup/{offerId}', 'OffersController@Followup'::class)->name('offers.followup');
             Route::get('offers/{offer}/status', 'OffersController@OfferStatus'::class)->name('offers.status');
 
-            
             Route::resource('files', 'FilesController');
             Route::resource('finance', 'FinanceController');
+
+
             Route::resource('employees', 'EmployeesController');
+            Route::get('/employees/{id}/show', 'EmployeesController@show')->name('employees.show');
+
+
             Route::resource('users', 'UsersController');
             Route::resource('roles', 'RolesController');
             Route::resource('notifications', 'NotificationsController');
@@ -76,9 +73,6 @@ Route::group(['middleware'=>['guest']],function(){
 
         Route::get('/{page}', 'AdminController@index');
     });
-
-
-
 
 Auth::routes();
 //Auth::routes(['register' => false]);

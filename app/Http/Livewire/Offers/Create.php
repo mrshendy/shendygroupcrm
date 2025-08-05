@@ -6,6 +6,8 @@ use App\Models\Client;
 use App\Models\Offer;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use App\Traits\web\file_storage;
+
 
 class Create extends Component
 {
@@ -31,7 +33,7 @@ class Create extends Component
 
     public $description;
 
-    public $status ;
+    public $status;
 
     public $attachment;
 
@@ -60,10 +62,13 @@ class Create extends Component
             'status' => 'required|string',
         ]);
 
-        $path = null;
+      // معالجة الصورة (إن وجدت)
+            $attachment = null;
+
         if ($this->attachment) {
-            $path = $this->attachment->store('offers', 'public');
-        }
+        $result = $this->file_storage($this->attachment, 'offer_attachments');
+        $attachment = is_array($result) ? ($result[0] ?? null) : $result;
+    }
 
         Offer::create([
             'client_id' => $this->client_id,
@@ -76,7 +81,7 @@ class Create extends Component
             'description' => $this->description,
             'status' => $this->status,
 
-            'attachment' => $path,
+            'attachment' => $attachment,
         ]);
 
         session()->flash('success', 'تم إنشاء العرض بنجاح.');
