@@ -3,6 +3,11 @@
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
+use App\Http\Controllers\Finance\ItemController;
+use App\Http\Livewire\Finance\Accounts\Index;
+use App\Http\Livewire\Finance\Settings;
+use App\Http\Controllers\Application_settings\application_settingsController;
+
 
 
 Auth::routes(['verify' => true]);
@@ -17,6 +22,18 @@ Auth::routes(['verify' => true]);
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+// إعدادات الإدارة المالية
+Route::get('finance/settings', [application_settingsController::class, 'financeSettings'])->name('finance.settings');
+
+// صفحة الحسابات المالية
+Route::get('finance/accounts', [application_settingsController::class, 'accountsIndex'])->name('finance.accounts.index');
+
+// صفحة البنود المالية
+Route::get('finance/items', [application_settingsController::class, 'itemsIndex'])->name('finance.items.index');
+// صفحة إنشاء بند مالي
+Route::get('finance/items/create', [application_settingsController::class, 'itemsCreate'])->name('finance.items.create');
+
 Route::group(['middleware' => ['guest']], function () {
     Route::get('/', function () {
         return view('auth.login');
@@ -66,10 +83,11 @@ Route::group(
             Route::resource('roles', 'RolesController');
             Route::resource('notifications', 'NotificationsController');
         });
+       
 
         Route::group(['namespace' => 'dashbord'], function () {
             Route::resource('dashbord', 'dashbordController');
-        });
+        }); 
 
         Route::get('/{page}', 'AdminController@index');
     });

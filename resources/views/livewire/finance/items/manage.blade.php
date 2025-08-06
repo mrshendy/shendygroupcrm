@@ -1,0 +1,167 @@
+<div class="container-fluid px-4 py-3">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h5 class="m-0">
+            <span class="mdi mdi-finance me-2 text-primary"></span>
+            إدارة البنود المالية
+        </h5>
+        @if (session()->has('message'))
+            <div class="alert alert-success alert-dismissible fade show py-2 px-3 mb-0">
+                <span class="mdi mdi-check-circle-outline me-2"></span>
+                {{ session('message') }}
+                <button type="button" class="btn-close p-2" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+    </div>
+
+    {{-- نموذج الإضافة أو التعديل --}}
+    <div class="card shadow-sm mb-4 border-0">
+        <div class="card-header bg-light text-dark d-flex align-items-center">
+            <span class="mdi mdi-plus-circle-outline me-2"></span>
+            {{ $updateMode ? 'تعديل بند' : 'إضافة بند جديد' }}
+        </div>
+        <div class="card-body">
+            <form wire:submit.prevent="{{ $updateMode ? 'update' : 'save' }}">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-semibold">اسم البند</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light">
+                                <span class="mdi mdi-tag-outline"></span>
+                            </span>
+                            <input type="text" class="form-control shadow-sm" wire:model="name" placeholder="أدخل اسم البند">
+                        </div>
+                        @error('name') 
+                            <small class="text-danger d-block mt-1">
+                                <span class="mdi mdi-alert-circle-outline me-1"></span>
+                                {{ $message }}
+                            </small> 
+                        @enderror
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold">النوع</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light">
+                                <span class="mdi mdi-format-list-bulleted-type"></span>
+                            </span>
+                            <select class="form-select shadow-sm" wire:model="type">
+                                <option value="">اختر النوع...</option>
+                                <option value="مصروف">مصروف</option>
+                                <option value="إيراد">إيراد</option>
+                            </select>
+                        </div>
+                        @error('type') 
+                            <small class="text-danger d-block mt-1">
+                                <span class="mdi mdi-alert-circle-outline me-1"></span>
+                                {{ $message }}
+                            </small> 
+                        @enderror
+                    </div>
+
+                    <div class="col-md-3">
+                        <label class="form-label fw-semibold">الحالة</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light">
+                                <span class="mdi mdi-power-plug-outline"></span>
+                            </span>
+                            <select class="form-select shadow-sm" wire:model="status">
+                                <option value="active">نشط</option>
+                                <option value="inactive">غير نشط</option>
+                            </select>
+                        </div>
+                        @error('status') 
+                            <small class="text-danger d-block mt-1">
+                                <span class="mdi mdi-alert-circle-outline me-1"></span>
+                                {{ $message }}
+                            </small> 
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="mt-4 d-flex justify-content-end">
+                    @if($updateMode)
+                        <button type="button" class="btn btn-outline-secondary me-2" wire:click="cancelUpdate">
+                            <span class="mdi mdi-close-circle-outline me-1"></span>
+                            إلغاء
+                        </button>
+                    @endif
+                    <button type="submit" class="btn btn-primary px-4">
+                        <span class="mdi mdi-content-save-outline me-1"></span>
+                        {{ $updateMode ? 'تحديث' : 'حفظ' }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {{-- جدول عرض البنود --}}
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="input-group w-25">
+                    <span class="input-group-text bg-light">
+                        <span class="mdi mdi-magnify"></span>
+                    </span>
+                    <input type="text" wire:model="search" class="form-control shadow-sm" placeholder="ابحث...">
+                </div>
+                <div class="text-muted small">
+                    <span class="mdi mdi-counter me-1"></span>
+                    العدد الإجمالي: {{ $items->total() }}
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th width="40%">اسم البند</th>
+                            <th width="25%">النوع</th>
+                            <th width="20%">الحالة</th>
+                            <th width="15%">إجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($items as $item)
+                            <tr>
+                                <td>{{ $item->name }}</td>
+                                <td>
+                                    <span class="badge bg-{{ $item->type == 'إيراد' ? 'success' : 'warning' }} bg-opacity-10 text-{{ $item->type == 'إيراد' ? 'success' : 'warning' }}">
+                                        {{ $item->type }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-{{ $item->status == 'active' ? 'success' : 'secondary' }} bg-opacity-10 text-{{ $item->status == 'active' ? 'success' : '' }}">
+                                        <span class="mdi mdi-small me-1"></span>
+                                        {{ $item->status == 'active' ? 'نشط' : 'غير نشط' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary" wire:click="edit({{ $item->id }})">
+                                        <span class="mdi mdi-pencil-outline me-1"></span>
+                                        تعديل
+                                    </button>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-muted">
+                                    <span class="mdi mdi-database-remove-outline me-2"></span>
+                                    لا توجد بيانات لعرضها
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            @if($items->hasPages())
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <div class="text-muted small">
+                        عرض {{ $items->firstItem() }} إلى {{ $items->lastItem() }} من {{ $items->total() }}
+                    </div>
+                    {{ $items->links() }}
+                </div>
+            @endif
+        </div>
+    </div>
+</div>

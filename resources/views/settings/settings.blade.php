@@ -99,6 +99,15 @@
                                         <a href="javascript:void(0);" class="btn btn-info">{{ trans('settings_trans.Go_to_settings_now') }}</a>
                                     </div>
                                 </div>
+
+
+
+
+   @livewire('finance.settings')
+
+
+
+
                                 <!-- end col -->
                             </div><!-- end row -->
                         </div><!-- end col -->

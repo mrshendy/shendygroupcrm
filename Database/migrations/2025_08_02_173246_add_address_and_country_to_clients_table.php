@@ -26,10 +26,20 @@ return new class extends Migration
     });
 }
 
-public function down(): void
+public function down()
 {
     Schema::table('clients', function (Blueprint $table) {
-        $table->dropColumn(['address', 'country_id']);
+        if (Schema::hasColumn('clients', 'country_id')) {
+            // احذف الـ foreign key حسب الاسم التلقائي
+            $table->dropForeign('clients_country_id_foreign');
+            $table->dropColumn('country_id');
+        }
+
+        if (Schema::hasColumn('clients', 'address')) {
+            $table->dropColumn('address');
+        }
     });
 }
+
+
 };

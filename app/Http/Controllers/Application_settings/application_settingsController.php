@@ -2,13 +2,13 @@
 
 
 namespace App\Http\Controllers\Application_settings;
-use RealRashid\SweetAlert\Facades\Alert;
+
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Storeapplication_settings;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\application_settings;
-header('Content-Type: application/json;charset=utf-8');
+use RealRashid\SweetAlert\Facades\Alert;
 use App\Http\Controllers\log\LogController;
 
   /**
@@ -16,12 +16,36 @@ use App\Http\Controllers\log\LogController;
    *
    * @return Response
    */
-  public function index()
-  {
-   
-    return view('settings.settings');
+  class application_settingsController extends Controller
+{
+    public function index()
+    {
+        return view('settings.settings');
+    }
 
-  }
+   public function financeSettings()
+{
+    return view('finance.settings');
+}
+
+public function accountsIndex()
+{
+    return view('finance.accounts.manage');
+}
+
+
+public function itemsIndex()
+{
+    // This method returns the view for managing financial items
+    return view('finance.items.index');
+
+}
+public function itemsCreate()
+{
+    // This method returns the view for managing financial items
+    return view('finance.items.create');
+
+}
 
   /**
    * Show the form for creating a new resource.
