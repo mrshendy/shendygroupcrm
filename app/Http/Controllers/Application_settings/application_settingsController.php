@@ -11,9 +11,6 @@ use App\Models\application_settings;
 header('Content-Type: application/json;charset=utf-8');
 use App\Http\Controllers\log\LogController;
 
-class application_settingsController extends Controller
-{
-
   /**
    * Display a listing of the resource.
    *
