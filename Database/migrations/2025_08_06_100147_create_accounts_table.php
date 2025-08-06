@@ -19,6 +19,7 @@ return new class extends Migration
             $table->enum('type', ['bank', 'cash', 'wallet', 'investment']);
             $table->decimal('opening_balance', 15, 2)->default(0);
             $table->decimal('current_balance', 15, 2)->default(0);
+            $table->string('account_number')->nullable();
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->text('notes')->nullable();
             $table->timestamps();

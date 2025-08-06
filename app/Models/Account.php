@@ -13,6 +13,8 @@ class Account extends Model
     'type',
     'opening_balance',
     'current_balance',
+    'account_number',
+    'bank',
     'status',
     'notes'
 ];
