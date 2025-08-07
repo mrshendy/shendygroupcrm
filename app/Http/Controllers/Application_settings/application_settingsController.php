@@ -33,17 +33,10 @@ public function accountsIndex()
     return view('finance.accounts.manage');
 }
 
-
 public function itemsIndex()
 {
     // This method returns the view for managing financial items
-    return view('finance.items.index');
-
-}
-public function itemsCreate()
-{
-    // This method returns the view for managing financial items
-    return view('finance.items.index');
+    return view('finance.items.manage');
 
 }
 

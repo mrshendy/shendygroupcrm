@@ -45,9 +45,7 @@ Route::group(
 
                 // صفحة البنود المالية
                 Route::get('finance/items', [application_settingsController::class, 'itemsIndex'])->name('finance.items.index');
-                // صفحة إنشاء بند مالي
-                Route::get('finance/items/create', [application_settingsController::class, 'itemsCreate'])->name('finance.items.create');
-
+               
         Route::group(['namespace' => 'Application_settings'], function () {
             Route::resource('places_settings', 'place_settingsController');
             Route::resource('countries', 'CountriesController');

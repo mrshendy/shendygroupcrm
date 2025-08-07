@@ -126,3 +126,5 @@ class Manage extends Component
         return view('livewire.finance.accounts.manage', compact('accounts'));
     }
 }
+
+

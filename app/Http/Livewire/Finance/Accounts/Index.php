@@ -1,7 +1,4 @@
 <?php
-
-// Livewire Component: app/Http/Livewire/Finance/Accounts/Index.php
-
 namespace App\Http\Livewire\Finance\Accounts;
 
 use Livewire\Component;
@@ -33,6 +30,6 @@ public $is_main = false;
             ->orderBy('id', 'desc')
             ->paginate(10);
 
-return view('livewire.finance.accounts.index', compact('accounts'));
+return view('livewire.finance.index', compact('accounts'));
     }
 }
