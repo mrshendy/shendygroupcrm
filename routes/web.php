@@ -23,16 +23,6 @@ Auth::routes(['verify' => true]);
 |
 */
 
-// إعدادات الإدارة المالية
-Route::get('finance/settings', [application_settingsController::class, 'financeSettings'])->name('finance.settings');
-
-// صفحة الحسابات المالية
-Route::get('finance/accounts', [application_settingsController::class, 'accountsIndex'])->name('finance.accounts.index');
-
-// صفحة البنود المالية
-Route::get('finance/items', [application_settingsController::class, 'itemsIndex'])->name('finance.items.index');
-// صفحة إنشاء بند مالي
-Route::get('finance/items/create', [application_settingsController::class, 'itemsCreate'])->name('finance.items.create');
 
 Route::group(['middleware' => ['guest']], function () {
     Route::get('/', function () {
@@ -47,6 +37,16 @@ Route::group(
         'middleware' => ['localeSessionRedirect', 'localizationRedirect', 'localeViewPath', 'auth', 'verified'],
     ],
     function () {
+                // إعدادات الإدارة المالية
+                Route::get('finance/settings', [application_settingsController::class, 'financeSettings'])->name('finance.settings');
+
+                // صفحة الحسابات المالية
+                Route::get('finance/accounts', [application_settingsController::class, 'accountsIndex'])->name('finance.accounts.index');
+
+                // صفحة البنود المالية
+                Route::get('finance/items', [application_settingsController::class, 'itemsIndex'])->name('finance.items.index');
+                // صفحة إنشاء بند مالي
+                Route::get('finance/items/create', [application_settingsController::class, 'itemsCreate'])->name('finance.items.create');
 
         Route::group(['namespace' => 'Application_settings'], function () {
             Route::resource('places_settings', 'place_settingsController');
