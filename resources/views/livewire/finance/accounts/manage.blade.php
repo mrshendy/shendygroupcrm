@@ -1,184 +1,260 @@
-@if (session()->has('message'))
-    <div class="alert alert-success alert-dismissible fade show d-flex align-items-center mb-4 border-0 shadow-sm">
-        <span class="mdi mdi-check-circle-outline me-2 fs-4 text-success"></span>
+<div class="card shadow-sm border-0 overflow-hidden mb-4">
+    <!-- Alert Message -->
+    @if (session()->has('message'))
+    <div class="alert alert-success alert-dismissible fade show d-flex align-items-center m-4 rounded-3 shadow-sm">
+        <span class="mdi mdi-check-circle-outline me-3 fs-4"></span>
         <div class="flex-grow-1">{{ session('message') }}</div>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-@endif
+    @endif
 
-<div class="card shadow-sm border-0 overflow-hidden">
     <!-- Card Header -->
-    <div class="card-header bg-light d-flex justify-content-between align-items-center border-bottom py-3">
-        <div class="d-flex align-items-center">
-            <span class="mdi mdi-bank-outline me-2 fs-4 text-primary"></span>
+    <div class="card-header bg-light d-flex flex-column flex-md-row justify-content-between align-items-center border-bottom py-3">
+        <div class="d-flex align-items-center mb-3 mb-md-0">
+            <span class="mdi mdi-bank-outline me-2 fs-3 text-primary"></span>
             <h5 class="mb-0 fw-semibold">إدارة الحسابات المالية</h5>
         </div>
-        <div class="col-md-4">
-            <div class="input-group input-group-sm">
-                <span class="input-group-text bg-white border-end-0">
-                    <span class="mdi mdi-magnify text-muted"></span>
+        
+        <div class="col-md-5">
+            <div class="input-group">
+                <span class="input-group-text bg-white">
+                    <span class="mdi mdi-magnify"></span>
                 </span>
-                <input type="text" wire:model.debounce.500ms="search" class="form-control shadow-none border-start-0"
-                    placeholder="ابحث عن حساب...">
+                <input type="text" wire:model.debounce.500ms="search" 
+                       class="form-control border-start-0 shadow-none" 
+                       placeholder="ابحث باسم الحساب، الرقم أو النوع...">
             </div>
         </div>
     </div>
 
-    <!-- Card Body -->
+    <!-- Card Body - Form -->
     <div class="card-body p-4">
-        <!-- Form Section -->
-        <div class="mb-5">
-            <form wire:submit.prevent="save">
-                <div class="row g-3">
-                    <input type="hidden" wire:model="account_id">
+        <form wire:submit.prevent="{{ $account_id ? 'update' : 'save' }}" class="needs-validation" novalidate>
+            <div class="row g-3">
+                <input type="hidden" wire:model="account_id">
 
-                    <!-- Account Name -->
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold small mb-1">اسم الحساب <span class="text-danger">*</span></label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light"><span class="mdi mdi-account-outline text-muted"></span></span>
-                            <input type="text" wire:model.defer="name" class="form-control shadow-sm" placeholder="أدخل اسم الحساب">
+                <!-- Account Name -->
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">اسم الحساب <span class="text-danger">*</span></label>
+                    <div class="input-group has-validation">
+                        <span class="input-group-text bg-light">
+                            <span class="mdi mdi-account-outline"></span>
+                        </span>
+                        <input type="text" wire:model.defer="name" 
+                               class="form-control shadow-sm @error('name') is-invalid @enderror" 
+                               placeholder="أدخل اسم الحساب" required>
+                        @error('name')
+                        <div class="invalid-feedback">
+                            {{ $message }}
                         </div>
-                        @error('name') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+                        @enderror
                     </div>
+                </div>
 
-                    <!-- Account Number -->
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold small mb-1">رقم الحساب</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light"><span class="mdi mdi-identifier text-muted"></span></span>
-                            <input type="text" wire:model.defer="account_number" class="form-control shadow-sm" placeholder="أدخل رقم الحساب">
+                <!-- Account Number -->
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">رقم الحساب</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light">
+                            <span class="mdi mdi-identifier"></span>
+                        </span>
+                        <input type="text" wire:model.defer="account_number" 
+                               class="form-control shadow-sm" 
+                               placeholder="أدخل رقم الحساب">
+                    </div>
+                </div>
+
+                <!-- Account Type -->
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">نوع الحساب</label>
+                    <div class="input-group has-validation">
+                        <span class="input-group-text bg-light">
+                            <span class="mdi mdi-form-select"></span>
+                        </span>
+                        <select wire:model.defer="type" 
+                                class="form-select shadow-sm @error('type') is-invalid @enderror">
+                            <option value="">اختر النوع...</option>
+                            <option value="بنكي">بنكي</option>
+                            <option value="نقدي">نقدي</option>
+                            <option value="إلكتروني">إلكتروني</option>
+                            <option value="استثمار">استثمار</option>
+                        </select>
+                        @error('type')
+                        <div class="invalid-feedback">
+                            {{ $message }}
                         </div>
+                        @enderror
                     </div>
+                </div>
 
-                    <!-- Account Type -->
-                    <div class="col-md-4">
-                        <label class="form-label fw-semibold small mb-1">نوع الحساب</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light"><span class="mdi mdi-format-list-bulleted-type text-muted"></span></span>
-                            <select wire:model.defer="type" class="form-select shadow-sm">
-                                <option value="">اختر النوع...</option>
-                                <option value="بنكي">بنكي</option>
-                                <option value="نقدي">نقدي</option>
-                                <option value="إلكتروني">إلكتروني</option>
-                            </select>
+                <!-- Opening Balance -->
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">الرصيد الافتتاحي</label>
+                    <div class="input-group has-validation">
+                        <span class="input-group-text bg-light">
+                            <span class="mdi mdi-cash"></span>
+                        </span>
+                        <input type="number" wire:model.defer="opening_balance" 
+                               class="form-control shadow-sm @error('opening_balance') is-invalid @enderror" 
+                               placeholder="0.00" step="0.01">
+                        <span class="input-group-text bg-light">ج.م</span>
+                        @error('opening_balance')
+                        <div class="invalid-feedback">
+                            {{ $message }}
                         </div>
-                        @error('type') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
+                        @enderror
                     </div>
+                </div>
 
-                    <!-- Opening Balance -->
-                    <div class="col-md-4">
-                        <label class="form-label fw-semibold small mb-1">الرصيد الافتتاحي</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light"><span class="mdi mdi-currency-egp text-muted"></span></span>
-                            <input type="number" wire:model.defer="opening_balance" class="form-control shadow-sm" placeholder="0.00" step="0.01">
-                            <span class="input-group-text bg-light">ج.م</span>
-                        </div>
+                <!-- Bank Name -->
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold">اسم البنك</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light">
+                            <span class="mdi mdi-bank"></span>
+                        </span>
+                        <input type="text" wire:model.defer="bank" 
+                               class="form-control shadow-sm" 
+                               placeholder="أدخل اسم البنك">
                     </div>
+                </div>
 
-                    <!-- Bank Name -->
-                    <div class="col-md-4">
-                        <label class="form-label fw-semibold small mb-1">اسم البنك</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light"><span class="mdi mdi-bank text-muted"></span></span>
-                            <input type="text" wire:model.defer="bank" class="form-control shadow-sm" placeholder="أدخل اسم البنك">
-                        </div>
+                <!-- Notes -->
+                <div class="col-12">
+                    <label class="form-label fw-semibold">ملاحظات</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light align-items-start">
+                            <span class="mdi mdi-note-text-outline"></span>
+                        </span>
+                        <textarea wire:model.defer="notes" 
+                                  class="form-control shadow-sm" 
+                                  rows="3"
+                                  placeholder="أدخل أي ملاحظات إضافية..."></textarea>
                     </div>
+                </div>
 
-                    <!-- Is Main Account -->
-                    <div class="col-12">
-                        <div class="form-check form-switch ps-0">
-                            <input class="form-check-input ms-0" type="checkbox" wire:model.defer="is_main" id="is_main">
-                            <label class="form-check-label fw-semibold ms-2" for="is_main">
-                                <span class="mdi mdi-star-outline me-1"></span> حساب رئيسي
-                            </label>
-                        </div>
+                <!-- Switches -->
+                <div class="col-md-6">
+                    <div class="form-check form-switch ps-0">
+                        <input class="form-check-input ms-0" type="checkbox" 
+                               wire:model.defer="is_main" id="is_main">
+                        <label class="form-check-label fw-semibold ms-3" for="is_main">
+                            <span class="mdi mdi-star-outline me-2"></span>
+                            حساب رئيسي
+                        </label>
                     </div>
+                </div>
 
-                    <!-- Form Actions -->
-<div class="col-12">
-    <div class="d-flex justify-content-end border-top pt-3">
-        @if ($account_id)
-            <button type="button" wire:click="resetInputs" class="btn btn-outline-secondary me-2">
-                <span class="mdi mdi-close-circle-outline me-1"></span> إلغاء
-            </button>
-            <button type="submit" class="btn btn-success px-4 py-2">
-                <span class="mdi mdi-content-save-edit-outline me-2"></span> تحديث الحساب
-            </button>
-        @else
-            <button type="submit" class="btn btn-primary px-4 py-2">
-                <span class="mdi mdi-content-save-outline me-2"></span> حفظ الحساب
-            </button>
-        @endif
+                <div class="col-md-6">
+                    <div class="form-check form-switch ps-0">
+                        <input class="form-check-input ms-0" type="checkbox" 
+                               wire:model.defer="status" id="status">
+                        <label class="form-check-label fw-semibold ms-3" for="status">
+                            <span class="mdi mdi-power-plug-outline me-2"></span>
+                            نشط الحساب
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="col-12">
+                    <div class="d-flex justify-content-end border-top pt-4">
+                        @if($account_id)
+                        <button type="button" wire:click="resetForm" 
+                                class="btn btn-outline-danger me-3 px-4">
+                            <span class="mdi mdi-close-circle-outline me-1"></span>
+                            إلغاء
+                        </button>
+                        @endif
+                        
+                        <button type="submit" class="btn btn-{{ $account_id ? 'success' : 'primary' }} px-4">
+                            <span class="mdi mdi-content-save-{{ $account_id ? 'edit' : '' }}-outline me-1"></span>
+                            {{ $account_id ? 'تحديث الحساب' : 'حفظ الحساب' }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>
 </div>
 
-
-        <!-- Accounts Table -->
-        <div class="mt-4">
-            <div class="table-responsive rounded-3 border">
-                <table class="table table-hover mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th class="ps-4 fw-semibold">اسم الحساب</th>
-                            <th class="fw-semibold">النوع</th>
-                            <th class="fw-semibold">رقم الحساب</th>
-                            <th class="fw-semibold">الرصيد</th>
-                            <th class="text-center fw-semibold">رئيسي</th>
-                            <th class="text-center fw-semibold pe-4">إجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($accounts as $acc)
-                            <tr>
-                                <td class="ps-4">{{ $acc->name }}</td>
-                                <td>
-                                    <span class="badge bg-{{ $acc->type == 'بنكي' ? 'primary' : ($acc->type == 'نقدي' ? 'info' : 'warning') }}">
-                                        {{ $acc->type }}
-                                    </span>
-                                </td>
-                                <td>{{ $acc->account_number ?? '--' }}</td>
-                                <td class="fw-bold {{ $acc->opening_balance >= 0 ? 'text-success' : 'text-danger' }}">
-                                    {{ number_format($acc->opening_balance, 2) }} ج.م
-                                </td>
-                                <td class="text-center">
-                                    @if ($acc->is_main)
-                                        <span class="mdi mdi-star text-warning fs-5"></span>
-                                    @else
-                                        <span class="mdi mdi-star-outline text-muted fs-5"></span>
-                                    @endif
-                                </td>
-                                <td class="text-center">
-                                    <button wire:click="edit({{ $acc->id }})" class="btn btn-sm btn-outline-primary">
-                                        تعديل
-                                    </button>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" class="text-center text-muted py-4">
-                                    <span class="mdi mdi-database-remove-outline fs-2 d-block mb-2"></span>
-                                    لا توجد حسابات مسجلة
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Pagination -->
-            @if ($accounts->hasPages())
-                <div class="d-flex justify-content-between align-items-center mt-3">
-                    <div class="text-muted small">
-                        عرض <span class="fw-semibold">{{ $accounts->firstItem() }}</span> إلى
-                        <span class="fw-semibold">{{ $accounts->lastItem() }}</span> من
-                        <span class="fw-semibold">{{ $accounts->total() }}</span> نتيجة
-                    </div>
-                    <div>
-                        {{ $accounts->onEachSide(1)->links() }}
-                    </div>
-                </div>
-            @endif
+<!-- Accounts Table -->
+<div class="card shadow-sm border-0 overflow-hidden">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4 fw-semibold">اسم الحساب</th>
+                        <th class="fw-semibold">النوع</th>
+                        <th class="fw-semibold">رقم الحساب</th>
+                        <th class="fw-semibold text-end">الرصيد</th>
+                        <th class="text-center fw-semibold">رئيسي</th>
+                        <th class="text-center fw-semibold">الحالة</th>
+                        <th class="text-center fw-semibold pe-4">إجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($accounts as $acc)
+                    <tr wire:key="account-{{ $acc->id }}">
+                        <td class="ps-4">{{ $acc->name }}</td>
+                        <td>
+                            <span class="badge bg-opacity-10 
+                                {{ $acc->type == 'بنكي' ? 'bg-primary text-primary' : 
+                                   ($acc->type == 'نقدي' ? 'bg-info text-info' : 'bg-warning text-warning') }}">
+                                {{ $acc->type }}
+                            </span>
+                        </td>
+                        <td>{{ $acc->account_number ?? '--' }}</td>
+                        <td class="fw-bold text-end {{ $acc->opening_balance >= 0 ? 'text-success' : 'text-danger' }}">
+                            {{ number_format($acc->opening_balance, 2) }} ج.م
+                        </td>
+                        <td class="text-center">
+                            @if($acc->is_main)
+                                <span class="mdi mdi-star-circle text-warning fs-5" title="حساب رئيسي"></span>
+                            @else
+                                <span class="mdi mdi-star-outline text-muted fs-5"></span>
+                            @endif
+                        </td>
+                        <td class="text-center">
+                            <span class="badge bg-opacity-10 {{ $acc->status ? 'bg-success text-success' : 'bg-danger text-danger' }}">
+                                {{ $acc->status ? 'نشط' : 'غير نشط' }}
+                            </span>
+                        </td>
+                        <td class="text-center pe-4">
+                            <button wire:click="edit({{ $acc->id }})" 
+                                    class="btn btn-sm btn-outline-primary px-3"
+                                    title="تعديل">
+                                <span class="mdi mdi-pencil-outline"></span>
+                            </button>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="7" class="text-center py-5 text-muted">
+                            <span class="mdi mdi-database-remove-outline fs-2 d-block mb-2"></span>
+                            لا توجد حسابات مسجلة
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
+
+        @if($accounts->hasPages())
+        <div class="card-footer bg-light">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+                <div class="text-muted small mb-2 mb-md-0">
+                    <span class="mdi mdi-counter me-1"></span>
+                    عرض <span class="fw-semibold">{{ $accounts->firstItem() }}</span> إلى 
+                    <span class="fw-semibold">{{ $accounts->lastItem() }}</span> من 
+                    <span class="fw-semibold">{{ $accounts->total() }}</span> نتيجة
+                </div>
+                <div>
+                    {{ $accounts->onEachSide(1)->links() }}
+                </div>
+            </div>
+        </div>
+        @endif
     </div>
 </div>
