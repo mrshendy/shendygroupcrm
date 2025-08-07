@@ -9,7 +9,7 @@
 
     <div class="card-header bg-light d-flex flex-column flex-md-row justify-content-between align-items-center border-bottom py-3">
         <div class="d-flex align-items-center mb-3 mb-md-0">
-            <span class="mdi mdi-bank-outline me-2 fs-3 text-primary"></span>
+            <span class="mdi mdi-bank-outline me-2 fs-3 text-secondary"></span>
             <h5 class="mb-0 fw-semibold">إدارة الحسابات المالية</h5>
         </div>
         <div class="col-md-5">
@@ -101,19 +101,26 @@
                     </div>
                 </div>
 
-                <div class="col-12">
-                    <div class="d-flex justify-content-end border-top pt-4">
-                        @if($account_id)
-                            <button type="button" wire:click="resetInputs" class="btn btn-outline-danger me-3 px-4">
-                                <span class="mdi mdi-close-circle-outline me-1"></span> إلغاء
-                            </button>
-                        @endif
-                        <button type="submit" class="btn btn-{{ $account_id ? 'success' : 'primary' }} px-4">
-                            <span class="mdi mdi-content-save-{{ $account_id ? 'edit' : '' }}-outline me-1"></span>
-                            {{ $account_id ? 'تحديث الحساب' : 'حفظ الحساب' }}
-                        </button>
-                    </div>
-                </div>
+               <div class="col-12">
+    <div class="d-flex justify-content-between align-items-center border-top pt-4">
+        <div>
+            @if($account_id)
+                <button type="button" wire:click="resetInputs" class="btn btn-light border text-danger px-4">
+                    <span class="mdi mdi-close-circle-outline me-1"></span>
+                    إلغاء التعديل
+                </button>
+            @endif
+        </div>
+
+        <div>
+            <button type="submit" class="btn btn-{{ $account_id ? 'success' : 'primary' }} px-4">
+                <span class="mdi mdi-content-save{{ $account_id ? '-edit' : '' }}-outline me-1"></span>
+                {{ $account_id ? 'تحديث الحساب' : 'حفظ الحساب' }}
+            </button>
+        </div>
+    </div>
+</div>
+
             </div>
         </form>
     </div>

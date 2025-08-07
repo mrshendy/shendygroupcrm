@@ -78,18 +78,24 @@
                     </div>
                 </div>
 
-                <div class="mt-4 d-flex justify-content-end">
-                    @if($updateMode)
-                        <button type="button" class="btn btn-outline-secondary me-2" wire:click="cancelUpdate">
-                            <span class="mdi mdi-close-circle-outline me-1"></span>
-                            إلغاء
-                        </button>
-                    @endif
-                    <button type="submit" class="btn btn-primary px-4">
-                        <span class="mdi mdi-content-save-outline me-1"></span>
-                        {{ $updateMode ? 'تحديث' : 'حفظ' }}
-                    </button>
-                </div>
+                <div class="mt-4 d-flex justify-content-between align-items-center border-top pt-4">
+    <div>
+        @if($updateMode)
+            <button type="button" class="btn btn-outline-danger px-4" wire:click="cancelUpdate">
+                <span class="mdi mdi-close-circle-outline me-1"></span>
+                إلغاء
+            </button>
+        @endif
+    </div>
+
+    <div>
+        <button type="submit" class="btn btn-{{ $updateMode ? 'success' : 'primary' }} px-4">
+            <span class="mdi mdi-content-save{{ $updateMode ? '-edit' : '' }}-outline me-1"></span>
+            {{ $updateMode ? 'تحديث' : 'حفظ' }}
+        </button>
+    </div>
+</div>
+
             </form>
         </div>
     </div>
