@@ -42,6 +42,11 @@ Route::group(
         // صفحة البنود المالية
         Route::get('finance/items', [application_settingsController::class, 'itemsIndex'])->name('finance.items.index');
 
+        Route::get('finance/index', function () {
+    return view('finance.index'); // اللي فيه @livewire('finance.transactions.index')
+})->name('finance.index');
+
+
         Route::group(['namespace' => 'Application_settings'], function () {
             Route::resource('places_settings', 'place_settingsController');
             Route::resource('countries', 'CountriesController');
