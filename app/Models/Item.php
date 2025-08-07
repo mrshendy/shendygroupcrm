@@ -12,4 +12,9 @@ class Item extends Model
     'type' ,
     'status' 
 ];
+
+public function transactions()
+{
+    return $this->hasMany(Transaction::class);
+}
 }

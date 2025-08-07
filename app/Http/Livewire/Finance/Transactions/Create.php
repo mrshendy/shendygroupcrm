@@ -15,6 +15,7 @@ class Create extends Component
     public $notes;
     public $transaction_date;
     public $transaction_type;
+    protected $listeners = ['closeModal'];
 
     protected $rules = [
         'account_id' => 'required|exists:accounts,id',
@@ -46,6 +47,11 @@ class Create extends Component
         session()->flash('message', 'تم حفظ الحركة بنجاح.');
         return redirect()->route('finance.index');
     }
+    public function closeModal()
+{
+    return redirect()->route('finance.index');
+}
+
 
     public function render()
     {
