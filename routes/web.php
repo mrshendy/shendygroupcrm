@@ -35,14 +35,11 @@ Route::group(
         'middleware' => ['localeSessionRedirect', 'localizationRedirect', 'localeViewPath', 'auth', 'verified'],
     ],
     function () {
-        // إعدادات الإدارة المالية
-        Route::get('finance/settings', [application_settingsController::class, 'financeSettings'])->name('finance.settings');
-        // صفحة الحسابات المالية
-        Route::get('finance/', [application_settingsController::class, 'mainIndex'])->name('finance.accounts.index');
-        // صفحة عمليات الحسابات المالية
-        Route::get('finance/accounts', [application_settingsController::class, 'accountsIndex'])->name('finance.accounts.manage');
-        // صفحة البنود المالية
-        Route::get('finance/items', [application_settingsController::class, 'itemsIndex'])->name('finance.items.index');
+       Route::get('finance/settings', [application_settingsController::class, 'financeSettings'])->name('finance.settings');
+Route::get('finance/', [application_settingsController::class, 'mainIndex'])->name('finance.accounts.index');
+Route::get('finance/accounts', [application_settingsController::class, 'accountsIndex'])->name('finance.accounts.manage');
+Route::get('finance/items', [application_settingsController::class, 'itemsIndex'])->name('finance.items.index');
+
 
         Route::get('finance/index', function () {
             return view('finance.index'); // اللي فيه @livewire('finance.index')

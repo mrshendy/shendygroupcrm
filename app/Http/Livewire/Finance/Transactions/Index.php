@@ -9,6 +9,7 @@ use App\Models\Item;
 use Livewire\WithPagination;
 use Illuminate\Support\Carbon;
 
+
 class Index extends Component
 {
     use WithPagination;
@@ -35,6 +36,7 @@ class Index extends Component
         $this->transaction_type = $type;
         $this->showModal = true;
     }
+ protected $paginationTheme = 'bootstrap';
 
     public function resetInputs()
     {

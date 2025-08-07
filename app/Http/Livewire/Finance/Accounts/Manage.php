@@ -43,7 +43,7 @@ class Manage extends Component
         'notes' => 'nullable|string|max:500',
     ];
 
-    public function updatingSearch()
+    public function updatedSearch()
     {
         $this->resetPage();
     }
@@ -84,7 +84,7 @@ class Manage extends Component
 
     public function delete($id)
     {
-        $account = Account::find($id);
+        $account = Account::findOrFail($id)->delete();
         if ($account) {
             $account->delete();
             session()->flash('message', 'تم حذف الحساب بنجاح.');

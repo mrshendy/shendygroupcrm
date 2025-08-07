@@ -29,44 +29,44 @@
             <table class="table table-hover align-middle mb-0">
                 <thead class="table-light">
                     <tr>
-                        <th width="50px">#</th>
-                        <th width="120px">رقم الحركة</th>
-                        <th width="120px" class="text-end">المبلغ</th>
-                        <th>المستلم</th>
-                        <th width="120px">النوع</th>
-                        <th>البند</th>
-                        <th width="200px">ملاحظات</th>
-                        <th width="120px">تاريخ الحركة</th>
-                        <th width="150px">تاريخ الإنشاء</th>
-                        <th width="100px" class="text-center">إدارة</th>
+                        <th class="ps-3" style="width: 60px;">#</th>
+                        <th style="width: 100px; padding-left: 1rem; padding-right: 1rem;">رقم الحركة</th>
+                        <th style="width: 120px; padding-left: 1rem; padding-right: 1rem;" class="text-end">المبلغ</th>
+                        <th style="padding-left: 1rem; padding-right: 1rem;">المستلم</th>
+                        <th style="width: 120px; padding-left: 1rem; padding-right: 1rem;">النوع</th>
+                        <th style="padding-left: 1rem; padding-right: 1rem;">البند</th>
+                        <th style="width: 200px; padding-left: 1rem; padding-right: 1rem;">ملاحظات</th>
+                        <th style="width: 120px; padding-left: 1rem; padding-right: 1rem;">تاريخ الحركة</th>
+                        <th style="width: 150px; padding-left: 1rem; padding-right: 1rem;">تاريخ الإنشاء</th>
+                        <th style="width: 100px; padding-left: 1rem; padding-right: 1rem;" class="text-center">إدارة</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($transactions as $index => $t)
                     <tr wire:key="transaction-{{ $t->id }}">
-                        <td>{{ $transactions->firstItem() + $index }}</td>
-                        <td class="fw-semibold">#{{ $t->id }}</td>
-                        <td class="text-end fw-bold {{ $t->transaction_type === 'مصروف' ? 'text-danger' : 'text-success' }}">
+                        <td class="ps-3">{{ $transactions->firstItem() + $index }}</td>
+                        <td class="px-3 fw-semibold">#{{ $t->id }}</td>
+                        <td class="px-3 text-end fw-bold {{ $t->transaction_type === 'مصروف' ? 'text-danger' : 'text-success' }}">
                             {{ number_format($t->amount, 2) }}
                         </td>
-                        <td>
+                        <td class="px-3">
                             <div class="d-flex align-items-center">
                                 <span class="mdi mdi-account-circle-outline me-2 text-muted"></span>
                                 {{ $t->account->name ?? '-' }}
                             </div>
                         </td>
-                        <td>
+                        <td class="px-3">
                             <span class="badge bg-{{ $t->transaction_type === 'مصروف' ? 'danger' : 'success' }}-subtle text-{{ $t->transaction_type === 'مصروف' ? 'danger' : 'success' }}">
                                 {{ $t->item->type ?? '-' }}
                             </span>
                         </td>
-                        <td>
+                        <td class="px-3">
                             <div class="d-flex align-items-center">
                                 <span class="mdi mdi-tag-outline me-2 text-muted"></span>
                                 {{ $t->item->name ?? '-' }}
                             </div>
                         </td>
-                        <td>
+                        <td class="px-3">
                             @if($t->notes)
                             <span class="text-truncate d-inline-block" style="max-width: 200px;" title="{{ $t->notes }}">
                                 <span class="mdi mdi-note-text-outline me-1 text-muted"></span>
@@ -76,9 +76,9 @@
                             <span class="text-muted">-</span>
                             @endif
                         </td>
-                        <td>{{ \Carbon\Carbon::parse($t->transaction_date)->format('Y-m-d') }}</td>
-                        <td>{{ \Carbon\Carbon::parse($t->created_at)->format('Y-m-d H:i') }}</td>
-                        <td class="text-center">
+                        <td class="px-3">{{ \Carbon\Carbon::parse($t->transaction_date)->format('Y-m-d') }}</td>
+                        <td class="px-3">{{ \Carbon\Carbon::parse($t->created_at)->format('Y-m-d H:i') }}</td>
+                        <td class="px-3 text-center">
                             <div class="dropdown">
                                 <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button"
                                     data-bs-toggle="dropdown" aria-expanded="false">
@@ -127,38 +127,3 @@
         @endif
     </div>
 </div>
-
-<!-- Modal -->
-@if ($showModal)
-<div class="modal fade show d-block" tabindex="-1" role="dialog" aria-modal="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content border-0 shadow-lg">
-            <div class="modal-header bg-light">
-                <h5 class="modal-title d-flex align-items-center">
-                    <lord-icon
-                        src="{{ $transaction_type === 'تحصيل' ? URL::asset('assets/images/icon/income.json') : URL::asset('assets/images/icon/expense.json') }}"
-                        trigger="loop"
-                        colors="primary:#4b38b3"
-                        style="width:30px;height:30px"
-                        class="me-2">
-                    </lord-icon>
-                    {{ $transaction_type === 'تحصيل' ? 'إضافة تحصيل جديد' : 'إضافة مصروف جديد' }}
-                </h5>
-                <button type="button" class="btn-close" wire:click="$set('showModal', false)" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-4">
-                @include('livewire.finance.transactions._form')
-            </div>
-            <div class="modal-footer bg-light">
-                <button type="button" class="btn btn-outline-secondary" wire:click="$set('showModal', false)">
-                    <i class="mdi mdi-close-circle-outline me-1"></i> إلغاء
-                </button>
-                <button type="button" class="btn btn-primary" wire:click="save">
-                    <i class="mdi mdi-content-save-outline me-1"></i> حفظ
-                </button>
-            </div>
-        </div>
-    </div>
-    <div class="modal-backdrop fade show"></div>
-</div>
-@endif
