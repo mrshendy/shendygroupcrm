@@ -52,7 +52,7 @@
                                     </div>
                                 </div>
                                 <h5 class="fs-16 mb-1">الحسابات</h5>
-                                <a href="{{ route('finance.accounts.index') }}" class="btn btn-sm btn-outline-success stretched-link mt-2">
+                                <a href="{{ route('finance.accounts.manage') }}" class="btn btn-sm btn-outline-success stretched-link mt-2">
                                     اذهب الان الي الحسابات
                                     <i class="mdi mdi-arrow-left ms-1"></i>
                                 </a>
