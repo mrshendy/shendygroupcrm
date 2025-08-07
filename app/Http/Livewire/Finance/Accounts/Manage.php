@@ -67,10 +67,6 @@ class Manage extends Component
         $this->resetPage();
     }
 
-    public function updatedSearch()
-    {
-        $this->render();
-    }
 
     public function save()
     {
@@ -92,20 +88,20 @@ class Manage extends Component
     {
         $acc = Account::find($id);
 
-        if (!$acc) {
-            session()->flash('message', 'الحساب غير موجود.');
-            return;
-        }
+    if (!$acc) {
+        session()->flash('message', 'الحساب غير موجود.');
+        return;
+    }
 
-        $this->account_id = $acc->id;
-        $this->name = $acc->name;
-        $this->account_number = $acc->account_number;
-        $this->type = $acc->type;
-        $this->opening_balance = $acc->opening_balance;
-        $this->bank = $acc->bank;
-        $this->notes = $acc->notes;
-        $this->is_main = (bool) $acc->is_main;
-        $this->status = (bool) $acc->status;
+    $this->account_id = $acc->id;
+    $this->name = $acc->name;
+    $this->account_number = $acc->account_number;
+    $this->type = $acc->type;
+    $this->opening_balance = $acc->opening_balance;
+    $this->bank = $acc->bank;
+    $this->notes = $acc->notes;
+    $this->is_main = (bool) $acc->is_main;
+    $this->status = (bool) $acc->status;
     }
 
     public function resetInputs()
@@ -139,16 +135,18 @@ class Manage extends Component
 
     public function render()
     {
-        $accounts = Account::query()
-            ->when($this->search, function ($query) {
-                $query->where('name', 'like', '%' . $this->search . '%')
-                      ->orWhere('account_number', 'like', '%' . $this->search . '%');
-            })
-            ->latest()
-            ->paginate(10);
+         $accounts = Account::query()
+        ->when($this->search, function ($query) {
+            $query->where(function ($q) {
+                $q->where('name', 'like', '%' . $this->search . '%')
+                  ->orWhere('account_number', 'like', '%' . $this->search . '%');
+            });
+        })
+        ->latest()
+        ->paginate(10);
 
-        return view('livewire.finance.accounts.manage', [
-            'accounts' => $accounts
-        ]);
+    return view('livewire.finance.accounts.manage', [
+        'accounts' => $accounts
+    ]);
     }
 }

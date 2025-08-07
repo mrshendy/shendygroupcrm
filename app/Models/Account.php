@@ -11,15 +11,12 @@ class Account extends Model
     protected $fillable = [
         'id',
         'name',
+        'account_number',
         'type',
         'opening_balance',
-        'current_balance',
-        'account_number',
         'bank',
+        'is_main',
         'status',
         'notes',
-        'is_main',
-        'created_at',
-        'updated_at',
     ];
 }

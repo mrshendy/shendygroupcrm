@@ -43,7 +43,7 @@ public function itemsIndex()
 public function itemsCreate()
 {
     // This method returns the view for managing financial items
-    return view('finance.items.create');
+    return view('finance.items.index');
 
 }
 
