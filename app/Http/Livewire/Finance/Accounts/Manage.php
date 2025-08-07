@@ -48,9 +48,11 @@ class Manage extends Component
         if ($this->account_id) {
             Account::findOrFail($this->account_id)->update($data);
             session()->flash('message', 'تم تحديث الحساب بنجاح');
+            $this->dispatchBrowserEvent('accountUpdated');
         } else {
             Account::create($data);
             session()->flash('message', 'تم إضافة الحساب بنجاح');
+            $this->dispatchBrowserEvent('accountAdded');
         }
 
         $this->resetInputs();
@@ -77,6 +79,7 @@ class Manage extends Component
         if ($account) {
             $account->delete();
             session()->flash('message', 'تم حذف الحساب بنجاح.');
+            $this->dispatchBrowserEvent('accountDeleted');
         }
     }
 
@@ -87,6 +90,10 @@ class Manage extends Component
             'opening_balance', 'bank', 'notes', 'is_main', 'status'
         ]);
     }
+    public function testClick()
+{
+    dd('وصل الزر!');
+}
 
     protected function formData()
     {
@@ -106,8 +113,12 @@ class Manage extends Component
     {
         $accounts = Account::query()
             ->when($this->search, function ($query) {
-                $query->where('name', 'like', '%' . $this->search . '%')
-                      ->orWhere('account_number', 'like', '%' . $this->search . '%');
+                $query->where(function ($q) {
+                    $q->where('name', 'like', '%' . $this->search . '%')
+                      ->orWhere('account_number', 'like', '%' . $this->search . '%')
+                      ->orWhere('type', 'like', '%' . $this->search . '%')
+                      ->orWhere('bank', 'like', '%' . $this->search . '%');
+                });
             })
             ->latest()
             ->paginate(10);

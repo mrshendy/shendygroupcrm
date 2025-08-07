@@ -12,15 +12,15 @@
 @endsection
 @section('scripts')
     <script>
-         window.addEventListener('itemAdded', function () {
+         window.addEventListener('accountAdded', function () {
     alert('تم إضافة الحساب جديد بنجاح!');
 });
 
-window.addEventListener('itemUpdated', function () {
+window.addEventListener('accountUpdated', function () {
     alert('تم تحديث بيانات الحساب بنجاح!');
 });
 
-window.addEventListener('itemDeleted', function () {
+window.addEventListener('accountDeleted', function () {
     alert('تم حذف الحساب بنجاح!');
 });
         
