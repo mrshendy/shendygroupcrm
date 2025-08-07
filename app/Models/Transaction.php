@@ -9,7 +9,9 @@ class Transaction extends Model
 {
     use HasFactory;
 
-
+protected $fillable = [
+        'account_id', 'item_id', 'type', 'amount', 'transaction_date', 'notes',
+    ];
 
     public function account()
 {

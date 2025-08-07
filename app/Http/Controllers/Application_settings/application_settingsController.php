@@ -41,7 +41,7 @@ public function MainIndex()
 public function itemsIndex()
 {
     // This method returns the view for managing financial items
-    return view('finance.items.manage');
+    return view('finance.items.index');
 
 }
 

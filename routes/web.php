@@ -43,8 +43,8 @@ Route::group(
         Route::get('finance/items', [application_settingsController::class, 'itemsIndex'])->name('finance.items.index');
 
         Route::get('finance/index', function () {
-    return view('finance.index'); // اللي فيه @livewire('finance.transactions.index')
-})->name('finance.index');
+    return view('finance.index'); // اللي فيه @livewire('finance.index')
+})->name('finance.transactions.index');
 
 
         Route::group(['namespace' => 'Application_settings'], function () {

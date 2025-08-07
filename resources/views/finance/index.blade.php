@@ -6,7 +6,7 @@
     <div class="card">
         <div class="card-body">
             <h4 class="mb-4">قائمة الحسابات المالية</h4>
-            @livewire('finance.accounts.index')
+            @livewire('finance.transactions.index')
         </div>
     </div>
 @endsection
