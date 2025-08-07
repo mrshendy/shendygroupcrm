@@ -2,23 +2,32 @@
 
 namespace App\Http\Livewire\Finance\Accounts;
 
+use App\Models\Account;
 use Livewire\Component;
 use Livewire\WithPagination;
-use App\Models\Account;
 
 class Manage extends Component
 {
     use WithPagination;
 
     public $account_id;
+
     public $name;
+
     public $account_number;
+
     public $type;
+
     public $opening_balance;
+
     public $bank;
+
     public $notes;
+
     public $is_main = false;
+
     public $status = true;
+
     public $search = '';
 
     protected $paginationTheme = 'bootstrap';
@@ -87,13 +96,14 @@ class Manage extends Component
     {
         $this->reset([
             'account_id', 'name', 'account_number', 'type',
-            'opening_balance', 'bank', 'notes', 'is_main', 'status'
+            'opening_balance', 'bank', 'notes', 'is_main', 'status',
         ]);
     }
+
     public function testClick()
-{
-    dd('وصل الزر!');
-}
+    {
+        dd('وصل الزر!');
+    }
 
     protected function formData()
     {
@@ -109,15 +119,16 @@ class Manage extends Component
         ];
     }
 
+
     public function render()
     {
         $accounts = Account::query()
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
-                    $q->where('name', 'like', '%' . $this->search . '%')
-                      ->orWhere('account_number', 'like', '%' . $this->search . '%')
-                      ->orWhere('type', 'like', '%' . $this->search . '%')
-                      ->orWhere('bank', 'like', '%' . $this->search . '%');
+                    $q->where('name', 'like', '%'.$this->search.'%')
+                        ->orWhere('account_number', 'like', '%'.$this->search.'%')
+                        ->orWhere('type', 'like', '%'.$this->search.'%')
+                        ->orWhere('bank', 'like', '%'.$this->search.'%');
                 });
             })
             ->latest()
@@ -126,5 +137,3 @@ class Manage extends Component
         return view('livewire.finance.accounts.manage', compact('accounts'));
     }
 }
-
-

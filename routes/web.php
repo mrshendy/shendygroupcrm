@@ -6,6 +6,8 @@ use App\Http\Controllers\Application_settings\Nationalities_settingsController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
+use App\Http\Controllers\Finance\TransactionPageController;
+
 
 Auth::routes(['verify' => true]);
 
@@ -43,8 +45,14 @@ Route::group(
         Route::get('finance/items', [application_settingsController::class, 'itemsIndex'])->name('finance.items.index');
 
         Route::get('finance/index', function () {
-    return view('finance.index'); // اللي فيه @livewire('finance.index')
-})->name('finance.transactions.index');
+            return view('finance.index'); // اللي فيه @livewire('finance.index')
+        })->name('finance.index');
+      
+Route::get('finance/transactions/create/expense', [TransactionPageController::class, 'createExpense'])
+    ->name('finance.transactions.create.expense');
+
+Route::get('finance/transactions/create/income', [TransactionPageController::class, 'createIncome'])
+    ->name('finance.transactions.create.income');
 
 
         Route::group(['namespace' => 'Application_settings'], function () {

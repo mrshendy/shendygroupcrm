@@ -3,13 +3,14 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h4 class="mb-0">قائمة المصروفات و التحصيلات</h4>
             <div>
-                <button wire:click="openCreateModal('مصروف')" class="btn btn-danger">
+                <a href="{{ route('finance.transactions.create.expense') }}" class="btn btn-danger">
                     <i class="mdi mdi-minus-circle-outline me-1"></i> إضافة مصروف
-                </button>
+                </a>
 
-                <button wire:click="openCreateModal('تحصيل')" class="btn btn-success">
+                <a href="{{ route('finance.transactions.create.income') }}" class="btn btn-success">
                     <i class="mdi mdi-plus-circle-outline me-1"></i> إضافة تحصيل
-                </button>
+                </a>
+
             </div>
         </div>
 
@@ -74,7 +75,7 @@
             </table>
         </div>
 
-        @if($transactions->hasPages())
+        @if ($transactions->hasPages())
             <div class="mt-3">
                 {{ $transactions->links() }}
             </div>

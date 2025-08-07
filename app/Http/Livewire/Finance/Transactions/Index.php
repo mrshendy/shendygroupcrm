@@ -42,23 +42,32 @@ class Index extends Component
     }
 
     public function save()
-    {
-        $this->validate();
+{
+    $this->validate();
 
-        Transaction::create([
-            'account_id' => $this->account_id,
-            'item_id' => $this->item_id,
-            'amount' => $this->amount,
-            'transaction_type' => $this->transaction_type,
-            'transaction_date' => $this->transaction_date,
-            'notes' => $this->notes,
-        ]);
+    Transaction::create([
+        'account_id' => $this->account_id,
+        'item_id' => $this->item_id,
+        'amount' => $this->amount,
+        'transaction_type' => $this->transaction_type,
+        'transaction_date' => $this->transaction_date,
+        'notes' => $this->notes,
+    ]);
 
-        $this->dispatchBrowserEvent('transactionSaved');
+    $this->dispatchBrowserEvent('transactionSaved'); // ← دا الحدث
 
-        $this->resetInputs();
-        $this->showModal = false;
-    }
+    $this->resetInputs();
+    $this->showModal = false;
+}
+
+    public function delete($id)
+{
+    $transaction = Transaction::findOrFail($id);
+    $transaction->delete();
+
+    $this->dispatchBrowserEvent('transactionDeleted');
+}
+
 
     public function render()
     {
