@@ -186,30 +186,7 @@
                                         <i class="mdi mdi-delete-outline"></i>
                                     </button>
 
-                                    <div class="dropdown">
-                                        <button class="btn btn-sm btn-light rounded-circle" type="button"
-                                            data-bs-toggle="dropdown">
-                                            <i class="mdi mdi-dots-vertical"></i>
-                                        </button>
-                                        <ul class="dropdown-menu dropdown-menu-end">
-                                            <li>
-                                                <a class="dropdown-item" href="#">
-                                                    <i class="mdi mdi-note-plus-outline me-2"></i>إضافة ملاحظة
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a class="dropdown-item" href="#">
-                                                    <i class="mdi mdi-file-document-outline me-2"></i>إنشاء عقد
-                                                </a>
-                                            </li>
-                                            <li><hr class="dropdown-divider"></li>
-                                            <li>
-                                                <a class="dropdown-item text-danger" href="#">
-                                                    <i class="mdi mdi-archive-outline me-2"></i>أرشفة العميل
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
+                                    
                                 </div>
                             </td>
                         </tr>
