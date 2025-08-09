@@ -78,7 +78,7 @@ class Create extends Component
                 'name'    => 'required|string|min:3|max:255',
                 'email'   => 'nullable|email|unique:clients,email',
                 'phone'   => 'nullable|string|max:20',
-                'status'  => 'required|in:new,in_progress,closed', // راجع القيم مع جدولك
+                'status'  => 'required|in:new,Under implementation,closed', // راجع القيم مع جدولك
                 'address' => 'required|string|min:5|max:255',
                 'country' => 'required|string|min:2|max:100',      // لو عندك country_id بدّلها
             ];

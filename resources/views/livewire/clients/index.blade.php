@@ -1,34 +1,100 @@
-<div class="container-fluid px-4">
+<div class="container-fluid px-4" dir="rtl">
     <!-- Header Section -->
     <div class="d-flex justify-content-between align-items-center py-4">
         <div>
-
+            <h4 class="mb-0 fw-bold text-primary">
+                <i class="mdi mdi-account-group-outline me-2"></i>
+                إدارة العملاء
+            </h4>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href=""><i class="mdi mdi-home"></i></a></li>
+                    <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-home"></i> الرئيسية</a></li>
                     <li class="breadcrumb-item active" aria-current="page">العملاء</li>
                 </ol>
             </nav>
         </div>
-        <a href="{{ route('clients.create') }}" class="btn btn-primary rounded-pill shadow-sm">
-            <i class="mdi mdi-plus-circle-outline me-1"></i>عميل جديد
+        <a href="{{ route('clients.create') }}" class="btn btn-primary rounded-pill shadow-sm px-4">
+            <i class="mdi mdi-plus-circle-outline me-1"></i> عميل جديد
         </a>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-light bg-opacity-10">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1 text-muted">العملاء الجدد</h6>
+                            <h3 class="mb-0 fw-bold">125</h3>
+                        </div>
+                        <span class="avatar bg-primary text-white rounded-circle">
+                            <i class="mdi mdi-account-plus"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-warning bg-opacity-10">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1 text-muted">قيد التنفيذ</h6>
+                            <h3 class="mb-0 fw-bold">89</h3>
+                        </div>
+                        <span class="avatar bg-warning text-white rounded-circle">
+                            <i class="mdi mdi-account-clock"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-success bg-opacity-10">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1 text-muted">العملاء النشطين</h6>
+                            <h3 class="mb-0 fw-bold">342</h3>
+                        </div>
+                        <span class="avatar bg-success text-white rounded-circle">
+                            <i class="mdi mdi-account-check"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-danger bg-opacity-10">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1 text-muted">العملاء الموقوفين</h6>
+                            <h3 class="mb-0 fw-bold">27</h3>
+                        </div>
+                        <span class="avatar bg-danger text-white rounded-circle">
+                            <i class="mdi mdi-account-cancel"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Search and Filter -->
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-body">
             <div class="row g-3 align-items-center">
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="input-group">
+                        <input wire:model="search" type="text" class="form-control border-start-0" placeholder="ابحث باسم العميل أو البريد...">
                         <span class="input-group-text bg-light border-end-0">
                             <i class="mdi mdi-magnify"></i>
                         </span>
-                        <input wire:model="search" type="text" class="form-control"
-                            placeholder="ابحث باسم العميل أو البريد...">
                     </div>
                 </div>
-
+                
             </div>
         </div>
     </div>
@@ -39,16 +105,16 @@
             <table class="table table-hover mb-0">
                 <thead class="bg-light">
                     <tr>
-                        <th class="fw-semibold">العميل</th>
-                        <th class="fw-semibold">معلومات التواصل</th>
-                        <th class="fw-semibold">الحالة</th>
-                        <th class="fw-semibold">ملفات العملاء</th>
-                        <th class="fw-semibold text-end">الإجراءات</th>
+                        <th class="fw-semibold" width="25%">العميل</th>
+                        <th class="fw-semibold" width="25%">معلومات التواصل</th>
+                        <th class="fw-semibold" width="15%">الحالة</th>
+                        <th class="fw-semibold" width="15%">تاريخ الإضافة</th>
+                        <th class="fw-semibold text-end" width="20%">الإجراءات</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($clients as $client)
-                        <tr>
+                        <tr class="align-middle">
                             <td>
                                 <div class="d-flex align-items-center">
                                     <div class="me-3">
@@ -57,7 +123,7 @@
                                         </span>
                                     </div>
                                     <div>
-                                        <h6 class="mb-0">{{ $client->name }}</h6>
+                                        <h6 class="mb-0 fw-semibold">{{ $client->name }}</h6>
                                         <small class="text-muted">ID: {{ $client->id }}</small>
                                     </div>
                                 </div>
@@ -76,39 +142,47 @@
                             </td>
                             <td>
                                 @if ($client->status == 'new')
-                                    <span class="badge bg-primary-subtle text-secondary">
+                                    <span class="badge bg-primary bg-opacity-10 text-primary">
                                         <i class="mdi mdi-account-plus-outline me-1"></i>جديد
                                     </span>
-                                @elseif($client->status == 'in_progress')
-                                    <span class="badge bg-warning-subtle text-warning">
-                                        <i class="mdi mdi-account-clock-outline me-1"></i>جاري العمل
+                                @elseif($client->status == 'Under implementation')
+                                    <span class="badge bg-warning bg-opacity-10 text-warning">
+                                        <i class="mdi mdi-account-clock-outline me-1"></i>قيد التنفيذ
                                     </span>
                                 @elseif($client->status == 'closed')
-                                    <span class="badge bg-danger-subtle text-danger">
+                                    <span class="badge bg-danger bg-opacity-10 text-danger">
                                         <i class="mdi mdi-account-cancel-outline me-1"></i>موقوف
                                     </span>
                                 @else
-                                    <span class="badge bg-secondary-subtle text-secondary">
+                                    <span class="badge bg-secondary bg-opacity-10 text-secondary">
                                         <i class="mdi mdi-account-question-outline me-1"></i>غير معروف
                                     </span>
                                 @endif
                             </td>
                             <td>
-                                <a href="{{ route('clients.show', $client->id) }}" class="btn btn-info btn-sm">
-                                    <i class="mdi mdi-eye"></i> عرض الملف
-                                </a>
-
+                                {{ $client->created_at->format('Y-m-d') }}
+                            </td>
                             <td>
                                 <div class="d-flex justify-content-end gap-2">
+                                    <a href="{{ route('clients.show', $client->id) }}" 
+                                       class="btn btn-sm btn-light rounded-circle" 
+                                       data-bs-toggle="tooltip" 
+                                       title="عرض الملف">
+                                        <i class="mdi mdi-eye-outline"></i>
+                                    </a>
+                                    
                                     <a href="{{ route('clients.edit', $client->id) }}"
-                                        class="btn btn-sm btn-light rounded-circle" data-bs-toggle="tooltip"
+                                        class="btn btn-sm btn-light rounded-circle" 
+                                        data-bs-toggle="tooltip"
                                         title="تعديل">
                                         <i class="mdi mdi-pencil-outline"></i>
                                     </a>
 
-                                    <button type="button" wire:click="confirmDelete('{{ $client->id }}')"
-                                        class="btn btn-sm btn-light rounded-circle" data-bs-toggle="tooltip"
-                                        title="حذف">
+                                    <button type="button" 
+                                            wire:click="confirmDelete('{{ $client->id }}')"
+                                            class="btn btn-sm btn-light rounded-circle" 
+                                            data-bs-toggle="tooltip"
+                                            title="حذف">
                                         <i class="mdi mdi-delete-outline"></i>
                                     </button>
 
@@ -120,12 +194,18 @@
                                         <ul class="dropdown-menu dropdown-menu-end">
                                             <li>
                                                 <a class="dropdown-item" href="#">
-                                                    <i class="mdi mdi-eye-outline me-2"></i>عرض التفاصيل
+                                                    <i class="mdi mdi-note-plus-outline me-2"></i>إضافة ملاحظة
                                                 </a>
                                             </li>
                                             <li>
                                                 <a class="dropdown-item" href="#">
-                                                    <i class="mdi mdi-note-plus-outline me-2"></i>إضافة ملاحظة
+                                                    <i class="mdi mdi-file-document-outline me-2"></i>إنشاء عقد
+                                                </a>
+                                            </li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li>
+                                                <a class="dropdown-item text-danger" href="#">
+                                                    <i class="mdi mdi-archive-outline me-2"></i>أرشفة العميل
                                                 </a>
                                             </li>
                                         </ul>
@@ -135,11 +215,14 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="text-center py-4">
+                            <td colspan="5" class="text-center py-5">
                                 <div class="d-flex flex-column align-items-center">
-                                    <i class="mdi mdi-account-off-outline fs-1 text-muted mb-2"></i>
-                                    <h5 class="text-muted">لا يوجد عملاء</h5>
-                                    <p class="text-muted small">قم بإضافة عميل جديد لبدء العمل</p>
+                                    <i class="mdi mdi-account-off-outline fs-1 text-muted mb-3"></i>
+                                    <h5 class="text-muted mb-2">لا يوجد عملاء</h5>
+                                    <p class="text-muted small mb-0">قم بإضافة عميل جديد لبدء العمل</p>
+                                    <a href="{{ route('clients.create') }}" class="btn btn-sm btn-primary mt-3">
+                                        <i class="mdi mdi-plus-circle-outline me-1"></i> إضافة عميل جديد
+                                    </a>
                                 </div>
                             </td>
                         </tr>
@@ -164,6 +247,29 @@
     </div>
 </div>
 
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true" wire:ignore.self>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title text-danger">
+                    <i class="mdi mdi-alert-circle-outline me-2"></i> تأكيد الحذف
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>هل أنت متأكد من رغبتك في حذف هذا العميل؟ سيتم حذف جميع البيانات المرتبطة به ولا يمكن استرجاعها.</p>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">إلغاء</button>
+                <button type="button" class="btn btn-danger" wire:click="deleteClient" data-bs-dismiss="modal">
+                    <i class="mdi mdi-delete-outline me-1"></i> نعم، احذف
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <style>
     .avatar {
         display: inline-flex;
@@ -177,20 +283,34 @@
     .breadcrumb {
         background-color: transparent;
         padding: 0;
+        font-size: 0.875rem;
     }
 
     .breadcrumb-item a {
         color: #6c757d;
         text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .breadcrumb-item a:hover {
+        color: #4361ee;
     }
 
     .breadcrumb-item.active {
         color: #4361ee;
+        font-weight: 500;
     }
 
     .table th {
         border-top: none;
         border-bottom: 2px solid #dee2e6;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .table td {
+        vertical-align: middle;
     }
 
     .rounded-circle {
@@ -199,6 +319,11 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
+        transition: all 0.2s;
+    }
+
+    .rounded-circle:hover {
+        transform: scale(1.1);
     }
 
     .badge {
@@ -206,6 +331,12 @@
         font-weight: 500;
         display: inline-flex;
         align-items: center;
+        font-size: 0.75rem;
+        border-radius: 50px;
+    }
+
+    .dropdown-menu {
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
     }
 </style>
 
@@ -215,6 +346,12 @@
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
         var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl)
-        })
-    })
+        });
+
+        // Delete confirmation modal
+        window.addEventListener('showDeleteModal', event => {
+            var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            deleteModal.show();
+        });
+    });
 </script>
