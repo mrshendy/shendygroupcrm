@@ -45,7 +45,7 @@
 
                     @forelse($transactions as $index => $t)
                         @php
-                            $isExpense = $t->transaction_type === 'مصروفات';
+                            $isExpense = $t->type === 'مصروفات';
                             $badgeTone = $isExpense ? 'danger' : 'success';
                         @endphp
                         <tr wire:key="transaction-{{ $t->id }}">

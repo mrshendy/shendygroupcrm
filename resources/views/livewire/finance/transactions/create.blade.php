@@ -98,10 +98,7 @@
                         @enderror
                     </div>
                 </div>
-              {{-- نوع التحصيل --}}
-
-
-<!-- نوع التحصيل -->
+             <!-- نوع التحصيل -->
 @if($transaction_type === 'تحصيل')
     <div class="mb-3">
         <label for="collection_type" class="form-label">نوع التحصيل</label>
@@ -124,7 +121,6 @@
         </div>
     @endif
 @endif
-
 
 
                 <!-- Notes -->

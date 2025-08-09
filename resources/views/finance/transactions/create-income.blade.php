@@ -5,7 +5,7 @@
 @section('content')
     <div class="card">
         <div class="card-body">
-            @livewire('finance.transactions.create', ['type' => 'تحصيل'])
+            @livewire('finance.transactions.create-collection', ['type' => 'تحصيل'])
         </div>
     </div>
 @endsection

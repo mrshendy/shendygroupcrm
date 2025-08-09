@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use App\Http\Controllers\Finance\TransactionPageController;
+use App\Http\Livewire\Finance\Transactions\Create as TransactionsCreate;
 
 
 Auth::routes(['verify' => true]);
@@ -41,16 +42,16 @@ Route::get('finance/accounts', [application_settingsController::class, 'accounts
 Route::get('finance/items', [application_settingsController::class, 'itemsIndex'])->name('finance.items.index');
 
 
-        Route::get('finance/index', function () {
-            return view('finance.index'); // اللي فيه @livewire('finance.index')
-        })->name('finance.index');
-      
+  // صفحة القائمة
+Route::get('finance/transactions', [TransactionPageController::class, 'index'])
+    ->name('finance.transactions.index');
+
+// صفحات الإنشاء
 Route::get('finance/transactions/create/expense', [TransactionPageController::class, 'createExpense'])
     ->name('finance.transactions.create.expense');
 
 Route::get('finance/transactions/create/income', [TransactionPageController::class, 'createIncome'])
     ->name('finance.transactions.create.income');
-
 
         Route::group(['namespace' => 'Application_settings'], function () {
             Route::resource('places_settings', 'place_settingsController');

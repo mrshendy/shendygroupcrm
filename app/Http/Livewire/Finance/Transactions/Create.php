@@ -28,7 +28,7 @@ class Create extends Component
             'account_id'       => 'required|exists:accounts,id',
             'item_id'          => 'required|exists:items,id',
             'amount'           => 'required|numeric|min:0.01',
-            'transaction_type' => 'required|in:مصروفات,تحصيل',
+            'transaction_type' => 'required|string',
             'transaction_date' => 'required|date',
             'notes'            => 'nullable|string|max:1000',
             'collection_type'  => 'nullable|in:تحصل من عميل,أخرى',
@@ -42,11 +42,15 @@ class Create extends Component
     }
 
     public function mount($type)
-    {
-        // $type: 'مصروفات' أو 'تحصيل'
-        $this->transaction_type = $type;
-        $this->transaction_date = now()->format('Y-m-d');
+{
+    $this->transaction_type = $type;
+    $this->transaction_date = now()->format('Y-m-d');
+
+    if ($this->transaction_type === 'تحصيل' && $this->collection_type === 'تحصل من عميل') {
+        $this->clients = Client::orderBy('name')->get();
     }
+}
+
 
     public function updatedCollectionType($value)
     {
