@@ -19,4 +19,21 @@ class Account extends Model
         'status',
         'notes',
     ];
+
+    public function projects()
+    {
+        return $this->hasMany(Project::class);
+    }
+
+    public function offers()
+    {
+
+        return $this->hasMany(Offer::class);
+    }
+
+    public function transactions()
+    {
+
+        return $this->hasMany(Transaction::class);
+    }
 }
