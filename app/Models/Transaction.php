@@ -9,18 +9,23 @@ class Transaction extends Model
 {
     use HasFactory;
 
-protected $fillable = [
-        'account_id', 'item_id', 'type', 'amount', 'transaction_date', 'notes',
+    protected $fillable = [
+        'account_id', 'item_id', 'amount', 'transaction_type',
+        'transaction_date', 'notes', 'collection_type', 'client_id',
     ];
 
+    public function client()
+    {
+        return $this->belongsTo(\App\Models\Client::class);
+    }
+
     public function account()
-{
-    return $this->belongsTo(Account::class);
-}
+    {
+        return $this->belongsTo(\App\Models\Account::class);
+    }
 
-public function item()
-{
-    return $this->belongsTo(Item::class);
-}
-
+    public function item()
+    {
+        return $this->belongsTo(\App\Models\Item::class);
+    }
 }

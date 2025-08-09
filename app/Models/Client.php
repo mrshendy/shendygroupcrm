@@ -20,16 +20,20 @@ class Client extends Model
         'is_main_contact',
     ];
 
-    // Client.php
+   
     public function country()
     {
         return $this->belongsTo(Country::class);
     }
 
-     // العلاقة
+   
     public function projects()
     {
         return $this->hasMany(Project::class);
     }
 
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
 }

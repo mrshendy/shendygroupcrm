@@ -98,6 +98,34 @@
                         @enderror
                     </div>
                 </div>
+              {{-- نوع التحصيل --}}
+
+
+<!-- نوع التحصيل -->
+@if($transaction_type === 'تحصيل')
+    <div class="mb-3">
+        <label for="collection_type" class="form-label">نوع التحصيل</label>
+        <select wire:model="collection_type" id="collection_type" class="form-select">
+            <option value="">اختر النوع...</option>
+            <option value="تحصل من عميل">تحصل من عميل</option>
+            <option value="أخرى">أخرى</option>
+        </select>
+    </div>
+
+    @if($collection_type === 'تحصل من عميل')
+        <div class="mb-3">
+            <label for="client_id" class="form-label">اختر العميل</label>
+            <select wire:model="client_id" id="client_id" class="form-select">
+                <option value="">اختر العميل...</option>
+                @foreach($clients as $client)
+                    <option value="{{ $client->id }}">{{ $client->name }}</option>
+                @endforeach
+            </select>
+        </div>
+    @endif
+@endif
+
+
 
                 <!-- Notes -->
                 <div class="col-12">
@@ -110,6 +138,7 @@
                                   placeholder="أدخل أي ملاحظات إضافية..."></textarea>
                     </div>
                 </div>
+
 
                 <!-- Form Actions -->
                 <div class="col-12">
