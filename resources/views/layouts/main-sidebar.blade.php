@@ -57,12 +57,12 @@
                             </a>
                         </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link menu-link font {{ request()->routeIs('files.*') ? 'active' : '' }}"
-                                href="{{ route('files.index') }}">
-                                <i class="mdi mdi-folder-outline"></i> ملفات العملاء
-                            </a>
-                        </li>
+                      <li class="nav-item">
+    <a class="nav-link menu-link font {{ request()->routeIs('clients.show') ? 'active' : '' }}"
+        href="{{ route('clients.show', $client->id ?? 0) }}">
+        <i class="mdi mdi-folder-outline"></i> ملفات العملاء
+    </a>
+</li>
 
                         <li class="nav-item">
                             <a class="nav-link menu-link font {{ request()->routeIs('finance.*') ? 'active' : '' }}"

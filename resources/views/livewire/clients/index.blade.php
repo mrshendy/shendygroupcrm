@@ -41,6 +41,7 @@
                         <th class="fw-semibold">العميل</th>
                         <th class="fw-semibold">معلومات التواصل</th>
                         <th class="fw-semibold">الحالة</th>
+                        <th class="fw-semibold">ملفات العملاء</th>
                         <th class="fw-semibold text-end">الإجراءات</th>
                     </tr>
                 </thead>
@@ -91,6 +92,11 @@
                             </span>
                             @endif
                         </td>
+                        <td>
+                           <a href="{{ route('clients.show', $client->id) }}" class="btn btn-info btn-sm">
+    <i class="mdi mdi-eye"></i> عرض الملف
+</a>
+
                         <td>
                             <div class="d-flex justify-content-end gap-2">
                                 <a href="{{ route('clients.edit', $client->id) }}" class="btn btn-sm btn-light rounded-circle" data-bs-toggle="tooltip" title="تعديل">
