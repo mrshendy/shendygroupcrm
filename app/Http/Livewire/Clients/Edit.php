@@ -2,45 +2,44 @@
 
 namespace App\Http\Livewire\Clients;
 
-
 use Livewire\Component;
 use App\Models\Client;
-use App\Models\Countries;
 
 class Edit extends Component
 {
-    public $client;
-    public $countries = [];
+    public Client $client;     // الموديل الجاي من الراوت
+    public array $form = [];   // نموذج وسيط لعرض/تعديل البيانات
 
-    public function mount(Client $client)
+    public function mount(Client $client): void
     {
         $this->client = $client;
-        $this->countries = Countries::pluck('name')->toArray();
-    }
 
-    public function rules()
-    {
-        return [
-            'client.name'           => 'required|string|min:3|max:255',
-            'client.email'          => 'nullable|email',
-            'client.phone'          => 'nullable|string|max:20',
-            'client.status'         => 'required|in:new,in_progress,closed',
-            'client.address'        => 'required|string|min:5|max:255',
-            'client.country'        => 'required|string|min:2|max:100',
-            'client.contact_name'   => 'required|string|min:3|max:255',
-            'client.contact_job'    => 'required|string|min:2|max:100',
-            'client.contact_phone'  => 'nullable|string|max:20',
-            'client.contact_email'  => 'nullable|email',
-            'client.is_primary'     => 'boolean',
+        // حمّل القيم في الفورم (عشان تظهر في الـ inputs)
+        $this->form = [
+            'name'    => $client->name,
+            'email'   => $client->email,
+            'phone'   => $client->phone,
+            'status'  => $client->status,   // قيمتك: new | in_progress | closed
+            'address' => $client->address,
         ];
     }
 
-    public function updateClient()
+    public function update()
     {
-        $this->validate();
-        $this->client->save();
+        $this->validate([
+            'form.name'    => 'required|string|max:255',
+            'form.email'   => 'nullable|email|unique:clients,email,' . $this->client->id,
+            'form.phone'   => 'nullable|string|max:20',
+            'form.status'  => 'required|in:new,in_progress,closed',
+            'form.address' => 'nullable|string|max:255',
+            'form.country' => 'nullable|string|max:100',
+        ]);
 
-        session()->flash('success', 'تم تحديث بيانات العميل بنجاح.');
+        // مرّر القيم من الفورم إلى الموديل واحفظ
+        $this->client->fill($this->form)->save();
+
+        $this->dispatchBrowserEvent('clientUpdated');
+        session()->flash('success', 'تم تعديل بيانات العميل بنجاح');
         return redirect()->route('clients.index');
     }
 

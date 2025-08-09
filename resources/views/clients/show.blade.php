@@ -4,7 +4,7 @@
 
 @section('content')
 
-            @livewire('clients.show', ['client' => $id])
+  <livewire:clients.show :client="$client" />
         </div>
     </div>
 @endsection

@@ -10,39 +10,19 @@ class Index extends Component
 {
     use WithPagination;
 
-    protected $paginationTheme = 'bootstrap'; // علشان شكل الـ pagination يطلع Bootstrap
-
+    protected $paginationTheme = 'bootstrap';
     public $search = '';
 
-    protected $listeners = [
-        'deleteConfirmed' => 'deleteClient', // لو هتستخدم SweetAlert أو Confirm Modal
-    ];
-
-    // دالة حذف العميل
-    public function deleteClient($id)
+    public function confirmDelete($id)
     {
-        $client = Client::findOrFail($id);
-        $client->delete();
-
-        session()->flash('success', 'تم حذف العميل بنجاح.');
-        $this->resetPage(); // علشان لو انت فى صفحة تانية ترجع للأولى بعد الحذف
-    }
-
-    public function updatingSearch()
-    {
-        // علشان أول ما تغيّر البحث يبدأ من الصفحة الأولى
-        $this->resetPage();
+        Client::findOrFail($id)->delete();
+        $this->dispatchBrowserEvent('clientDeleted');
+        session()->flash('success', 'تم حذف العميل بنجاح');
     }
 
     public function render()
     {
-        $clients = Client::where('name', 'like', '%' . $this->search . '%')
-            ->orWhere('email', 'like', '%' . $this->search . '%')
-            ->orderBy('id', 'desc')
-            ->paginate(10);
-
-        return view('livewire.clients.index', [
-            'clients' => $clients
-        ]);
+        $clients = Client::where('name', 'like', "%{$this->search}%")->paginate(10);
+        return view('livewire.clients.index', compact('clients'));
     }
 }

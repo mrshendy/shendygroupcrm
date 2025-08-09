@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use App\Http\Controllers\Shendy\ClientsController;
+
+
+
 // لو حابب تستخدم alias بدل FQCN مباشرة:
 // use App\Http\Livewire\Clients\Show as ClientShow;
 
@@ -57,7 +60,7 @@ Route::group(
         // Shendy
         Route::group(['namespace' => 'Shendy'], function () {
             Route::resource('clients', 'ClientsController');
-
+         
             Route::resource('projects', 'ProjectsController');
             Route::resource('offers', 'OffersController');
 

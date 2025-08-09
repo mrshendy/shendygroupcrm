@@ -3,15 +3,16 @@
 @section('title', 'قائمة العملاء')
 
 @section('content')
-    <div class="card">
+  <div class="card">
         <div class="card-body">
-            @livewire('clients.edit', ['client' => $id])
+            <h4 class="mb-4">تعديل عميل</h4>
+  <livewire:clients.edit :client="$client" />
         </div>
     </div>
 @endsection
 @section('scripts')
     <script>
-        document.addEventListener('livewire:load', function () {
+        document.addEventListener('livewire:load', function() {
             Livewire.on('clientAdded', () => {
                 alert('تم إضافة عميل جديد بنجاح!');
             });

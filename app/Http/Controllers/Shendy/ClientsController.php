@@ -3,83 +3,36 @@
 namespace App\Http\Controllers\Shendy;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Models\Client;
 
 class ClientsController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
+        // resources/views/clients/index.blade.php يحتوي على @livewire('clients.index')
         return view('clients.index');
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
-       return view('clients.create');
+        // resources/views/clients/create.blade.php يحتوي على @livewire('clients.create')
+        return view('clients.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function show(Client $client)
     {
-        //
+        // resources/views/clients/show.blade.php يحتوي على <livewire:clients.show :client="$client" />
+        return view('clients.show', compact('client'));
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
+    public function edit(Client $client)
     {
-        return view('clients.show', compact('id'));
+        // resources/views/clients/edit.blade.php يحتوي على <livewire:clients.edit :client="$client" />
+        return view('clients.edit', compact('client'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        return view('clients.edit', compact('id'));
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
-    }
+    // Store/Update/Destroy مش لازمة هنا لو هتشتغل Livewire بالكامل
+    public function store() {}
+    public function update() {}
+    public function destroy() {}
 }
