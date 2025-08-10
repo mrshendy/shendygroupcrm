@@ -148,15 +148,16 @@
                         <tr wire:key="account-{{ $acc->id }}">
                             <td class="ps-4">{{ $acc->name }}</td>
                             <td>
-                                <span class="badge bg-opacity-10 
-                                    {{ $acc->type == 'bank' ? 'bg-primary text-primary' : 
-                                       ($acc->type == 'cash' ? 'bg-info text-info' : 'bg-warning text-warning')
-                                       ($acc->type == 'wallet' ? 'bg-info text-info' : 'bg-warning text-warning')
-                                       ($acc->type == 'investment' ? 'bg-info text-info' : 'bg-warning text-warning')
-                                       ($acc->type == 'instapay' ? 'bg-info text-info' : 'bg-warning text-warning')   }}">
-                                    {{ $acc->type }}
-                                </span>
-                            </td>
+    <span class="badge bg-opacity-10
+        {{ $acc->type === 'bank'
+            ? 'bg-primary text-primary'
+            : (in_array($acc->type, ['cash','wallet','investment','instapay'])
+                ? 'bg-info text-info'
+                : 'bg-warning text-warning') }}">
+        {{ $acc->type }}
+    </span>
+</td>
+
                             <td>{{ $acc->account_number ?? '--' }}</td>
                             <td class="fw-bold text-end {{ $acc->opening_balance >= 0 ? 'text-success' : 'text-danger' }}">
                                 {{ number_format($acc->opening_balance, 2) }} ج.م
