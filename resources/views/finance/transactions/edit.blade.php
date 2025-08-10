@@ -3,5 +3,5 @@
 @section('title', 'تعديل حركة مالية')
 
 @section('content')
-    @livewire('finance.transactions.edit', ['transactionId' => $transaction->id])
+    @livewire('finance.transactions.edit', ['transactionId' => $transactionId])
 @endsection

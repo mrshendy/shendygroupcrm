@@ -12,8 +12,8 @@
         <form wire:submit.prevent="save">
             <div class="row g-3">
                 <div class="col-12">
-                    <span class="badge {{ $transaction_type === 'مصروفات' ? 'bg-danger' : 'bg-success' }}">
-                        {{ $transaction_type }}
+                    <span class="badge {{ $type === 'مصروف' ? 'bg-danger' : 'bg-success' }}">
+                        {{ $type }}
                     </span>
                 </div>
 
@@ -63,7 +63,7 @@
                 </div>
 
                 <div class="col-md-6">
-                    <label class="form-label">نوع التحصيل</label>
+                    <label class="form-label">نوع الإيراد</label>
                     <input type="text" wire:model.defer="collection_type" class="form-control" placeholder="إن وجد">
                     @error('collection_type')<small class="text-danger">{{ $message }}</small>@enderror
                 </div>

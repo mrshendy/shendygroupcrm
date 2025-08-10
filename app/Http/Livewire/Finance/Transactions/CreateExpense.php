@@ -28,7 +28,7 @@ class CreateExpense extends Component
     {
         $this->accounts = Account::orderBy('name')->get();
         // بنود المصروفات فقط – عمود type
-        $this->items = Item::whereIn('type', ['مصروفات','expense','expenses'])
+        $this->items = Item::whereIn('type', ['مصروف','expense','expenses'])
             ->orderBy('name')->get();
         $this->transaction_date = now()->format('Y-m-d');
     }
@@ -38,13 +38,16 @@ class CreateExpense extends Component
         $this->validate();
 
         Transaction::create([
-            'transaction_type' => 'مصروفات',
+            'type' => 'مصروفات',
             'from_account_id'  => $this->from_account_id,
             'to_account_id'    => $this->to_account_id,
             'item_id'          => $this->item_id,
             'amount'           => $this->amount,
             'transaction_date' => $this->transaction_date,
             'notes'            => $this->notes,
+            'collection_type'  => 'expense', // نوع الحركة
+            'user_add'          => auth()->id(),
+
         ]);
 
         session()->flash('message','تم حفظ المصروف بنجاح');

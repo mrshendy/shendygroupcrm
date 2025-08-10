@@ -32,7 +32,7 @@ class CreateCollection extends Component
         $this->clients  = \App\Models\Client::orderBy('name')->get();
 
         // بنود التحصيل/الدخل فقط – عمود type
-        $this->items = Item::whereIn('type', ['تحصيل','دخل','income','receipt'])
+        $this->items = Item::whereIn('type', ['إيراد','دخل','income','receipt'])
             ->orderBy('name')->get();
 
         $this->transaction_date = now()->format('Y-m-d');
@@ -47,7 +47,7 @@ class CreateCollection extends Component
         $this->validate($rules);
 
         Transaction::create([
-            'transaction_type' => 'تحصيل',
+            'type' => 'تحصيل',
             'from_account_id'  => $this->from_account_id,
             'to_account_id'    => $this->to_account_id,
             'item_id'          => $this->item_id,
@@ -56,6 +56,7 @@ class CreateCollection extends Component
             'collection_type'  => $this->collection_type,
             'client_id'        => $this->client_id,
             'notes'            => $this->notes,
+            'user_add'        => auth()->id(),
         ]);
 
         session()->flash('message','تم حفظ التحصيل بنجاح');

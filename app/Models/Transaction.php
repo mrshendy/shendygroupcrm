@@ -21,6 +21,7 @@ class Transaction extends Model
         'collection_type',
         'client_id',
         'notes',
+        'user_add', // المستخدم الذي أضاف الحركة
     ];
 
     public function client()

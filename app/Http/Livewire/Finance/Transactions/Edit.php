@@ -11,7 +11,7 @@ class Edit extends Component
 {
     public $transactionId;
     public $amount,$transaction_date,$from_account_id,$to_account_id,$item_id,$collection_type,$notes;
-    public $transaction_type;
+    public $type;
     public $accounts = [], $items = [];
 
     protected $rules = [
@@ -36,18 +36,18 @@ class Edit extends Component
         $this->item_id         = $t->item_id;
         $this->collection_type = $t->collection_type;
         $this->notes           = $t->notes;
-        $this->transaction_type= $t->transaction_type;
+        $this->type= $t->type;
 
         $this->accounts = Account::orderBy('name')->get();
-        $this->items    = $this->itemsForType($this->transaction_type);
+        $this->items    = $this->itemsForType($this->type);
     }
 
     private function itemsForType($type)
     {
-        if (in_array($type, ['مصروفات','expense','expenses'])) {
-            return Item::whereIn('type',['مصروفات','expense','expenses'])->orderBy('name')->get();
+        if (in_array($type, ['مصروف','expense','expenses'])) {
+            return Item::whereIn('type',['مصروف','expense','expenses'])->orderBy('name')->get();
         }
-        return Item::whereIn('type',['تحصيل','دخل','income','receipt'])->orderBy('name')->get();
+        return Item::whereIn('type',['إيراد','دخل','income','receipt'])->orderBy('name')->get();
     }
 
     public function save()
@@ -62,6 +62,7 @@ class Edit extends Component
             'item_id'          => $this->item_id,
             'collection_type'  => $this->collection_type,
             'notes'            => $this->notes,
+            'user_add'         => auth()->id(),
         ]);
 
         session()->flash('message','تم حفظ التعديلات بنجاح');
