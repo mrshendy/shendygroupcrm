@@ -48,10 +48,12 @@
                         <span class="input-group-text bg-light"><span class="mdi mdi-form-select"></span></span>
                         <select wire:model.defer="type" class="form-select shadow-sm @error('type') is-invalid @enderror">
                             <option value="">اختر النوع...</option>
-                            <option value="بنكي">بنكي</option>
-                            <option value="نقدي">نقدي</option>
-                            <option value="إلكتروني">إلكتروني</option>
-                            <option value="استثمار">استثمار</option>
+                            <option value="bank">بنكي</option>
+                            <option value="cash">نقدي</option>
+                            <option value="wallet">محفظه</option>
+                            <option value="investment">استثمار</option>
+                            <option value="instapay">انستا باي</option>
+
                         </select>
                         @error('type') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
@@ -147,8 +149,11 @@
                             <td class="ps-4">{{ $acc->name }}</td>
                             <td>
                                 <span class="badge bg-opacity-10 
-                                    {{ $acc->type == 'بنكي' ? 'bg-primary text-primary' : 
-                                       ($acc->type == 'نقدي' ? 'bg-info text-info' : 'bg-warning text-warning') }}">
+                                    {{ $acc->type == 'bank' ? 'bg-primary text-primary' : 
+                                       ($acc->type == 'cash' ? 'bg-info text-info' : 'bg-warning text-warning')
+                                       ($acc->type == 'wallet' ? 'bg-info text-info' : 'bg-warning text-warning')
+                                       ($acc->type == 'investment' ? 'bg-info text-info' : 'bg-warning text-warning')
+                                       ($acc->type == 'instapay' ? 'bg-info text-info' : 'bg-warning text-warning')   }}">
                                     {{ $acc->type }}
                                 </span>
                             </td>

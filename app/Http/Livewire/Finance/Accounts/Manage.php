@@ -35,7 +35,7 @@ class Manage extends Component
     protected $rules = [
         'name' => 'required|string|min:3|max:100',
         'account_number' => 'nullable|string|regex:/^[\d\-\s]+$/|max:30',
-        'type' => 'required|in:بنكي,نقدي,إلكتروني,استثمار',
+        'type' => 'required|in:bank,cash,wallet,investment,instapay',
         'opening_balance' => 'required|numeric|min:0|max:1000000000',
         'bank' => 'nullable|string|min:2|max:100',
         'is_main' => 'boolean',
