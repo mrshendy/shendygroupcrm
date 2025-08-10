@@ -25,10 +25,9 @@ class ClientsController extends Controller
         return view('clients.show', compact('client'));
     }
 
-    public function edit(Client $client)
+    public function edit($id)
     {
-        // resources/views/clients/edit.blade.php يحتوي على <livewire:clients.edit :client="$client" />
-        return view('clients.edit', compact('client'));
+        return view('clients.edit', ['clientId' => $id]);
     }
 
     // Store/Update/Destroy مش لازمة هنا لو هتشتغل Livewire بالكامل

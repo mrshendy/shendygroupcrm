@@ -60,6 +60,7 @@ Route::group(
         // Shendy
         Route::group(['namespace' => 'Shendy'], function () {
             Route::resource('clients', 'ClientsController');
+            
          
             Route::resource('projects', 'ProjectsController');
             Route::resource('offers', 'OffersController');

@@ -4,7 +4,8 @@
 
 @section('content')
 
-  <livewire:clients.edit :client="$client" />
+      @livewire('clients.edit', ['clientId' => $clientId])
+
 
 @endsection
 @section('scripts')

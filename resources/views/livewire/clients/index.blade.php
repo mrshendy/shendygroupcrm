@@ -25,23 +25,40 @@
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="mb-1 text-muted">العملاء الجدد</h6>
-                            <h3 class="mb-0 fw-bold">125</h3>
+                            <h6 class="mb-1 text-muted">إجمالي العملاء</h6>
+                            <h3 class="mb-0 fw-bold">{{ number_format($totalClients) }}</h3>
                         </div>
                         <span class="avatar bg-primary text-white rounded-circle">
+                            <i class="mdi mdi-account-group"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm bg-info bg-opacity-10">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1 text-muted">العملاء الجدد</h6>
+                            <h3 class="mb-0 fw-bold">{{ number_format($newClients) }}</h3>
+                        </div>
+                        <span class="avatar bg-info text-white rounded-circle">
                             <i class="mdi mdi-account-plus"></i>
                         </span>
                     </div>
                 </div>
             </div>
         </div>
+
         <div class="col-md-3">
             <div class="card border-0 shadow-sm bg-warning bg-opacity-10">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="mb-1 text-muted">قيد التنفيذ</h6>
-                            <h3 class="mb-0 fw-bold">89</h3>
+                            <h6 class="mb-1 text-muted">العملاء النشطون</h6>
+                            <h3 class="mb-0 fw-bold">{{ number_format($activeClients) }}</h3>
                         </div>
                         <span class="avatar bg-warning text-white rounded-circle">
                             <i class="mdi mdi-account-clock"></i>
@@ -50,31 +67,17 @@
                 </div>
             </div>
         </div>
+
         <div class="col-md-3">
             <div class="card border-0 shadow-sm bg-success bg-opacity-10">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="mb-1 text-muted">العملاء النشطين</h6>
-                            <h3 class="mb-0 fw-bold">342</h3>
+                            <h6 class="mb-1 text-muted">العملاء الموقوفون</h6>
+                            <h3 class="mb-0 fw-bold">{{ number_format($closedClients) }}</h3>
                         </div>
                         <span class="avatar bg-success text-white rounded-circle">
                             <i class="mdi mdi-account-check"></i>
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm bg-danger bg-opacity-10">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="mb-1 text-muted">العملاء الموقوفين</h6>
-                            <h3 class="mb-0 fw-bold">27</h3>
-                        </div>
-                        <span class="avatar bg-danger text-white rounded-circle">
-                            <i class="mdi mdi-account-cancel"></i>
                         </span>
                     </div>
                 </div>
@@ -88,8 +91,8 @@
             <div class="row g-3 align-items-center">
                 <div class="col-md-4">
                     <div class="input-group">
-                        <input wire:model="search" type="text" class="form-control border-start-0" placeholder="ابحث باسم العميل أو البريد...">
-                        <span class="input-group-text bg-light border-end-0">
+                        <input wire:model.debounce.400ms="search" type="text" class="form-control" placeholder="ابحث باسم العميل أو البريد...">
+                        <span class="input-group-text bg-light">
                             <i class="mdi mdi-magnify"></i>
                         </span>
                     </div>
@@ -114,12 +117,13 @@
                 </thead>
                 <tbody>
                     @forelse($clients as $client)
+                        @php $status = strtolower($client->status ?? ''); @endphp
                         <tr class="align-middle">
                             <td>
                                 <div class="d-flex align-items-center">
                                     <div class="me-3">
                                         <span class="avatar bg-primary text-white rounded-circle">
-                                            {{ substr($client->name, 0, 1) }}
+                                            {{ mb_substr($client->name ?? '؟', 0, 1) }}
                                         </span>
                                     </div>
                                     <div>
@@ -132,36 +136,49 @@
                                 <div class="d-flex flex-column">
                                     <div class="mb-1">
                                         <i class="mdi mdi-email-outline me-2 text-muted"></i>
-                                        {{ $client->email }}
+                                        {{ $client->email ?: '—' }}
                                     </div>
                                     <div>
                                         <i class="mdi mdi-phone-outline me-2 text-muted"></i>
-                                        {{ $client->phone }}
+                                        {{ $client->phone ?: '—' }}
                                     </div>
                                 </div>
                             </td>
                             <td>
-                                @if ($client->status == 'new')
-                                    <span class="badge bg-primary bg-opacity-10 text-primary">
-                                        <i class="mdi mdi-account-plus-outline me-1"></i>جديد
-                                    </span>
-                                @elseif($client->status == 'Under implementation')
-                                    <span class="badge bg-warning bg-opacity-10 text-warning">
-                                        <i class="mdi mdi-account-clock-outline me-1"></i>قيد التنفيذ
-                                    </span>
-                                @elseif($client->status == 'closed')
-                                    <span class="badge bg-danger bg-opacity-10 text-danger">
-                                        <i class="mdi mdi-account-cancel-outline me-1"></i>موقوف
-                                    </span>
-                                @else
-                                    <span class="badge bg-secondary bg-opacity-10 text-secondary">
-                                        <i class="mdi mdi-account-question-outline me-1"></i>غير معروف
-                                    </span>
-                                @endif
+                                @switch($status)
+                                    @case('new')
+                                        <span class="badge bg-primary bg-opacity-10 text-primary">
+                                            <i class="mdi mdi-account-plus-outline me-1"></i> جديد
+                                        </span>
+                                        @break
+
+                                    @case('under_implementation')
+                                    @case('under implementation')
+                                        <span class="badge bg-warning bg-opacity-10 text-warning">
+                                            <i class="mdi mdi-account-clock-outline me-1"></i> قيد التنفيذ
+                                        </span>
+                                        @break
+
+                                    @case('active')
+                                        <span class="badge bg-success bg-opacity-10 text-success">
+                                            <i class="mdi mdi-account-check-outline me-1"></i> نشط
+                                        </span>
+                                        @break
+
+                                    @case('closed')
+                                    @case('blocked')
+                                        <span class="badge bg-danger bg-opacity-10 text-danger">
+                                            <i class="mdi mdi-account-cancel-outline me-1"></i> موقوف
+                                        </span>
+                                        @break
+
+                                    @default
+                                        <span class="badge bg-secondary bg-opacity-10 text-secondary">
+                                            <i class="mdi mdi-account-question-outline me-1"></i> غير معروف
+                                        </span>
+                                @endswitch
                             </td>
-                            <td>
-                                {{ $client->created_at->format('Y-m-d') }}
-                            </td>
+                            <td>{{ optional($client->created_at)->format('Y-m-d') }}</td>
                             <td>
                                 <div class="d-flex justify-content-end gap-2">
                                     <a href="{{ route('clients.show', $client->id) }}" 
@@ -170,11 +187,11 @@
                                        title="عرض الملف">
                                         <i class="mdi mdi-eye-outline"></i>
                                     </a>
-                                    
+
                                     <a href="{{ route('clients.edit', $client->id) }}"
-                                        class="btn btn-sm btn-light rounded-circle" 
-                                        data-bs-toggle="tooltip"
-                                        title="تعديل">
+                                       class="btn btn-sm btn-light rounded-circle" 
+                                       data-bs-toggle="tooltip"
+                                       title="تعديل">
                                         <i class="mdi mdi-pencil-outline"></i>
                                     </a>
 
@@ -185,8 +202,6 @@
                                             title="حذف">
                                         <i class="mdi mdi-delete-outline"></i>
                                     </button>
-
-                                    
                                 </div>
                             </td>
                         </tr>
@@ -212,12 +227,12 @@
         <div class="card-footer bg-light">
             <div class="d-flex justify-content-between align-items-center">
                 <div class="text-muted small">
-                    عرض <span class="fw-semibold">{{ $clients->firstItem() }}</span> إلى <span
-                        class="fw-semibold">{{ $clients->lastItem() }}</span> من <span
-                        class="fw-semibold">{{ $clients->total() }}</span> عميل
+                    عرض <span class="fw-semibold">{{ $clients->firstItem() }}</span> إلى
+                    <span class="fw-semibold">{{ $clients->lastItem() }}</span> من
+                    <span class="fw-semibold">{{ $clients->total() }}</span> عميل
                 </div>
                 <div>
-                    {{ $clients->links() }}
+                    {{ $clients->onEachSide(1)->links() }}
                 </div>
             </div>
         </div>
@@ -246,6 +261,24 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
+
+        // Delete confirmation modal
+        window.addEventListener('showDeleteModal', event => {
+            var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            deleteModal.show();
+        });
+    });
+</script>
+@endpush
 
 <style>
     .avatar {
@@ -311,24 +344,4 @@
         font-size: 0.75rem;
         border-radius: 50px;
     }
-
-    .dropdown-menu {
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
-    }
 </style>
-
-<script>
-    // Initialize tooltips
-    document.addEventListener('DOMContentLoaded', function() {
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl)
-        });
-
-        // Delete confirmation modal
-        window.addEventListener('showDeleteModal', event => {
-            var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
-            deleteModal.show();
-        });
-    });
-</script>

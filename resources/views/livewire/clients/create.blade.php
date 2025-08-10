@@ -78,7 +78,7 @@
                                                 class="mdi mdi-information-outline"></i></span>
                                         <select wire:model="clients.{{ $index }}.status" class="form-select">
                                             <option value="new">جديد</option>
-                                            <option value="Under implementation">قيد التنفيذ</option>
+                                            <option value="active">نشط</option>
                                             <option value="closed">موقوف</option>
                                         </select>
                                     </div>
