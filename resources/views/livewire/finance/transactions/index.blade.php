@@ -71,7 +71,7 @@
                                     <i class="mdi mdi-{{ $isExpense ? 'arrow-up' : 'arrow-down' }}-circle-outline me-2 
                                         {{ $isExpense ? 'text-danger' : 'text-success' }}" style="font-size: 1.25rem"></i>
                                     <span class="fw-bold {{ $isExpense ? 'text-danger' : 'text-success' }}">
-                                        {{ number_format($t->amount, 2) }} ر.س
+                                        {{ number_format($t->amount, 2) }} ج.م
                                     </span>
                                 </div>
                             </td>
