@@ -20,25 +20,36 @@
 
         <form wire:submit.prevent="save" class="needs-validation" novalidate>
             <div class="row g-3">
-                <!-- Account Selection -->
-                <div class="col-md-6">
-                    <label class="form-label fw-semibold">المستلم <span class="text-danger">*</span></label>
-                    <div class="input-group has-validation">
-                        <span class="input-group-text bg-light">
-                            <span class="mdi mdi-account-outline"></span>
-                        </span>
-                        <select wire:model="account_id" class="form-select shadow-sm @error('account_id') is-invalid @enderror" required>
-                            <option value="">اختر الحساب...</option>
-                            @foreach ($accounts as $acc)
-                                <option value="{{ $acc->id }}">{{ $acc->name }}</option>
-                            @endforeach
-                        </select>
-                        @error('account_id')
-                        <div class="invalid-feedback">
-                            {{ $message }}
-                        </div>
-                        @enderror
-                    </div>
+               <div class="row">
+   <div class="row">
+    <div class="col-md-6">
+        <label class="form-label">من <span class="text-danger">*</span></label>
+        <select name="from_account_id" class="form-select" @required($transaction_type === 'مصروفات')>
+            <option value="">— اختر —</option>
+            @foreach($accounts as $acc)
+                <option value="{{ $acc->id }}" @selected(old('from_account_id',$transaction->from_account_id ?? null)==$acc->id)>
+                    {{ $acc->name }}
+                </option>
+            @endforeach
+        </select>
+        @error('from_account_id') <small class="text-danger">{{ $message }}</small> @enderror
+    </div>
+
+    <div class="col-md-6">
+        <label class="form-label">إلى <span class="text-danger">*</span></label>
+        <select name="to_account_id" class="form-select" @required($transaction_type === 'تحصيل')>
+            <option value="">— اختر —</option>
+            @foreach($accounts as $acc)
+                <option value="{{ $acc->id }}" @selected(old('to_account_id',$transaction->to_account_id ?? null)==$acc->id)>
+                    {{ $acc->name }}
+                </option>
+            @endforeach
+        </select>
+        @error('to_account_id') <small class="text-danger">{{ $message }}</small> @enderror
+    </div>
+</div>
+
+
                 </div>
 
                 <!-- Item Selection -->

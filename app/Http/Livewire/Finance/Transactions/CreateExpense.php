@@ -9,27 +9,27 @@ use App\Models\Transaction;
 
 class CreateExpense extends Component
 {
-    public $account_id;
-    public $item_id;
-    public $amount;
-    public $notes;
-    public $transaction_date;
+    public $from_account_id, $to_account_id;
+    public $item_id, $amount, $transaction_date, $notes;
 
-    protected $listeners = ['closeModal'];
+    public $accounts = [];
+    public $items    = [];
 
-    protected function rules()
-    {
-        return [
-            'account_id'       => 'required|exists:accounts,id',
-            'item_id'          => 'required|exists:items,id',
-            'amount'           => 'required|numeric|min:0.01',
-            'transaction_date' => 'required|date',
-            'notes'            => 'nullable|string|max:1000',
-        ];
-    }
+    protected $rules = [
+        'from_account_id'  => 'required|exists:accounts,id|different:to_account_id',
+        'to_account_id'    => 'required|exists:accounts,id|different:from_account_id',
+        'item_id'          => 'required|exists:items,id',
+        'amount'           => 'required|numeric|min:0.01',
+        'transaction_date' => 'required|date',
+        'notes'            => 'nullable|string|max:500',
+    ];
 
     public function mount()
     {
+        $this->accounts = Account::orderBy('name')->get();
+        // بنود المصروفات فقط – عمود type
+        $this->items = Item::whereIn('type', ['مصروفات','expense','expenses'])
+            ->orderBy('name')->get();
         $this->transaction_date = now()->format('Y-m-d');
     }
 
@@ -38,30 +38,21 @@ class CreateExpense extends Component
         $this->validate();
 
         Transaction::create([
-            'account_id'       => $this->account_id,
+            'transaction_type' => 'مصروفات',
+            'from_account_id'  => $this->from_account_id,
+            'to_account_id'    => $this->to_account_id,
             'item_id'          => $this->item_id,
-            'type'             => 'مصروفات',
             'amount'           => $this->amount,
             'transaction_date' => $this->transaction_date,
             'notes'            => $this->notes,
-            'user_add'         => auth()->id(),
         ]);
 
-        session()->flash('message', 'تم حفظ المصروف بنجاح.');
-        // وجّه كما تحب: لفهرس الحركات أو نفس الصفحة
-        return redirect()->route('finance.transactions.index');
-    }
-
-    public function closeModal()
-    {
+        session()->flash('message','تم حفظ المصروف بنجاح');
         return redirect()->route('finance.transactions.index');
     }
 
     public function render()
     {
-        return view('livewire.finance.transactions.create-expense', [
-            'accounts' => Account::orderBy('name')->get(),
-            'items'    => Item::orderBy('name')->get(),
-        ]);
+        return view('livewire.finance.transactions.create-expense');
     }
 }

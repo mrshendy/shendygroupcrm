@@ -6,15 +6,21 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-
 class Transaction extends Model
 {
     use HasFactory;
     use SoftDeletes;
 
     protected $fillable = [
-        'account_id', 'item_id', 'amount', 'type','user_add',
-        'transaction_date', 'notes', 'collection_type', 'client_id',
+        'amount',
+        'transaction_date',
+        'transaction_type',
+        'from_account_id',
+        'to_account_id',
+        'item_id',
+        'collection_type',
+        'client_id',
+        'notes',
     ];
 
     public function client()
@@ -31,4 +37,16 @@ class Transaction extends Model
     {
         return $this->belongsTo(\App\Models\Item::class);
     }
+
+    public function fromAccount()
+    {
+        return $this->belongsTo(\App\Models\Account::class, 'from_account_id');
+    }
+
+    public function toAccount()
+    {
+        return $this->belongsTo(\App\Models\Account::class, 'to_account_id');
+    }
+
+
 }

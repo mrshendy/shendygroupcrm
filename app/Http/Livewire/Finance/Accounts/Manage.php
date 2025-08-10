@@ -1,139 +1,127 @@
 <?php
 
-namespace App\Http\Livewire\Finance\Accounts;
+namespace App\Http\Livewire\Finance\Transactions;
 
-use App\Models\Account;
 use Livewire\Component;
 use Livewire\WithPagination;
+use App\Models\Transaction;
+use App\Models\Account;
+use App\Models\Item;
+use Illuminate\Support\Carbon;
 
-class Manage extends Component
+class Table extends Component
 {
     use WithPagination;
 
-    public $account_id;
-
-    public $name;
-
-    public $account_number;
-
-    public $type;
-
-    public $opening_balance;
-
-    public $bank;
-
-    public $notes;
-
-    public $is_main = false;
-
-    public $status = true;
-
-    public $search = '';
-
     protected $paginationTheme = 'bootstrap';
 
+    // حقول التعديل
+    public $transaction_id;
+    public $amount;
+    public $transaction_date;
+    public $from_account_id;
+    public $to_account_id;
+    public $item_id;
+    public $collection_type;
+    public $notes;
+
+    // بيانات مساعدة
+    public $accounts = [];
+    public $items = [];
+    public $search = '';
+    public $perPage = 10;
+
     protected $rules = [
-        'name' => 'required|string|min:3|max:100',
-        'account_number' => 'nullable|string|regex:/^[\d\-\s]+$/|max:30',
-        'type' => 'required|in:bank,cash,wallet,investment,instapay',
-        'opening_balance' => 'required|numeric|min:0|max:1000000000',
-        'bank' => 'nullable|string|min:2|max:100',
-        'is_main' => 'boolean',
-        'status' => 'boolean',
-        'notes' => 'nullable|string|max:500',
+        'amount'           => 'required|numeric|min:0.01',
+        'transaction_date' => 'required|date',
+        'from_account_id'  => 'nullable|exists:accounts,id',
+        'to_account_id'    => 'nullable|exists:accounts,id',
+        'item_id'          => 'nullable|exists:items,id',
+        'collection_type'  => 'nullable|string|max:100',
+        'notes'            => 'nullable|string|max:500',
     ];
 
-    public function updatedSearch()
+    public function mount()
+    {
+        $this->accounts = Account::orderBy('name')->get();
+        $this->items    = Item::orderBy('name')->get();
+    }
+
+    public function updatingSearch()
     {
         $this->resetPage();
     }
 
+    /** فتح مودال التعديل وملء الحقول */
+    public function edit($id)
+    {
+        $t = Transaction::with(['fromAccount','toAccount','item','client'])->findOrFail($id);
+
+        $this->transaction_id   = $t->id;
+        $this->amount           = $t->amount;
+        $this->transaction_date = $t->transaction_date
+            ? Carbon::parse($t->transaction_date)->format('Y-m-d')
+            : null;
+        $this->from_account_id  = $t->from_account_id;
+        $this->to_account_id    = $t->to_account_id;
+        $this->item_id          = $t->item_id;
+        $this->collection_type  = $t->collection_type;
+        $this->notes            = $t->notes;
+
+        $this->dispatchBrowserEvent('openEditModal');
+    }
+
+    /** حفظ التعديلات */
     public function save()
     {
         $this->validate();
 
-        $data = $this->formData();
+        $t = Transaction::findOrFail($this->transaction_id);
 
-        if ($this->account_id) {
-            Account::findOrFail($this->account_id)->update($data);
-            session()->flash('message', 'تم تحديث الحساب بنجاح');
-            $this->dispatchBrowserEvent('accountUpdated');
-        } else {
-            Account::create($data);
-            session()->flash('message', 'تم إضافة الحساب بنجاح');
-            $this->dispatchBrowserEvent('accountAdded');
-        }
+        $t->update([
+            'amount'           => $this->amount,
+            'transaction_date' => $this->transaction_date,
+            'from_account_id'  => $this->from_account_id,
+            'to_account_id'    => $this->to_account_id,
+            'item_id'          => $this->item_id,
+            'collection_type'  => $this->collection_type,
+            'notes'            => $this->notes,
+        ]);
 
-        $this->resetInputs();
+        $this->dispatchBrowserEvent('editSaved');
+        $this->resetForm();
+        $this->resetPage(); // عشان لو اتغير الترتيب بعد التعديل
     }
 
-    public function edit($id)
-    {
-        $acc = Account::findOrFail($id);
-
-        $this->account_id = $acc->id;
-        $this->name = $acc->name;
-        $this->account_number = $acc->account_number;
-        $this->type = $acc->type;
-        $this->opening_balance = $acc->opening_balance;
-        $this->bank = $acc->bank;
-        $this->notes = $acc->notes;
-        $this->is_main = (bool) $acc->is_main;
-        $this->status = (bool) $acc->status;
-    }
-
+    /** حذف ريكورد */
     public function delete($id)
     {
-        $account = Account::findOrFail($id)->delete();
-        if ($account) {
-            $account->delete();
-            session()->flash('message', 'تم حذف الحساب بنجاح.');
-            $this->dispatchBrowserEvent('accountDeleted');
-        }
+        Transaction::findOrFail($id)->delete();
+        $this->dispatchBrowserEvent('rowDeleted');
+        $this->resetPage();
     }
 
-    public function resetInputs()
+    public function resetForm()
     {
         $this->reset([
-            'account_id', 'name', 'account_number', 'type',
-            'opening_balance', 'bank', 'notes', 'is_main', 'status',
+            'transaction_id','amount','transaction_date',
+            'from_account_id','to_account_id','item_id',
+            'collection_type','notes'
         ]);
     }
 
-    public function testClick()
-    {
-        dd('وصل الزر!');
-    }
-
-    protected function formData()
-    {
-        return [
-            'name' => $this->name,
-            'account_number' => $this->account_number,
-            'type' => $this->type,
-            'opening_balance' => $this->opening_balance,
-            'bank' => $this->bank,
-            'is_main' => $this->is_main ? 1 : 0,
-            'status' => $this->status ? 1 : 0,
-            'notes' => $this->notes,
-        ];
-    }
-
-
     public function render()
     {
-        $accounts = Account::query()
-            ->when($this->search, function ($query) {
-                $query->where(function ($q) {
-                    $q->where('name', 'like', '%'.$this->search.'%')
-                        ->orWhere('account_number', 'like', '%'.$this->search.'%')
-                        ->orWhere('type', 'like', '%'.$this->search.'%')
-                        ->orWhere('bank', 'like', '%'.$this->search.'%');
+        $transactions = Transaction::with(['fromAccount','toAccount','item','client'])
+            ->when($this->search, function ($q) {
+                $q->where(function($qq){
+                    $qq->where('notes','like','%'.$this->search.'%')
+                       ->orWhere('collection_type','like','%'.$this->search.'%');
                 });
             })
             ->latest()
-            ->paginate(10);
+            ->paginate($this->perPage);
 
-        return view('livewire.finance.accounts.manage', compact('accounts'));
+        return view('livewire.finance.transactions.table', compact('transactions'));
     }
 }
