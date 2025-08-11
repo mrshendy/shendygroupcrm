@@ -56,6 +56,14 @@
                                 <i class="mdi mdi-tag-multiple-outline"></i> العروض
                             </a>
                         </li>
+                        
+                        
+                        <li class="nav-item">
+                            <a class="nav-link menu-link font {{ request()->routeIs('contracts.*') ? 'active' : '' }}"
+                                href="{{ route('contracts.index') }}">
+                                <i class="mdi mdi-briefcase-outline"></i> التعاقدات
+                            </a>
+                        </li>
 
                         <li class="nav-item">
                             <a class="nav-link menu-link font {{ request()->routeIs('finance.*') ? 'active' : '' }}"
