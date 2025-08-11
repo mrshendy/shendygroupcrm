@@ -70,9 +70,11 @@ class Create extends Component
         ];
     }
 
-    public function mount(): void
+    public function mount(Contract $contract): void
     {
         $this->clients = Client::orderBy('name')->get(['id','name'])->toArray();
+            $this->contract = $contract->load(['client','project','offer','items','payments']);
+
     }
 
     // hook عام عشان snake_case
@@ -140,19 +142,22 @@ class Create extends Component
             }
 
             foreach ($this->payments as $p) {
-                $c->payments()->create([
-                    'payment_type'=>$p['payment_type'] ?? 'milestone',
-                    'title'=>$p['title'] ?? null,
-                    'stage'=>$p['stage'] ?? null,
-                    'condition'=>$p['condition'] ?? 'date',
-                    'period_month'=>$p['period_month'] ?? null,
-                    'due_date'=>$p['due_date'] ?? null,
-                    'amount'=>$p['amount'] ?? 0,
-                    'include_tax'=>!empty($p['include_tax']),
-                    'is_paid'=>!empty($p['is_paid']),
-                    'notes'=>$p['notes'] ?? null,
-                ]);
-            }
+    $pm = !empty($p['period_month']) ? ($p['period_month'].'-01') : null;
+
+    $this->contract->payments()->create([
+        'payment_type' => $p['payment_type'] ?? 'milestone',
+        'title'        => $p['title'] ?? null,
+        'stage'        => $p['stage'] ?? null,
+        'condition'    => $p['condition'] ?? 'date',
+        'period_month' => $pm,                 // <-- تم التطبيع
+        'due_date'     => $p['due_date'] ?? null,
+        'amount'       => $p['amount'] ?? 0,
+        'include_tax'  => !empty($p['include_tax']),
+        'is_paid'      => !empty($p['is_paid']),
+        'notes'        => $p['notes'] ?? null,
+    ]);
+}
+
 
             return $c;
         });

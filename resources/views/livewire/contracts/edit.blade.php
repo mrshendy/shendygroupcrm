@@ -2,7 +2,7 @@
 <div class="container" dir="rtl">
     <h3 class="mb-3">تعديل العقد #{{ $contract->id }}</h3>
 
-    <form action="{{ route('contracts.update',$contract) }}" method="POST" enctype="multipart/form-data" id="contractForm">
+    <form wire:submit.prevent="save" action="{{ route('contracts.update',$contract) }}" method="POST" enctype="multipart/form-data" id="contractForm">
         @csrf @method('PUT')
 
         {{-- بيانات العقد --}}

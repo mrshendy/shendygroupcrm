@@ -56,7 +56,7 @@
                 </span>
                 <div class="d-flex gap-2">
                     <a href="{{ route('contracts.show', $c) }}" class="btn btn-sm btn-outline-primary">
-                        عرض (Controller)
+                        عرض 
                     </a>
                     <a href="{{ route('contracts.edit', $c) }}" class="btn btn-sm btn-outline-warning">
                         تعديل 

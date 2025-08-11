@@ -2,7 +2,7 @@
 <div class="container" dir="rtl">
     <h3 class="mb-3">إنشاء عقد جديد</h3>
 
-    <form action="{{ route('contracts.store') }}" method="POST" enctype="multipart/form-data" id="contractForm">
+    <form wire:submit.prevent="save" action="{{ route('contracts.store') }}" method="POST" enctype="multipart/form-data" id="contractForm">
         @csrf
 
         {{-- بيانات العقد --}}

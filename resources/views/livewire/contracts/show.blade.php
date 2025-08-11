@@ -7,7 +7,7 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h3 class="mb-0">عرض العقد #{{ $contract->id }}</h3>
         <div>
-            <a href="{{ route('contracts.edit', $contract) }}" class="btn btn-warning">تعديل (Livewire)</a>
+            <a href="{{ route('contracts.edit', $contract) }}" class="btn btn-warning">تعديل</a>
             <a href="{{ route('contracts.index') }}" class="btn btn-secondary">رجوع</a>
         </div>
     </div>
