@@ -47,7 +47,7 @@ class Edit extends Component
         if (in_array($type, ['مصروف','expense','expenses'])) {
             return Item::whereIn('type',['مصروف','expense','expenses'])->orderBy('name')->get();
         }
-        return Item::whereIn('type',['إيراد','دخل','income','receipt'])->orderBy('name')->get();
+        return Item::whereIn('type',['مصروف','دخل','income','receipt'])->orderBy('name')->get();
     }
 
     public function save()
