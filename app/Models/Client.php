@@ -20,13 +20,11 @@ class Client extends Model
         'is_main_contact',
     ];
 
-   
     public function country()
     {
         return $this->belongsTo(Country::class);
     }
 
-   
     public function projects()
     {
         return $this->hasMany(Project::class);
@@ -35,5 +33,15 @@ class Client extends Model
     public function transactions()
     {
         return $this->hasMany(Transaction::class);
+    }
+
+    public function offers()
+    {
+        return $this->hasMany(Offer::class);
+    }
+
+    public function contracts()
+    {
+        return $this->hasMany(Contract::class);
     }
 }

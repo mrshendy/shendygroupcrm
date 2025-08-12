@@ -45,4 +45,8 @@ class Project extends Model
     {
         return $this->hasMany(Offer::class);
     }
+      public function contracts()
+    {
+        return $this->hasMany(Contract::class);
+    }
 }

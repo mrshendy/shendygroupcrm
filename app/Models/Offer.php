@@ -47,6 +47,10 @@ class Offer extends Model
     {
         return $this->belongsTo(Project::class);
     }
+     public function contracts()
+    {
+        return $this->hasMany(Contract::class);
+    }
 
     // إرجاع اسم الحالة بالعربية
     public function getStatusLabelAttribute()

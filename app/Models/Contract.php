@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 class Contract extends Model
 {
     protected $fillable = [
-        'client_id', 'project_id', 'offer_id', 'type', 'start_date', 'end_date',
-        'amount', 'include_tax', 'status', 'contract_file',
+        'client_id', 'project_id', 'offer_id',
+        'start_date', 'end_date',
+        'type', 'amount', 'include_tax', 'contract_file', 'status',
     ];
 
-    // ثوابت الأنواع
+    // مطابق لحقل enum(type)
     public const TYPES = [
         'maintenance' => 'صيانة',
         'supply_install' => 'توريد وتركيب',
@@ -45,11 +46,13 @@ class Contract extends Model
 
     public function items()
     {
-        return $this->hasMany(ContractItem::class);
+        return $this->hasMany(ContractItem::class)->orderBy('sort_order');
     }
 
     public function payments()
     {
-        return $this->hasMany(ContractPayment::class);
+        return $this->hasMany(ContractPayment::class)->orderBy('due_date')->orderBy('id');
     }
+
+   
 }

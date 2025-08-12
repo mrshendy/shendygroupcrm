@@ -174,3 +174,5 @@
         {{ $contracts->links() }}
     </div>
 </div>
+
+
