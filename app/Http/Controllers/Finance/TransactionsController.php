@@ -28,6 +28,9 @@ class TransactionsController extends Controller
             'collectionType' => 'income', // For backward compatibility
         ]);
     }
+    public function show($transactionId){
+        return view('finance.transactions.show', compact('transactionId'));
+    }
 
     /** صفحة التعديل (تستضيف <livewire:finance.transactions.edit :transactionId="$transactionId" />) */
     public function edit($transactionId)

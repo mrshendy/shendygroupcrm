@@ -49,5 +49,8 @@ class Transaction extends Model
         return $this->belongsTo(\App\Models\Account::class, 'to_account_id');
     }
 
-
+    public function addedBy()
+    {
+        return $this->belongsTo(\App\User::class, 'user_add')->withDefault();
+    }
 }
