@@ -1,10 +1,13 @@
 <?php
 
-namespace App\Http\Livewire\Contracts;
+namespace App\Http\Livewire\contracts;
 
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
+
 use App\Models\Client;
 use App\Models\Project;
 use App\Models\Offer;
@@ -16,162 +19,205 @@ class Create extends Component
 {
     use WithFileUploads;
 
-    // وضع إضافة/تعديل
-    public ?Contract $contract = null;
+    /** =======================
+     *  متغير يحدد وضع الكلاس (إنشاء/تعديل)
+     *  لو فيه قيمة => تعديل، لو null => إنشاء جديد
+     *  ======================= */
+    public ?int $contractId = null;
 
-    // اختيارات القوائم
-    public $client_id = null;
-    public $project_id = null;
-    public $offer_id   = null;
+    /** =======================
+     *  كائن العقد عند التعديل (للاستخدام داخل الفيو)
+     *  ======================= */
+    public $contract;
 
-    // بيانات القوائم
-    public $clients  = [];
-    public $projects = [];
-    public $offers   = [];
+    /** =======================
+     *  حقول بيانات العقد (مطابقة للفيو 1:1)
+     *  ======================= */
+    public $client_id;
+    public $project_id;
+    public $offer_id;
 
-    // حقول العقد
-    public $type;
+    public $type = 'software';
     public $start_date;
     public $end_date;
-    public $amount = 0;
+    public $amount;
     public $include_tax = false;
-    public $status = 'active';
+    public $contract_file; // Livewire Temp UploadedFile
+    public $status = 'draft';
 
-    // ملف العقد
-    public $contract_file;
+    /** =======================
+     *  Data Sources للقوائم المعتمدة
+     *  ======================= */
+    public $clients = [];
+    public $projects = [];
+    public $offers = [];
 
-    // بنود ودفعات Livewire
-    public $items = [];      // [['title'=>'', 'body'=>''], ...]
-    public $payments = [];   // [['payment_type'=>'milestone', 'title'=>'', 'stage'=>'', 'condition'=>'date', 'due_date'=>null, 'amount'=>0, 'include_tax'=>false, 'is_paid'=>false, 'notes'=>null], ...]
+    /** =======================
+     *  المصفوفات الديناميكية الخاصة بالبُنود والدفعات
+     *  ======================= */
+    public $items = [];     // كل عنصر: ['title' => '', 'body' => '', 'sort_order' => int]
+    public $payments = [];  // كل عنصر: ['payment_type','title','stage','condition','due_date','amount','include_tax','is_paid','notes']
 
-    // القواعد
-    protected $rules = [
-        'client_id'   => 'required|exists:clients,id',
-        'project_id'  => 'nullable|exists:projects,id',
-        'offer_id'    => 'nullable|exists:offers,id',
-        'type'        => 'required|string',
-        'start_date'  => 'nullable|date',
-        'end_date'    => 'nullable|date|after_or_equal:start_date',
-        'amount'      => 'required|numeric|min:0',
-        'include_tax' => 'boolean',
-        'status'      => 'required|in:draft,active,suspended,completed,cancelled',
-        'contract_file' => 'nullable|file|mimes:pdf,doc,docx,png,jpg,jpeg|max:20480',
-
-        // قواعد اختيارية للبنود/الدفعات
-        'items.*.title' => 'nullable|string|max:255',
-        'items.*.body'  => 'nullable|string',
-        'payments.*.payment_type' => 'nullable|in:milestone,monthly',
-        'payments.*.title'        => 'nullable|string|max:255',
-        'payments.*.stage'        => 'nullable|string',
-        'payments.*.condition'    => 'nullable|in:date,stage',
-        'payments.*.due_date'     => 'nullable|date',
-        'payments.*.amount'       => 'nullable|numeric|min:0',
-        'payments.*.include_tax'  => 'nullable|boolean',
-        'payments.*.is_paid'      => 'nullable|boolean',
-        'payments.*.notes'        => 'nullable|string',
-    ];
-
-    protected $messages = [
-        'client_id.required' => 'برجاء اختيار العميل.',
-        'client_id.exists'   => 'العميل المختار غير موجود.',
-        'project_id.exists'  => 'المشروع المختار غير موجود.',
-        'offer_id.exists'    => 'العرض المختار غير موجود.',
-        'type.required'      => 'نوع العقد مطلوب.',
-        'start_date.date'    => 'تاريخ البداية غير صحيح.',
-        'end_date.date'      => 'تاريخ النهاية غير صحيح.',
-        'end_date.after_or_equal' => 'تاريخ النهاية يجب أن يكون بعد أو يساوي تاريخ البداية.',
-        'amount.required'    => 'قيمة العقد مطلوبة.',
-        'amount.numeric'     => 'قيمة العقد يجب أن تكون رقمًا.',
-        'amount.min'         => 'قيمة العقد لا يجب أن تكون سالبة.',
-        'status.in'          => 'حالة العقد غير صحيحة.',
-        'contract_file.mimes' => 'صيغة الملف غير مدعومة.',
-        'contract_file.max'   => 'حجم الملف كبير للغاية (الحد 20MB).',
-    ];
-
-    public function mount(?Contract $contract = null)
+    /**
+     * قواعد التحقق العامة للفورم
+     * - لاحظ استخدام Rule::in لقيم type/status
+     * - التحقق على عناصر المصفوفات items / payments
+     */
+    protected function rules()
     {
-        $this->contract = $contract;
+        return [
+            'client_id'   => ['required', 'integer', 'exists:clients,id'],
+            'project_id'  => ['nullable', 'integer', 'exists:projects,id'],
+            'offer_id'    => ['nullable', 'integer', 'exists:offers,id'],
 
-        // تحميل العملاء
-        $this->clients = Client::select('id', 'name')
-            ->orderBy('name')
-            ->get()
-            ->toArray();
+            'type'        => ['required', Rule::in(array_keys(Contract::TYPES))],
+            'start_date'  => ['nullable', 'date'],
+            'end_date'    => ['nullable', 'date', 'after_or_equal:start_date'],
+            'amount'      => ['required', 'numeric', 'min:0'],
+            'include_tax' => ['boolean'],
+            'contract_file' => ['nullable', 'file', 'max:10240', 'mimes:pdf,doc,docx,png,jpg,jpeg'],
+            'status'      => ['required', Rule::in(['draft','active','suspended','completed','cancelled'])],
 
-        if ($contract) {
-            // ملء حقول العقد
-            $this->client_id   = $contract->client_id;
-            $this->project_id  = $contract->project_id;
-            $this->offer_id    = $contract->offer_id;
+            // بنود العقد
+            'items'                  => ['array'],
+            'items.*.title'          => ['nullable', 'string', 'max:255'],
+            'items.*.body'           => ['nullable', 'string'],
+            'items.*.sort_order'     => ['nullable', 'integer', 'min:0'],
 
-            $this->type        = $contract->type;
-            $this->start_date  = optional($contract->start_date)?->format('Y-m-d');
-            $this->end_date    = optional($contract->end_date)?->format('Y-m-d');
-            $this->amount      = $contract->amount;
-            $this->include_tax = (bool) $contract->include_tax;
-            $this->status      = $contract->status;
+            // دفعات العقد
+            'payments'                      => ['array'],
+            'payments.*.payment_type'       => ['required', Rule::in(['milestone','monthly'])],
+            'payments.*.title'              => ['nullable', 'string', 'max:255'],
+            'payments.*.stage'              => ['nullable', Rule::in(array_keys(ContractPayment::STAGES))],
+            'payments.*.condition'          => ['nullable', Rule::in(['date','stage'])],
+            'payments.*.due_date'           => ['nullable', 'date'],
+            'payments.*.amount'             => ['nullable', 'numeric', 'min:0'],
+            'payments.*.include_tax'        => ['boolean'],
+            'payments.*.is_paid'            => ['boolean'],
+            'payments.*.notes'              => ['nullable', 'string', 'max:1000'],
+        ];
+    }
 
-            // تحميل المشاريع والعروض
+    /**
+     * رسائل مخصصة مختصرة بالعربي (حافظ على بساطة الرسالة)
+     */
+    protected $messages = [
+        'client_id.required' => 'اختَر العميل.',
+        'type.required'      => 'اختَر نوع العقد.',
+        'amount.required'    => 'أدخل إجمالي العقد.',
+        'amount.numeric'     => 'قيمة الإجمالي يجب أن تكون رقم.',
+        'end_date.after_or_equal' => 'تاريخ نهاية العقد لا يجب أن يكون قبل البداية.',
+        'contract_file.mimes' => 'صيغة الملف يجب أن تكون PDF/Word/صورة.',
+        'contract_file.max'   => 'حجم الملف بحد أقصى 10 ميجا.',
+        'payments.*.payment_type.in' => 'نوع الدفعة غير صحيح.',
+    ];
+
+    /**
+     * mount:
+     * - تحميل القوائم الأساسية (العملاء)
+     * - تحديد وضع الكومبوننت (إنشاء/تعديل)
+     * - تحميل العقد والبنود والدفعات عند التعديل
+     */
+    public function mount(?int $contractId = null): void
+    {
+        $this->contractId = $contractId;
+
+        // تحميل العملاء (خفيف: id & name فقط)
+        $this->clients = Client::query()->select('id','name')->orderBy('name')->get()->toArray();
+
+        if ($this->contractId) {
+            // تعديل: جلب العقد وعلاقاته
+            $this->contract = Contract::with(['items','payments'])->findOrFail($this->contractId);
+
+            // تعبئة الحقول من العقد الحالي
+            $this->client_id   = $this->contract->client_id;
+            $this->project_id  = $this->contract->project_id;
+            $this->offer_id    = $this->contract->offer_id;
+            $this->type        = $this->contract->type;
+            $this->start_date  = optional($this->contract->start_date)->format('Y-m-d');
+            $this->end_date    = optional($this->contract->end_date)->format('Y-m-d');
+            $this->amount      = $this->contract->amount;
+            $this->include_tax = (bool) $this->contract->include_tax;
+            $this->status      = $this->contract->status;
+
+            // تحميل المشاريع/العروض المعتمدة على العميل/المشروع
             $this->loadProjects();
             $this->loadOffers();
 
-            // تحميل البنود والدفعات الحالية
-            $this->items = $contract->items()
-                ->select('title', 'body')
-                ->orderBy('sort_order')
-                ->get()
-                ->toArray();
+            // تحويل البنود لمصفوفة مناسبة للفيو
+            $this->items = $this->contract->items
+                ->sortBy('sort_order')
+                ->map(function ($it) {
+                    return [
+                        'title'      => $it->title,
+                        'body'       => $it->body,
+                        'sort_order' => (int) $it->sort_order,
+                    ];
+                })->values()->toArray();
 
-            $this->payments = $contract->payments()
-                ->select('payment_type','title','stage','condition','due_date','amount','include_tax','is_paid','notes')
-                ->orderBy('id')
-                ->get()
+            // تحويل الدفعات لمصفوفة مناسبة للفيو
+            $this->payments = $this->contract->payments
+                ->sortBy(['due_date','id'])
                 ->map(function ($p) {
                     return [
-                        'payment_type' => $p->payment_type,
+                        'payment_type' => $p->payment_type, // milestone/monthly
                         'title'        => $p->title,
                         'stage'        => $p->stage,
-                        'condition'    => $p->condition,
-                        'due_date'     => optional($p->due_date)?->format('Y-m-d'),
-                        'amount'       => (float) $p->amount,
+                        'condition'    => $p->condition,    // date/stage
+                        'due_date'     => optional($p->due_date)->format('Y-m-d'),
+                        'amount'       => $p->amount,
                         'include_tax'  => (bool) $p->include_tax,
                         'is_paid'      => (bool) $p->is_paid,
                         'notes'        => $p->notes,
                     ];
-                })
-                ->toArray();
+                })->values()->toArray();
         } else {
-            // قيَم افتراضية
-            $this->status = 'active';
-            $this->amount = 0;
-
-            // صف افتراضي
-            $this->items = [
-                ['title' => '', 'body' => '']
-            ];
-            $this->payments = []; // ابدأ بدون دفعات
+            // إنشاء: قيم ابتدائية نظيفة
+            $this->contract = null;
+            $this->items = [];
+            $this->payments = [];
         }
     }
 
-    // تغييرات اختيار العميل/المشروع
-    public function updatedClientId()
+    /**
+     * render:
+     * - يمرر نفس متغير $contract للفيو عشان العنوان يتغير (تعديل/إنشاء)
+     * - خليك متأكد من مسار الفيو
+     */
+    public function render()
     {
-        $this->project_id = null;
-        $this->offer_id   = null;
-        $this->projects   = [];
-        $this->offers     = [];
-
-        $this->loadProjects();
-        $this->loadOffers();
+        return view('livewire.contracts.Create', [
+            'contract' => $this->contract,
+        ]);
     }
 
-    public function updatedProjectId()
+    /**
+     * لما المستخدم يغيّر العميل:
+     * - نحمل المشاريع المرتبطة ونفضي العرض
+     * - نعيد ضبط project_id/offer_id
+     */
+    public function updatedClientId(): void
+    {
+        $this->project_id = null;
+        $this->offer_id = null;
+        $this->offers = [];
+        $this->loadProjects();
+    }
+
+    /**
+     * لما المستخدم يغيّر المشروع:
+     * - نحمل العروض المرتبطة ونضبط offer_id
+     */
+    public function updatedProjectId(): void
     {
         $this->offer_id = null;
         $this->loadOffers();
     }
 
-    protected function loadProjects()
+    /**
+     * تحميل المشاريع حسب client_id
+     */
+    protected function loadProjects(): void
     {
         if (!$this->client_id) {
             $this->projects = [];
@@ -179,162 +225,220 @@ class Create extends Component
         }
 
         $this->projects = Project::query()
-            ->select('id', 'name')
+            ->select('id','name')
             ->where('client_id', $this->client_id)
             ->orderBy('name')
             ->get()
             ->toArray();
     }
 
-    protected function loadOffers()
+    /**
+     * تحميل العروض حسب project_id
+     */
+    protected function loadOffers(): void
     {
+        if (!$this->project_id) {
+            $this->offers = [];
+            return;
+        }
+
         $this->offers = Offer::query()
-            ->select('id', 'start_date')
-            ->when($this->client_id, fn ($q) => $q->where('client_id', $this->client_id))
-            ->when($this->project_id, fn ($q) => $q->where('project_id', $this->project_id))
-            ->orderByDesc('start_date')
+            ->select('id','start_date')
+            ->where('project_id', $this->project_id)
+            ->orderByDesc('id')
             ->get()
-            ->map(function ($o) {
+            ->map(function ($of) {
                 return [
-                    'id'         => $o->id,
-                    'start_date' => optional($o->start_date)?->format('Y-m-d'),
+                    'id' => $of->id,
+                    'start_date' => optional($of->start_date)->format('Y-m-d'),
                 ];
-            })
-            ->toArray();
+            })->toArray();
     }
 
-    // إدارة البنود
-    public function addItem()
+    /**
+     * إضافة بند جديد للمصفوفة items
+     */
+    public function addItem(): void
     {
-        $this->items[] = ['title' => '', 'body' => ''];
+        $this->items[] = [
+            'title'      => '',
+            'body'       => '',
+            'sort_order' => count($this->items), // الفرز حسب ترتيب الإضافة
+        ];
     }
 
-    public function removeItem($index)
+    /**
+     * حذف بند بناءً على الفهرس
+     */
+    public function removeItem(int $index): void
     {
-        unset($this->items[$index]);
-        $this->items = array_values($this->items);
+        if (isset($this->items[$index])) {
+            unset($this->items[$index]);
+            $this->items = array_values($this->items); // إعادة ترقيم الفهارس
+            // تحديث sort_order بما يطابق الفهرس
+            foreach ($this->items as $i => &$it) {
+                $it['sort_order'] = $i;
+            }
+        }
     }
 
-    // إدارة الدفعات
-    public function addPayment($type = 'milestone')
+    /**
+     * إضافة دفعة (مرحلية/شهرية)
+     * $type = 'milestone' | 'monthly'
+     */
+    public function addPayment(string $type = 'milestone'): void
     {
         $this->payments[] = [
             'payment_type' => in_array($type, ['milestone','monthly']) ? $type : 'milestone',
             'title'        => '',
-            'stage'        => '',
-            'condition'    => 'date',
+            'stage'        => null,          // يستخدم فقط لو النوع مرحلي
+            'condition'    => 'date',        // date أو stage
             'due_date'     => null,
-            'amount'       => 0,
+            'amount'       => null,
             'include_tax'  => false,
             'is_paid'      => false,
-            'notes'        => '',
+            'notes'        => null,
         ];
     }
 
-    public function removePayment($index)
+    /**
+     * حذف دفعة حسب الفهرس
+     */
+    public function removePayment(int $index): void
     {
-        unset($this->payments[$index]);
-        $this->payments = array_values($this->payments);
+        if (isset($this->payments[$index])) {
+            unset($this->payments[$index]);
+            $this->payments = array_values($this->payments);
+        }
     }
 
-   public function save()
-{
-    $data = $this->validate();
+    /**
+     * حفظ العقد (إنشاء/تحديث) مع البنود والدفعات
+     * - استخدام معاملات DB::transaction لضمان التناسق
+     * - رفع الملف (إن وجد) إلى storage/ (المسار: contracts/)
+     */
+    public function save()
+    {
+        // 1) تحقق أولي
+        $validated = $this->validate();
 
-    if ($this->contract_file) {
-        $data['contract_file'] = $this->contract_file->store('contracts');
-    } elseif (!$this->contract) {
-        $data['contract_file'] = null;
-    }
+        // 2) بعض التنظيف المنطقي قبل الحفظ:
+        //    - لو نوع الدفعة "شهرية" نخلي stage = null
+        //    - لو الشرط "date" ومفيش due_date، نسيبها null (مسموح)
+        $paymentsClean = collect($this->payments)->map(function ($p) {
+            $p['payment_type'] = $p['payment_type'] ?? 'milestone';
+            if (($p['payment_type'] ?? '') === 'monthly') {
+                $p['stage'] = null;
+            }
+            if (($p['condition'] ?? 'date') === 'stage' && empty($p['stage'])) {
+                // لو الشرط مرحلة لازم يبقى فيه stage
+                // هنسيبه null للتحقق؛ القاعدة تسمح null، لكن الأفضل نعالجه منطقيًا حسب استخدامك
+            }
+            // تطبيع القيم البوليانية
+            $p['include_tax'] = (bool) ($p['include_tax'] ?? false);
+            $p['is_paid']     = (bool) ($p['is_paid'] ?? false);
+            return $p;
+        })->toArray();
 
-    DB::beginTransaction();
-    try {
-        // إنشاء/تحديث العقد ثم refresh لضمان وجود الـ ID
-        if ($this->contract) {
-            $this->contract->update($data);
-            $contract = $this->contract->refresh();
+        // 3) رفع الملف (إن وُجد) قبل المعاملة، مع الاحتفاظ بالمسار لاستخدامه
+        $storedPath = null;
+        if ($this->contract_file) {
+            // التخزين على disk الافتراضي داخل مجلد contracts
+            $storedPath = $this->contract_file->store('contracts');
+        }
 
-            // امسح القديم قبل البناء من جديد
+        // 4) تنفيذ المعاملة
+        DB::beginTransaction();
+
+        try {
+            // 4.1) إنشاء/تحديث العقد
+            if ($this->contractId) {
+                // تحديث
+                $contract = Contract::lockForUpdate()->findOrFail($this->contractId);
+                $contract->client_id   = $this->client_id;
+                $contract->project_id  = $this->project_id;
+                $contract->offer_id    = $this->offer_id;
+                $contract->type        = $this->type;
+                $contract->start_date  = $this->start_date ?: null;
+                $contract->end_date    = $this->end_date ?: null;
+                $contract->amount      = $this->amount;
+                $contract->include_tax = (bool) $this->include_tax;
+                $contract->status      = $this->status;
+
+                if ($storedPath) {
+                    // لو تم رفع ملف جديد، استبدل المسار
+                    $contract->contract_file = $storedPath;
+                }
+
+                $contract->save();
+            } else {
+                // إنشاء
+                $contract = Contract::create([
+                    'client_id'   => $this->client_id,
+                    'project_id'  => $this->project_id,
+                    'offer_id'    => $this->offer_id,
+                    'type'        => $this->type,
+                    'start_date'  => $this->start_date ?: null,
+                    'end_date'    => $this->end_date ?: null,
+                    'amount'      => $this->amount,
+                    'include_tax' => (bool) $this->include_tax,
+                    'contract_file' => $storedPath,
+                    'status'      => $this->status,
+                ]);
+
+                // ضبط وضع التعديل بعد الإنشاء
+                $this->contractId = $contract->id;
+                $this->contract   = $contract;
+            }
+
+            // 4.2) حفظ البنود:
+            //      - أبسط طريقة: حذف القديم وإعادة الإنشاء (لو عايز نحسّن لاحقاً نعمل sync أذكى)
             $contract->items()->delete();
+
+            // إعادة ترتيب sort_order حسب الفهرس الحالي
+            foreach ($this->items as $i => $it) {
+                ContractItem::create([
+                    'contract_id' => $contract->id,
+                    'title'       => $it['title'] ?? null,
+                    'body'        => $it['body']  ?? null,
+                    'sort_order'  => $i,
+                ]);
+            }
+
+            // 4.3) حفظ الدفعات: حذف القديم وإعادة الإنشاء
             $contract->payments()->delete();
-        } else {
-            $contract = Contract::create($data);
-            $contract->refresh();
-            $this->contract = $contract;
-        }
 
-        // تحضير البنود (تجاهل الفارغ)
-        $sort = 1;
-        $preparedItems = [];
-        foreach ($this->items as $it) {
-            $title = isset($it['title']) ? trim((string)$it['title']) : '';
-            $body  = $it['body'] ?? null;
-
-            if ($title === '' && empty($body)) {
-                continue;
+            foreach ($paymentsClean as $p) {
+                ContractPayment::create([
+                    'contract_id'  => $contract->id,
+                    'payment_type' => $p['payment_type'] ?? 'milestone',
+                    'title'        => $p['title'] ?? null,
+                    'stage'        => $p['stage'] ?? null,
+                    'period_month' => null, // غير مستخدمة في الفيو الحالي؛ تركناها null
+                    'condition'    => $p['condition'] ?? 'date',
+                    'due_date'     => $p['due_date'] ?? null,
+                    'amount'       => $p['amount'] ?? 0,
+                    'include_tax'  => (bool) ($p['include_tax'] ?? false),
+                    'is_paid'      => (bool) ($p['is_paid'] ?? false),
+                    'notes'        => $p['notes'] ?? null,
+                ]);
             }
 
-            $preparedItems[] = [
-                'title'      => $title !== '' ? $title : 'بدون عنوان',
-                'body'       => $body,
-                'sort_order' => $sort++,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
-        }
+            DB::commit();
 
-        // تحضير الدفعات (تجاهل الصفوف الفارغة)
-        $preparedPayments = [];
-        foreach ($this->payments as $p) {
-            $amountVal = isset($p['amount']) ? (float)$p['amount'] : 0;
-            $ptype     = in_array(($p['payment_type'] ?? 'milestone'), ['milestone','monthly']) ? $p['payment_type'] : 'milestone';
-            $cond      = in_array(($p['condition'] ?? 'date'), ['date','stage']) ? $p['condition'] : 'date';
+            // 5) رسالة نجاح واجهة
+            session()->flash('success', $this->contractId ? 'تم تحديث العقد بنجاح' : 'تم إنشاء العقد بنجاح');
+        } catch (\Throwable $e) {
+            DB::rollBack();
 
-            if ($amountVal <= 0 && empty($p['title'])) {
-                continue;
+            // لو كنا رفعنا ملف جديد وفشلت العملية، احذف الملف لتفادي orphan files
+            if ($storedPath) {
+                try { Storage::delete($storedPath); } catch (\Throwable $t) {}
             }
 
-            $preparedPayments[] = [
-                'payment_type' => $ptype,
-                'title'        => $p['title'] ?? null,
-                'stage'        => $p['stage'] ?? null,
-                'period_month' => null, // غير مستخدم حالياً
-                'due_date'     => !empty($p['due_date']) ? $p['due_date'] : null,
-                'condition'    => $cond,
-                'amount'       => $amountVal,
-                'include_tax'  => !empty($p['include_tax']),
-                'is_paid'      => !empty($p['is_paid']),
-                'notes'        => $p['notes'] ?? null,
-                'created_at'   => now(),
-                'updated_at'   => now(),
-            ];
+            // رسالة خطأ واجهة + لوج داخلي لو تحب
+            session()->flash('error', 'حدث خطأ أثناء حفظ العقد. برجاء المحاولة مرة أخرى.');
+            report($e);
         }
-
-        // ✅ الحفظ عبر العلاقات يملأ contract_id تلقائياً
-        if (!empty($preparedItems)) {
-            $contract->items()->createMany($preparedItems);
-        }
-        if (!empty($preparedPayments)) {
-            $contract->payments()->createMany($preparedPayments);
-        }
-
-        DB::commit();
-
-        session()->flash('success', $this->contract->wasRecentlyCreated ? 'تم إنشاء العقد بنجاح.' : 'تم تحديث العقد بنجاح.');
-        return redirect()->route('contracts.index');
-
-    } catch (\Throwable $e) {
-        DB::rollBack();
-        report($e);
-        session()->flash('error', 'حدث خطأ أثناء حفظ العقد. برجاء المحاولة مرة أخرى.');
-        // ابقَ في نفس الصفحة لعرض الرسالة
-    }
-}
-
-    public function render()
-    {
-        return view('livewire.contracts.create')
-            ->extends('layouts.master')
-            ->section('content');
     }
 }

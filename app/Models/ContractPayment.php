@@ -6,30 +6,33 @@ use Illuminate\Database\Eloquent\Model;
 
 class ContractPayment extends Model
 {
+    // الحقول القابلة للإدخال
     protected $fillable = [
         'contract_id', 'payment_type', 'title', 'stage', 'period_month',
         'due_date', 'condition', 'amount', 'include_tax', 'is_paid', 'notes',
     ];
 
-    // مطابق لحقل enum(stage)
+    // مراحل التنفيذ (خاصة بالدفعات المرحلية)
     public const STAGES = [
-        'contract' => 'تعاقد',
-        'supply' => 'توريد',
-        'training' => 'تدريب',
-        'operation' => 'تشغيل',
-        'migration' => 'تهجير البيانات',
-        'soft_live' => 'سوفت لايف',
-        'maintenance' => 'صيانة',
+        'contract'   => 'تعاقد',
+        'supply'     => 'توريد',
+        'training'   => 'تدريب',
+        'operation'  => 'تشغيل',
+        'migration'  => 'تهجير البيانات',
+        'soft_live'  => 'سوفت لايف',
+        'maintenance'=> 'صيانة',
     ];
 
+    // تحويل القيم تلقائيًا
     protected $casts = [
-        'period_month' => 'date',   // نخزنها كـ YYYY-MM-01
-        'due_date' => 'date',
-        'amount' => 'decimal:2',
-        'include_tax' => 'boolean',
-        'is_paid' => 'boolean',
+        'period_month' => 'date',        // نخزنها كـ YYYY-MM-01
+        'due_date'     => 'date',
+        'amount'       => 'decimal:2',
+        'include_tax'  => 'boolean',
+        'is_paid'      => 'boolean',
     ];
 
+    // العلاقة مع العقد
     public function contract()
     {
         return $this->belongsTo(Contract::class);
