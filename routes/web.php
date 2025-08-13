@@ -9,8 +9,6 @@ use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use App\Http\Controllers\Shendy\ContractsController;
 
-// (اختياري) لو هتستخدمه في مكان تاني
-// use App\Http\Livewire\Clients\Show as ClientShow;
 
 Auth::routes(['verify' => true]);
 
@@ -61,7 +59,7 @@ Route::group(
             Route::resource('projects', 'ProjectsController');
             Route::resource('offers', 'OffersController');
             Route::resource('contracts', 'ContractsController');
-             // روابط الكنترولر: تنزيل/معاينة ملف العقد
+             
     Route::get('/contracts/{contract}/download', [ContractController::class, 'download'])
         ->whereNumber('contract')->name('contracts.download');
 
@@ -85,7 +83,7 @@ Route::group(
             Route::resource('dashbord', 'dashbordController');
         });
 
-        // catch-all (خليه آخر سطر دائمًا)
+        // catch-all 
         Route::get('/{page}', 'AdminController@index');
     }
 );
