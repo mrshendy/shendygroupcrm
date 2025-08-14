@@ -17,9 +17,15 @@
             <a href="{{ route('attendance.manage') }}" class="btn btn-secondary btn-lg rounded-pill shadow-sm px-4">
                 <i class="mdi mdi-clock-outline me-2"></i>ادارة الحضور والإنصراف 
             </a>
+             <a href="{{ route('employees.salaries') }}" class="btn btn-secondary btn-lg rounded-pill shadow-sm px-4">
+                <i class="mdi mdi-clock-outline me-2"></i>المرتبات  
+            </a>
+             <a href="{{ route('employees.leaves') }}" class="btn btn-secondary btn-lg rounded-pill shadow-sm px-4">
+                <i class="mdi mdi-clock-outline me-2"></i>الأجازات  
+            </a>
         </div>
     </div>
-
+    
     <!-- Search and Filters -->
     <div class="card shadow-sm border-0 rounded-3 mb-4">
         <div class="card-body p-4">

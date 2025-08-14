@@ -31,18 +31,30 @@ class EmployeesController extends Controller
         // Logic to check attendance for the employee with the given ID
         return view('attendance.manage');
     }
-
+public function salaries()
+    {
+        // Logic to check attendance for the employee with the given ID
+        return view('Employees.salaries.index');
+    }
+    public function leaves()
+    {
+        // Logic to check attendance for the employee with the given ID
+        return view('Employees.leaves.index');
+    }
 
     public function show($id)
     {
         return view('employees.show', compact('id'));
     }
 
-    public function edit($id)
+    public function editattendance($id)
+    {
+        return view('attendance.edit', compact('id'));
+    }
+public function edit($id)
     {
         return view('employees.edit', compact('id'));
     }
-
     public function update(Request $request, $id)
     {
 

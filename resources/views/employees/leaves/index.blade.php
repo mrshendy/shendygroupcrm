@@ -6,7 +6,7 @@
     <div class="card">
         <div class="card-body">
             <h4 class="mb-4">قائمة الإجازات</h4>
-            @livewire('employees.leaves.manage')
+            @livewire('employees.leaves.index')
         </div>
     </div>
 @endsection

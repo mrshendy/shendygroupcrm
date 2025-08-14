@@ -74,11 +74,18 @@ Route::group(
             Route::resource('files', 'FilesController');
             Route::resource('finance', 'FinanceController');
 
-            //Employees
+       //Employees
             Route::resource('employees', 'EmployeesController');
             Route::get('/employees/{id}/show', 'EmployeesController@show')->name('employees.show');
+
+      // الرواتب والإجازات
+        Route::get('employees/salaries','EmployeesController@salaries')->name('employees.salaries');
+        Route::get('employees/leaves','EmployeesController@leaves')->name('employees.leaves');
+
+        //  الحضور والانصراف
             Route::get('/attendance', 'EmployeesController@attendanceCheck')->name('attendance.check');
             Route::get('/attendance/manage', 'EmployeesController@attendanceManage')->name('attendance.manage');
+            Route::get('/attendance/{id}/edit', 'EmployeesController@editattendance')->name('attendance.attendanceedit');
 
 
             Route::resource('users', 'UsersController');

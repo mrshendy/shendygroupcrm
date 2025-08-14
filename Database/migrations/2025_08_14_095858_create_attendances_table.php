@@ -23,9 +23,9 @@ return new class extends Migration
         $table->date('attendance_date');
         $table->timestamps();
     });
-}
 
-
+    
+} 
 
     /**
      * Reverse the migrations.

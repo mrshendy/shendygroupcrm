@@ -20,8 +20,9 @@
                     <td>{{ $attendance->hours ?? 0 }}</td>
                     <td>{{ $attendance->attendance_date }}</td>
                     <td>
-                        <button class="btn btn-primary btn-sm">تعديل</button>
-                    </td>
+ <a href="{{ route('attendance.attendanceedit', $attendance->id) }}" class="btn btn-warning btn-sm">
+        <i class="mdi mdi-pencil"></i> تعديل
+    </a>                    </td>
                 </tr>
             @endforeach
         </tbody>
