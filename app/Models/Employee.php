@@ -23,4 +23,19 @@ class Employee extends Model
         'avatar',
         'status',
     ];
+
+
+    // علاقة الموظف مع المرتبات
+    public function salaries()
+    {
+        return $this->hasMany(Salary::class);
+    }
+
+    // علاقة الموظف مع الإجازات
+    public function leaves()
+    {
+        return $this->hasMany(Leave::class);
+    }
 }
+
+

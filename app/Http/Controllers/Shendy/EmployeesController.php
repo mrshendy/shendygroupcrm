@@ -89,4 +89,15 @@ class EmployeesController extends Controller
     {
         //
     }
+
+ public function salaries()
+    {
+        return view('employees.salaries.index');
+    }
+
+    public function leaves()
+    {
+        return view('employees.leaves.index');
+
+    }
 }

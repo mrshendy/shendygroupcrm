@@ -2,15 +2,14 @@
 
 namespace App\Http\Livewire\Contracts;
 
-use App\Models\Client;
-use App\Models\Contract;
-use App\Models\ContractPayment;
-use App\Models\Offer;
-use App\Models\Project;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use App\Models\Client;
+use App\Models\Project;
+use App\Models\Offer;
+use App\Models\Contract;
+use App\Models\ContractItem;
+use App\Models\ContractPayment;
 
 class Edit extends Component
 {
@@ -18,165 +17,164 @@ class Edit extends Component
 
     public Contract $contract;
 
-    public $client_id, $project_id, $offer_id;
-    public $start_date, $end_date;
-    public $type, $amount, $include_tax=false, $status='draft';
+    public $client_id;
+    public $project_id;
+    public $offer_id;
+    public $clients = [];
+    public $projects = [];
+    public $offers = [];
+    public $type;
+    public $start_date;
+    public $end_date;
+    public $amount;
+    public $include_tax = false;
+    public $status = 'active';
     public $contract_file;
 
     public $items = [];
     public $payments = [];
-    public $clients=[], $projects=[], $offers=[];
 
-    protected function rules()
-    {
-        return [
-            'client_id'   => 'required|exists:clients,id',
-            'project_id'  => 'nullable|exists:projects,id',
-            'offer_id'    => 'nullable|exists:offers,id',
-            'type'        => ['required', Rule::in(array_keys(Contract::TYPES))],
-            'start_date'  => 'nullable|date',
-            'end_date'    => 'nullable|date|after_or_equal:start_date',
-            'amount'      => 'required|numeric|min:0',
-            'include_tax' => 'boolean',
-            'status'      => 'required|in:draft,active,suspended,completed,cancelled',
-            'contract_file' => 'nullable|file|mimes:pdf,doc,docx,png,jpg,jpeg|max:8192',
+    protected $rules = [
+        'client_id' => 'required|exists:clients,id',
+        'project_id' => 'nullable|exists:projects,id',
+        'offer_id'   => 'nullable|exists:offers,id',
+        'type'       => 'required|string',
+        'start_date' => 'nullable|date',
+        'end_date'   => 'nullable|date|after_or_equal:start_date',
+        'amount'     => 'required|numeric|min:0',
+        'include_tax'=> 'boolean',
+        'status'     => 'required|string',
+        'contract_file' => 'nullable|file|max:2048',
+        'items.*.title' => 'required|string',
+        'items.*.body'  => 'nullable|string',
+        'payments.*.payment_type' => 'required|string',
+        'payments.*.title' => 'nullable|string',
+        'payments.*.stage' => 'nullable|string',
+        'payments.*.condition' => 'nullable|string',
+        'payments.*.due_date' => 'nullable|date',
+        'payments.*.amount' => 'nullable|numeric|min:0',
+        'payments.*.include_tax' => 'boolean',
+        'payments.*.is_paid' => 'boolean',
+        'payments.*.notes' => 'nullable|string',
+    ];
 
-            'items'                 => 'nullable|array',
-            'items.*.title'         => 'required_with:items|string|max:255',
-            'items.*.body'          => 'nullable|string',
-            'items.*.sort_order'    => 'nullable|integer|min:1',
-
-            'payments'                      => 'nullable|array',
-            'payments.*.payment_type'       => 'required_with:payments|in:milestone,monthly',
-            'payments.*.title'              => 'nullable|string|max:255',
-            'payments.*.stage'              => ['nullable', Rule::in(array_keys(ContractPayment::STAGES))],
-            'payments.*.period_month'       => 'nullable|date',
-            'payments.*.due_date'           => 'nullable|date',
-            'payments.*.condition'          => 'nullable|in:date,stage',
-            'payments.*.amount'             => 'nullable|numeric|min:0',
-            'payments.*.include_tax'        => 'nullable|boolean',
-            'payments.*.is_paid'            => 'nullable|boolean',
-            'payments.*.notes'              => 'nullable|string|max:500',
-        ];
-    }
+    protected $messages = [
+        'client_id.required' => 'اختر العميل',
+        'type.required' => 'اختر نوع العقد',
+        'amount.required' => 'أدخل قيمة الإجمالي',
+        'items.*.title.required' => 'عنوان البند مطلوب',
+        'payments.*.payment_type.required' => 'نوع الدفعة مطلوب',
+    ];
 
     public function mount(Contract $contract)
     {
-        $this->contract   = $contract->load('items','payments');
+        $this->contract = $contract;
+
+        $this->clients = Client::select('id','name')->orderBy('name')->get()->toArray();
+
         $this->client_id  = $contract->client_id;
         $this->project_id = $contract->project_id;
         $this->offer_id   = $contract->offer_id;
         $this->type       = $contract->type;
-        $this->start_date = optional($contract->start_date)->format('Y-m-d');
-        $this->end_date   = optional($contract->end_date)->format('Y-m-d');
+        $this->start_date = $contract->start_date;
+        $this->end_date   = $contract->end_date;
         $this->amount     = $contract->amount;
-        $this->include_tax= (bool)$contract->include_tax;
-        $this->status     = $contract->status ?? 'draft';
+        $this->include_tax= $contract->include_tax;
+        $this->status     = $contract->status;
 
-        $this->clients  = Client::orderBy('name')->get(['id','name']);
-        $this->projects = Project::where('client_id',$this->client_id)->orderBy('name')->get(['id','name']);
-        $this->offers   = Offer::where('client_id',$this->client_id)->orderByDesc('id')->get(['id','amount','include_tax']);
+        // تحميل المشاريع الخاصة بالعميل الحالي
+        $this->projects = Project::where('client_id', $this->client_id)->select('id','name')->get()->toArray();
 
-        $this->items = $contract->items->map(fn($it)=>[
-            'title'=>$it->title,'body'=>$it->body,'sort_order'=>$it->sort_order
-        ])->toArray();
+        // تحميل العروض الخاصة بالمشروع الحالي
+        if ($this->project_id) {
+            $this->offers = Offer::where('project_id', $this->project_id)->select('id','start_date')->get()->toArray();
+        }
 
-        $this->payments = $contract->payments->map(fn($p)=>[
-            'payment_type'=>$p->payment_type,'title'=>$p->title,'stage'=>$p->stage,
-            'period_month'=>optional($p->period_month)->format('Y-m'),
-            'due_date'=>optional($p->due_date)->format('Y-m-d'),
-            'condition'=>$p->condition,'amount'=>$p->amount,
-            'include_tax'=>(bool)$p->include_tax,'is_paid'=>(bool)$p->is_paid,'notes'=>$p->notes
-        ])->toArray();
+        // تحميل البنود
+        $this->items = $contract->items()->select('title','body')->get()->toArray();
+
+        // تحميل الدفعات
+        $this->payments = $contract->payments()->select(
+            'payment_type','title','stage','condition','due_date','amount','include_tax','is_paid','notes'
+        )->get()->toArray();
     }
 
-    public function updated($name, $value)
+    public function updatedClientId()
     {
-        if ($name === 'client_id') {
-            $this->projects = Project::where('client_id',$value)->orderBy('name')->get(['id','name']);
-            $this->offers   = Offer::where('client_id',$value)->orderByDesc('id')->get(['id','amount','include_tax']);
-            $this->project_id = $this->offer_id = null;
-        }
-
-        if ($name === 'offer_id' && $value) {
-            if ($o = Offer::find($value)) {
-                $this->amount = $o->amount;
-                $this->include_tax = (bool)$o->include_tax;
-            }
-        }
+        $this->projects = Project::where('client_id', $this->client_id)->select('id','name')->get()->toArray();
+        $this->project_id = null;
+        $this->offers = [];
+        $this->offer_id = null;
     }
 
-    public function addItem()                 { $this->items[] = ['title'=>'','body'=>'','sort_order'=>count($this->items)+1]; }
-    public function removeItem(int $i)        { unset($this->items[$i]); $this->items = array_values($this->items); }
-    public function addPayment($type='milestone')
+    public function updatedProjectId()
+    {
+        $this->offers = Offer::where('project_id', $this->project_id)->select('id','start_date')->get()->toArray();
+        $this->offer_id = null;
+    }
+
+    public function addItem()
+    {
+        $this->items[] = ['title' => '', 'body' => ''];
+    }
+
+    public function removeItem($index)
+    {
+        unset($this->items[$index]);
+        $this->items = array_values($this->items);
+    }
+
+    public function addPayment($type = 'milestone')
     {
         $this->payments[] = [
-            'payment_type'=>$type,'title'=>'','stage'=>null,'period_month'=>null,
-            'due_date'=>null,'condition'=>'date','amount'=>0,'include_tax'=>false,'is_paid'=>false,'notes'=>null
+            'payment_type' => $type,
+            'title' => '',
+            'stage' => '',
+            'condition' => '',
+            'due_date' => '',
+            'amount' => 0,
+            'include_tax' => false,
+            'is_paid' => false,
+            'notes' => '',
         ];
     }
-    public function removePayment(int $i)     { unset($this->payments[$i]); $this->payments = array_values($this->payments); }
+
+    public function removePayment($index)
+    {
+        unset($this->payments[$index]);
+        $this->payments = array_values($this->payments);
+    }
 
     public function save()
     {
-        $this->validate();
+        $data = $this->validate();
 
-        DB::transaction(function () {
-            $this->contract->update([
-                'client_id'   => $this->client_id,
-                'project_id'  => $this->project_id,
-                'offer_id'    => $this->offer_id,
-                'start_date'  => $this->start_date,
-                'end_date'    => $this->end_date,
-                'type'        => $this->type,
-                'amount'      => $this->amount,
-                'include_tax' => (bool)$this->include_tax,
-                'status'      => $this->status,
-            ]);
+        if ($this->contract_file) {
+            $data['contract_file'] = $this->contract_file->store('contracts', 'public');
+        } else {
+            $data['contract_file'] = $this->contract->contract_file;
+        }
 
-            if ($this->contract_file) {
-                $path = $this->contract_file->store('contracts','public');
-                $this->contract->update(['contract_file'=>$path]);
-            }
+        $this->contract->update($data);
 
-            $this->contract->items()->delete();
-            foreach ($this->items as $i=>$row) {
-                if (!trim($row['title'])) continue;
-                $this->contract->items()->create([
-                    'title'=>$row['title'],
-                    'body'=>$row['body'] ?? null,
-                    'sort_order'=>$row['sort_order'] ?? ($i+1),
-                ]);
-            }
+        // تحديث البنود
+        $this->contract->items()->delete();
+        foreach ($this->items as $item) {
+            $this->contract->items()->create($item);
+        }
 
-            $this->contract->payments()->delete();
-            foreach ($this->payments as $p) {
-                $pm = !empty($p['period_month']) ? ($p['period_month'].'-01') : null;
-                $this->contract->payments()->create([
-                    'payment_type'=>$p['payment_type'] ?? 'milestone',
-                    'title'=>$p['title'] ?? null,
-                    'stage'=>$p['stage'] ?? null,
-                    'period_month'=>$pm,
-                    'due_date'=>$p['due_date'] ?? null,
-                    'condition'=>$p['condition'] ?? 'date',
-                    'amount'=>$p['amount'] ?? 0,
-                    'include_tax'=>!empty($p['include_tax']),
-                    'is_paid'=>!empty($p['is_paid']),
-                    'notes'=>$p['notes'] ?? null,
-                ]);
-            }
-        });
+        // تحديث الدفعات
+        $this->contract->payments()->delete();
+        foreach ($this->payments as $pay) {
+            $this->contract->payments()->create($pay);
+        }
 
-        session()->flash('success','تم تحديث العقد بنجاح.');
-        return redirect()->route('contracts.show', $this->contract->id);
+        session()->flash('success', 'تم تحديث العقد بنجاح');
+        return redirect()->route('contracts.index');
     }
 
     public function render()
     {
-        return view('livewire.contracts.edit', [
-            'types'  => Contract::TYPES,
-            'stages' => ContractPayment::STAGES,
-            'contract'=>$this->contract,
-        ])->layout('layouts.master', ['title'=>'تعديل عقد']);
+        return view('livewire.contracts.edit');
     }
 }

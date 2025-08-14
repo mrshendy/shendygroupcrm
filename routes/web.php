@@ -4,13 +4,11 @@ use App\Http\Controllers\Application_settings\application_settingsController;
 use App\Http\Controllers\Application_settings\CurrenciesController;
 use App\Http\Controllers\Application_settings\Nationalities_settingsController;
 use App\Http\Controllers\Finance\TransactionsController;
+use App\Http\Livewire\Employees\Leaves\Manage as LeavesManage;
+use App\Http\Livewire\Employees\Salaries\Manage as SalariesManage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
-use App\Http\Controllers\Shendy\ContractsController;
-
-// (اختياري) لو هتستخدمه في مكان تاني
-// use App\Http\Livewire\Clients\Show as ClientShow;
 
 Auth::routes(['verify' => true]);
 
@@ -26,6 +24,14 @@ Route::group(
         'middleware' => ['localeSessionRedirect', 'localizationRedirect', 'localeViewPath', 'auth', 'verified'],
     ],
     function () {
+
+        // شاشة إدارة المرتبات
+        Route::get('/employees/salaries', SalariesManage::class)
+            ->name('employees.salaries');
+
+        // شاشة إدارة الإجازات
+        Route::get('/employees/leaves', LeavesManage::class)
+            ->name('employees.leaves');
         // إعدادات المالية
         Route::get('finance/settings', [application_settingsController::class, 'financeSettings'])->name('finance.settings');
         Route::get('finance/', [application_settingsController::class, 'mainIndex'])->name('finance.accounts.index');
@@ -61,14 +67,13 @@ Route::group(
             Route::resource('projects', 'ProjectsController');
             Route::resource('offers', 'OffersController');
             Route::resource('contracts', 'ContractsController');
-             // روابط الكنترولر: تنزيل/معاينة ملف العقد
-    Route::get('/contracts/{contract}/download', [ContractController::class, 'download'])
-        ->whereNumber('contract')->name('contracts.download');
+            // روابط الكنترولر: تنزيل/معاينة ملف العقد
+            Route::get('/contracts/{contract}/download', [ContractController::class, 'download'])
+                ->whereNumber('contract')->name('contracts.download');
 
-    Route::get('/contracts/{contract}/preview', [ContractController::class, 'preview'])
+            Route::get('/contracts/{contract}/preview', [ContractController::class, 'preview'])
 
-    
-        ->whereNumber('contract')->name('contracts.preview');
+                ->whereNumber('contract')->name('contracts.preview');
             Route::get('/offers/followup/{offerId}', 'OffersController@Followup')->name('offers.followup');
             Route::get('offers/{offer}/status', 'OffersController@OfferStatus')->name('offers.status');
             Route::resource('files', 'FilesController');
