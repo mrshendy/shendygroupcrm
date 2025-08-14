@@ -9,7 +9,7 @@
         </button>
     @else
         <div class="alert alert-info">
-            تم تسجيل الحضور والانصراف لليوم.
+            ✅ تم تسجيل الحضور والانصراف لليوم.
         </div>
     @endif
 </div>

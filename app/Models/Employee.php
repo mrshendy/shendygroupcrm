@@ -36,6 +36,8 @@ class Employee extends Model
     {
         return $this->hasMany(Leave::class);
     }
+    // علاقة الموظف مع الحضور
+    
 }
 
 

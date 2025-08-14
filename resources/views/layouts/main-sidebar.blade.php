@@ -56,8 +56,8 @@
                                 <i class="mdi mdi-tag-multiple-outline"></i> العروض
                             </a>
                         </li>
-                        
-                        
+
+
                         <li class="nav-item">
                             <a class="nav-link menu-link font {{ request()->routeIs('contracts.*') ? 'active' : '' }}"
                                 href="{{ route('contracts.index') }}">
@@ -71,6 +71,15 @@
                                 <i class="mdi mdi-cash-multiple"></i> الحسابات المالية
                             </a>
                         </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link menu-link font {{ request()->routeIs('attendance.*') ? 'active' : '' }}"
+                                 href="{{ route('attendance.check') }}">
+                                <i class="mdi mdi-clock-outline"></i> تسجيل حضور وانصراف
+                            </a>
+
+                        </li>
+
 
                         <li class="nav-item">
                             <a class="nav-link menu-link font {{ request()->routeIs('employees.*') ? 'active' : '' }}"

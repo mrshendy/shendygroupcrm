@@ -14,6 +14,9 @@
             <a href="{{ route('employees.create') }}" class="btn btn-primary btn-lg rounded-pill shadow-sm px-4">
                 <i class="mdi mdi-account-multiple-plus me-2"></i>إضافة موظف جديد
             </a>
+            <a href="{{ route('attendance.manage') }}" class="btn btn-secondary btn-lg rounded-pill shadow-sm px-4">
+                <i class="mdi mdi-clock-outline me-2"></i>ادارة الحضور والإنصراف 
+            </a>
         </div>
     </div>
 

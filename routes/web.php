@@ -1,38 +1,16 @@
 <?php
 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
-use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
-
-// Application Settings Controllers
 use App\Http\Controllers\Application_settings\application_settingsController;
 use App\Http\Controllers\Application_settings\CurrenciesController;
 use App\Http\Controllers\Application_settings\Nationalities_settingsController;
-use App\Http\Controllers\Application_settings\place_settingsController;
-use App\Http\Controllers\Application_settings\CountriesController;
-use App\Http\Controllers\Application_settings\CityController;
-use App\Http\Controllers\Application_settings\GovernmentController;
-use App\Http\Controllers\Application_settings\areaController;
-use App\Http\Controllers\Application_settings\SettingsTypeController;
-
-// Finance Controllers
 use App\Http\Controllers\Finance\TransactionsController;
-
-// Shendy Controllers
-use App\Http\Controllers\Shendy\ClientsController;
-use App\Http\Controllers\Shendy\ProjectsController;
-use App\Http\Controllers\Shendy\OffersController;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
+use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use App\Http\Controllers\Shendy\ContractsController;
-use App\Http\Controllers\Shendy\ContractController;
-use App\Http\Controllers\Shendy\FilesController;
-use App\Http\Controllers\Shendy\FinanceController;
-use App\Http\Controllers\Shendy\EmployeesController;
-use App\Http\Controllers\Shendy\UsersController;
-use App\Http\Controllers\Shendy\RolesController;
-use App\Http\Controllers\Shendy\NotificationsController;
-// Dashboard & Admin
-use App\Http\Controllers\dashbord\dashbordController;
-use App\Http\Controllers\AdminController;
+
+// (اختياري) لو هتستخدمه في مكان تاني
+// use App\Http\Livewire\Clients\Show as ClientShow;
 
 Auth::routes(['verify' => true]);
 
@@ -48,66 +26,72 @@ Route::group(
         'middleware' => ['localeSessionRedirect', 'localizationRedirect', 'localeViewPath', 'auth', 'verified'],
     ],
     function () {
-
-        /** إعدادات المالية */
+        // إعدادات المالية
         Route::get('finance/settings', [application_settingsController::class, 'financeSettings'])->name('finance.settings');
         Route::get('finance/', [application_settingsController::class, 'mainIndex'])->name('finance.accounts.index');
         Route::get('finance/accounts', [application_settingsController::class, 'accountsIndex'])->name('finance.accounts.manage');
         Route::get('finance/items', [application_settingsController::class, 'itemsIndex'])->name('finance.items.index');
 
-        /** المعاملات المالية */
+        // معاملات مالية
         Route::get('finance/transactions', [TransactionsController::class, 'index'])->name('finance.transactions.index');
         Route::get('finance/transactions/create/expense', [TransactionsController::class, 'createExpense'])->name('finance.transactions.create.expense');
         Route::get('finance/transactions/create/income', [TransactionsController::class, 'createIncome'])->name('finance.transactions.create.income');
         Route::get('finance/transactions/edit/{transactionId}', [TransactionsController::class, 'edit'])->name('finance.transactions.edit');
         Route::get('finance/transactions/show/{transactionId}', [TransactionsController::class, 'show'])->name('finance.transactions.show');
 
-        /** Application Settings */
-        Route::resource('places_settings', place_settingsController::class);
-        Route::resource('countries', CountriesController::class);
-        Route::get('/city/{id}', [CityController::class, 'getGovernment']);
-        Route::resource('city', CityController::class);
-        Route::resource('government', GovernmentController::class);
-        Route::get('/area/{id}', [areaController::class, 'getcity']);
-        Route::resource('area', areaController::class);
-        Route::resource('settings_type', SettingsTypeController::class);
+        // Application_settings (مزيج سترينج + كلاس)
+        Route::group(['namespace' => 'Application_settings'], function () {
+            Route::resource('places_settings', 'place_settingsController');
+            Route::resource('countries', 'CountriesController');
+            Route::get('/city/{id}', 'CityController@getGovernment');
+            Route::resource('city', 'CityController');
+            Route::resource('government', 'GovernmentController');
+            Route::get('/area/{id}', 'areaController@getcity');
+            Route::resource('area', 'areaController');
+            Route::resource('settings_type', 'SettingsTypeController');
 
-        Route::resource('settings', application_settingsController::class);
-        Route::resource('currencies', CurrenciesController::class);
-        Route::resource('nationalities_settings', Nationalities_settingsController::class);
+            Route::resource('settings', application_settingsController::class);
+            Route::resource('currencies', CurrenciesController::class);
+            Route::resource('nationalities_settings', Nationalities_settingsController::class);
+        });
 
-        /** Shendy */
-        Route::resource('clients', ClientsController::class);
-        Route::resource('projects', ProjectsController::class);
-        Route::resource('offers', OffersController::class);
-        Route::resource('contracts', ContractsController::class);
+        // Shendy
+        Route::group(['namespace' => 'Shendy'], function () {
+            Route::resource('clients', 'ClientsController');
+            Route::resource('projects', 'ProjectsController');
+            Route::resource('offers', 'OffersController');
+            Route::resource('contracts', 'ContractsController');
+             // روابط الكنترولر: تنزيل/معاينة ملف العقد
+    Route::get('/contracts/{contract}/download', [ContractController::class, 'download'])
+        ->whereNumber('contract')->name('contracts.download');
 
-        // روابط العقد: تنزيل/معاينة
-        Route::get('/contracts/{contract}/download', [ContractController::class, 'download'])
-            ->whereNumber('contract')->name('contracts.download');
-        Route::get('/contracts/{contract}/preview', [ContractController::class, 'preview'])
-            ->whereNumber('contract')->name('contracts.preview');
+    Route::get('/contracts/{contract}/preview', [ContractController::class, 'preview'])
 
-        // عروض الأسعار: متابعة وحالة
-        Route::get('/offers/followup/{offerId}', [OffersController::class, 'Followup'])->name('offers.followup');
-        Route::get('offers/{offer}/status', [OffersController::class, 'OfferStatus'])->name('offers.status');
+    
+        ->whereNumber('contract')->name('contracts.preview');
+            Route::get('/offers/followup/{offerId}', 'OffersController@Followup')->name('offers.followup');
+            Route::get('offers/{offer}/status', 'OffersController@OfferStatus')->name('offers.status');
+            Route::resource('files', 'FilesController');
+            Route::resource('finance', 'FinanceController');
 
-        // باقي الموارد
-        Route::resource('files', FilesController::class);
-        Route::resource('finance', FinanceController::class);
+            //Employees
+            Route::resource('employees', 'EmployeesController');
+            Route::get('/employees/{id}/show', 'EmployeesController@show')->name('employees.show');
+            Route::get('/attendance', 'EmployeesController@attendanceCheck')->name('attendance.check');
+            Route::get('/attendance/manage', 'EmployeesController@attendanceManage')->name('attendance.manage');
 
-        /** مجموعة الموظفين */
-        Route::resource('employees', EmployeesController::class);
 
-        /** المستخدمين والصلاحيات */
-        Route::resource('users', UsersController::class);
-        Route::resource('roles', RolesController::class);
-        Route::resource('notifications', NotificationsController::class);
+            Route::resource('users', 'UsersController');
+            Route::resource('roles', 'RolesController');
+            Route::resource('notifications', 'NotificationsController');
+        });
 
-        /** Dashboard */
-        Route::resource('dashbord', dashbordController::class);
+        // dashbord
+        Route::group(['namespace' => 'dashbord'], function () {
+            Route::resource('dashbord', 'dashbordController');
+        });
 
-        /** Catch-All */
-        Route::get('/{page}', [AdminController::class, 'index']);
+        // catch-all (خليه آخر سطر دائمًا)
+        Route::get('/{page}', 'AdminController@index');
     }
 );

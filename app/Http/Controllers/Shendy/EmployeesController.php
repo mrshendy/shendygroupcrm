@@ -21,6 +21,17 @@ class EmployeesController extends Controller
     {
 
     }
+    public function attendanceCheck()
+    {
+        // Logic to check attendance for the employee with the given ID
+        return view('attendance.check');
+    }
+    public function attendanceManage()
+    {
+        // Logic to check attendance for the employee with the given ID
+        return view('attendance.manage');
+    }
+
 
     public function show($id)
     {

@@ -10,27 +10,32 @@ use Illuminate\Support\Facades\Auth;
 class Check extends Component
 {
     public $attendanceToday;
-    public $employee_id;
 
     public function mount()
     {
-        // مثال: ربط الموظف بالمستخدم الحالي
-        $this->employee_id = Auth::user()->employee_id ?? null;
+        $employeeId = Auth::user()->employee_id ?? null;
+        
 
-        $this->attendanceToday = Attendance::where('employee_id', $this->employee_id)
+        $this->attendanceToday = Attendance::where('employee_id', $employeeId)
             ->whereDate('attendance_date', Carbon::today())
             ->first();
     }
 
-    public function checkIn()
-    {
-        $this->attendanceToday = Attendance::create([
-            'employee_id' => $this->employee_id,
-            'check_in' => Carbon::now(),
-            'attendance_date' => Carbon::today(),
-        ]);
+   public function checkIn()
+{
+    $employeeId = Auth::user()->employee_id; // أو ->employee->id لو عندك علاقة
+
+    if (!$employeeId) {
+        session()->flash('error', 'لا يوجد موظف مرتبط بهذا الحساب.');
+        return;
     }
 
+    $this->attendanceToday = Attendance::create([
+        'employee_id' => $employeeId,
+        'check_in' => now(),
+        'attendance_date' => today(),
+    ]);
+}
     public function checkOut()
     {
         if ($this->attendanceToday && !$this->attendanceToday->check_out) {
