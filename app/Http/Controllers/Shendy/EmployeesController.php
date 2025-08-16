@@ -11,7 +11,16 @@ class EmployeesController extends Controller
     {
         return view('employees.index');
     }
+  public function leaves()
+{
+    return view('employees.leaves.index');
+}
 
+public function salaries()
+    {
+        // Logic to check attendance for the employee with the given ID
+        return view('employees.salaries.index');
+    }
     public function create()
     {
         return view('employees.create');
@@ -31,16 +40,6 @@ class EmployeesController extends Controller
         // Logic to check attendance for the employee with the given ID
         return view('attendance.manage');
     }
-public function salaries()
-    {
-        // Logic to check attendance for the employee with the given ID
-        return view('Employees.salaries.index');
-    }
-    public function leaves()
-    {
-        // Logic to check attendance for the employee with the given ID
-        return view('Employees.leaves.index');
-    }
 
     public function show($id)
     {
@@ -55,11 +54,16 @@ public function edit($id)
     {
         return view('employees.edit', compact('id'));
     }
+    public function editSalary($id)
+    {
+        return view('employees.salaries.edit', compact('id'));
+    }
+
     public function update(Request $request, $id)
     {
 
     }
-
+  
     public function destroy($id)
     {
 

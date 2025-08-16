@@ -69,7 +69,10 @@
                     <td>{{ $salary->net_salary }}</td>
                     <td>{{ $salary->status }}</td>
                     <td>
-                        <button wire:click="edit({{ $salary->id }})" class="btn btn-primary btn-sm">تعديل</button>
+                        <a href="{{ route('salaries.edit', $salary->id) }}" class="btn btn-primary btn-sm">
+    تعديل
+</a>
+
                         <button wire:click="delete({{ $salary->id }})" class="btn btn-danger btn-sm">حذف</button>
                     </td>
                 </tr>

@@ -37,19 +37,19 @@ class Index extends Component
     {
         $this->validate();
 
-        Salary::updateOrCreate(
-            ['id' => $this->salary_id],
-            [
-                'employee_id' => $this->employee_id,
-                'month' => $this->month,
-                'basic_salary' => $this->basic_salary,
-                'allowances' => $this->allowances,
-                'deductions' => $this->deductions,
-                'net_salary' => $this->net_salary,
-                'status' => $this->status,
-                'notes' => $this->notes,
-            ]
-        );
+     Salary::updateOrCreate(
+    ['id' => $this->salary_id],
+    [
+        'employee_id' => $this->employee_id,
+        'month' => $this->month,
+        'allowances' => $this->allowances,
+        'deductions' => $this->deductions,
+        'net_salary' => $this->net_salary,
+        'status' => $this->status,
+        'notes' => $this->notes,
+    ]
+);
+
 
         $this->resetInput();
         $this->loadSalaries();

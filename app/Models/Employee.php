@@ -1,10 +1,13 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
 class Employee extends Model
 {
+    protected $table = 'employees';
+
     protected $fillable = [
         'full_name',
         'employee_code',
@@ -22,8 +25,9 @@ class Employee extends Model
         'notes',
         'avatar',
         'status',
+        'position',
+        'basic_salary',
     ];
-
 
     // علاقة الموظف مع المرتبات
     public function salaries()
@@ -36,8 +40,9 @@ class Employee extends Model
     {
         return $this->hasMany(Leave::class);
     }
+
     // علاقة الموظف مع الحضور
-       public function users()
+    public function users()
     {
         return $this->hasMany(User::class);
     }
@@ -46,7 +51,4 @@ class Employee extends Model
     {
         return $this->hasMany(Attendance::class);
     }
-
 }
-
-

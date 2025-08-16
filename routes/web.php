@@ -74,12 +74,11 @@ Route::group(
             Route::resource('files', 'FilesController');
             Route::resource('finance', 'FinanceController');
 
-       //Employees
-            Route::resource('employees', 'EmployeesController');
-            Route::get('/employees/{id}/show', 'EmployeesController@show')->name('employees.show');
+       
 
       // الرواتب والإجازات
         Route::get('employees/salaries','EmployeesController@salaries')->name('employees.salaries');
+        Route::get('salaries/{id}/edit','EmployeesController@editSalary')->name('salaries.edit');
         Route::get('employees/leaves','EmployeesController@leaves')->name('employees.leaves');
 
         //  الحضور والانصراف
@@ -87,7 +86,9 @@ Route::group(
             Route::get('/attendance/manage', 'EmployeesController@attendanceManage')->name('attendance.manage');
             Route::get('/attendance/{id}/edit', 'EmployeesController@editattendance')->name('attendance.attendanceedit');
 
-
+//Employees
+            Route::resource('employees', 'EmployeesController');
+            
             Route::resource('users', 'UsersController');
             Route::resource('roles', 'RolesController');
             Route::resource('notifications', 'NotificationsController');

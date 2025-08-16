@@ -6,14 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Salary extends Model
 {
-    protected $fillable = [
+   protected $fillable = [
         'employee_id',
-        'month',       // صيغة مثل 2025-08
+        'month',
         'basic_salary',
         'allowances',
         'deductions',
         'net_salary',
-        'status',      // pending - paid
+        'status',
         'notes',
     ];
 
