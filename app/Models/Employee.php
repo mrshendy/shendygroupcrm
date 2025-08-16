@@ -37,9 +37,9 @@ class Employee extends Model
         return $this->hasMany(Leave::class);
     }
     // علاقة الموظف مع الحضور
-      public function user()
+       public function users()
     {
-        return $this->belongsTo(User::class);
+        return $this->hasMany(User::class);
     }
 
     public function attendances()
