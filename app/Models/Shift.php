@@ -13,4 +13,18 @@ class Shift extends Model
     protected $casts = [
         'days' => 'array', // يخزن الأيام كـ JSON
     ];
+
+   public function employees()
+{
+    return $this->belongsToMany(Employee::class, 'employee_shift')
+                ->withPivot('custom_leave_allowance')
+                ->withTimestamps();
+}
+
+
+public function leaves()
+{
+    return $this->hasMany(Leave::class);
+}
+
 }

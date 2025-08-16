@@ -37,9 +37,9 @@ class Check extends Component
         }
 
         $this->attendanceToday = Attendance::create([
-            'employee_id'    => $employeeId,
-            'check_in'       => now(),
-            'attendance_date'=> today(),
+            'employee_id'     => $employeeId,
+            'check_in'        => now(),
+            'attendance_date' => today(),
         ]);
 
         session()->flash('success', 'تم تسجيل الحضور بنجاح.');
@@ -59,11 +59,19 @@ class Check extends Component
 
         $checkIn  = Carbon::parse($this->attendanceToday->check_in);
         $checkOut = now();
-        $hours    = $checkIn->diffInHours($checkOut);
+
+        // نحسب الفرق بالدقايق
+        $totalMinutes = $checkIn->diffInMinutes($checkOut);
+
+        // ساعات ودقايق
+        $hours   = floor($totalMinutes / 60);
+        $minutes = $totalMinutes % 60;
+
+        $formattedHours = $hours . ' ساعة ' . $minutes . ' دقيقة';
 
         $this->attendanceToday->update([
             'check_out' => $checkOut,
-            'hours'     => $hours,
+            'hours'     => $formattedHours,
         ]);
 
         session()->flash('success', 'تم تسجيل الانصراف بنجاح.');

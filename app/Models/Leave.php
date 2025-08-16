@@ -20,4 +20,9 @@ class Leave extends Model
     {
         return $this->belongsTo(Employee::class);
     }
+
+    public function shift()
+    {
+        return $this->belongsTo(Shift::class);
+    }
 }

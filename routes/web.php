@@ -7,7 +7,6 @@ use App\Http\Controllers\Finance\TransactionsController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
-use App\Http\Controllers\Shendy\ContractsController;
 
 // (اختياري) لو هتستخدمه في مكان تاني
 // use App\Http\Livewire\Clients\Show as ClientShow;
@@ -61,34 +60,33 @@ Route::group(
             Route::resource('projects', 'ProjectsController');
             Route::resource('offers', 'OffersController');
             Route::resource('contracts', 'ContractsController');
-             // روابط الكنترولر: تنزيل/معاينة ملف العقد
-    Route::get('/contracts/{contract}/download', [ContractController::class, 'download'])
-        ->whereNumber('contract')->name('contracts.download');
+            // روابط الكنترولر: تنزيل/معاينة ملف العقد
+            Route::get('/contracts/{contract}/download', [ContractController::class, 'download'])
+                ->whereNumber('contract')->name('contracts.download');
 
-    Route::get('/contracts/{contract}/preview', [ContractController::class, 'preview'])
+            Route::get('/contracts/{contract}/preview', [ContractController::class, 'preview'])
 
-    
-        ->whereNumber('contract')->name('contracts.preview');
+                ->whereNumber('contract')->name('contracts.preview');
             Route::get('/offers/followup/{offerId}', 'OffersController@Followup')->name('offers.followup');
             Route::get('offers/{offer}/status', 'OffersController@OfferStatus')->name('offers.status');
             Route::resource('files', 'FilesController');
             Route::resource('finance', 'FinanceController');
 
-       
+            // الرواتب والإجازات
+            Route::get('employees/salaries', 'EmployeesController@salaries')->name('employees.salaries');
+            Route::get('employees/salaries/{id}/edit', 'EmployeesController@editSalary')->name('salaries.edit');
+            Route::get('employees/leaves', 'EmployeesController@leaves')->name('employees.leaves');
+            Route::get('employees/leaves/create', 'EmployeesController@createLeave')->name('leaves.create');
+            Route::get('employees/shifts', 'EmployeesController@shifts')->name('shifts.manage');
 
-      // الرواتب والإجازات
-        Route::get('employees/salaries','EmployeesController@salaries')->name('employees.salaries');
-        Route::get('salaries/{id}/edit','EmployeesController@editSalary')->name('salaries.edit');
-        Route::get('employees/leaves','EmployeesController@leaves')->name('employees.leaves');
-
-        //  الحضور والانصراف
+            //  الحضور والانصراف
             Route::get('/attendance', 'EmployeesController@attendanceCheck')->name('attendance.check');
             Route::get('/attendance/manage', 'EmployeesController@attendanceManage')->name('attendance.manage');
             Route::get('/attendance/{id}/edit', 'EmployeesController@editattendance')->name('attendance.attendanceedit');
 
-//Employees
+            //Employees
             Route::resource('employees', 'EmployeesController');
-            
+
             Route::resource('users', 'UsersController');
             Route::resource('roles', 'RolesController');
             Route::resource('notifications', 'NotificationsController');

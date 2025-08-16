@@ -21,9 +21,18 @@ public function salaries()
         // Logic to check attendance for the employee with the given ID
         return view('employees.salaries.index');
     }
+
+    public function shifts()
+    {
+        return view('shifts.manage');
+    }
     public function create()
     {
         return view('employees.create');
+    }
+    public function createLeave()
+    {
+        return view('employees.leaves.create');
     }
 
     public function store(Request $request)

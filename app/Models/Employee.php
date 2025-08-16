@@ -51,4 +51,17 @@ class Employee extends Model
     {
         return $this->hasMany(Attendance::class);
     }
+    public function shifts()
+{
+    return $this->belongsToMany(Shift::class, 'employee_shift')
+                ->withPivot('custom_leave_allowance')
+                ->withTimestamps();
+}
+
+
+public function leaveBalance()
+{
+    return $this->hasOne(LeaveBalance::class)->where('year', now()->year);
+}
+
 }

@@ -80,7 +80,14 @@
 
                         </li>
 
-                     
+                        <li class="nav-item">
+                            <a class="nav-link menu-link font {{ request()->routeIs('attendance.*') ? 'active' : '' }}"
+                                 href="{{ route('leaves.create') }}">
+                                <i class="mdi mdi-clock-outline"></i> تقديم على اجازه 
+                            </a>
+
+                        </li>
+
 
                         <li class="nav-item">
                             <a class="nav-link menu-link font {{ request()->routeIs('employees.*') ? 'active' : '' }}"
