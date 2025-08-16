@@ -34,4 +34,10 @@ protected $casts = [
 'roles_name' => 'array',
 
 ];
+
+   public function employee()
+    {
+        return $this->hasOne(Employee::class);
+    }
+
 }
