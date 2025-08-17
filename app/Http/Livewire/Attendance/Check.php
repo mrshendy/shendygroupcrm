@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Attendance;
 use Livewire\Component;
 use App\Models\Attendance;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class Check extends Component
@@ -14,10 +15,11 @@ class Check extends Component
     public function mount()
     {
         $employeeId = Auth::user()->employee_id ?? null;
+        $tz = config('app.timezone', 'Africa/Cairo');
 
         if ($employeeId) {
             $this->attendanceToday = Attendance::where('employee_id', $employeeId)
-                ->whereDate('attendance_date', Carbon::today())
+                ->whereDate('attendance_date', Carbon::today($tz))
                 ->first();
         }
     }
@@ -25,28 +27,58 @@ class Check extends Component
     public function checkIn()
     {
         $employeeId = Auth::user()->employee_id;
+        $tz = config('app.timezone', 'Africa/Cairo');
 
         if (!$employeeId) {
             session()->flash('error', 'لا يوجد موظف مرتبط بهذا الحساب.');
             return;
         }
 
-        if ($this->attendanceToday) {
-            session()->flash('error', 'تم تسجيل حضورك بالفعل اليوم.');
-            return;
+        try {
+            DB::beginTransaction();
+
+            // منع التكرار في نفس اليوم (يتطلب فهرس فريد مركب في قاعدة البيانات إن أمكن)
+            $attendance = Attendance::firstOrCreate(
+                [
+                    'employee_id'     => $employeeId,
+                    'attendance_date' => Carbon::today($tz)->toDateString(),
+                ],
+                [
+                    'check_in' => Carbon::now($tz),
+                ]
+            );
+
+            // لو كان موجود مسبقًا وفيه check_in فهتكون محاولة تكرار
+            if ($attendance->wasRecentlyCreated) {
+                $this->attendanceToday = $attendance->fresh();
+                DB::commit();
+                session()->flash('success', 'تم تسجيل الحضور بنجاح.');
+                return;
+            }
+
+            // لو السجل موجود بالفعل
+            if ($attendance->check_in) {
+                DB::rollBack();
+                session()->flash('error', 'تم تسجيل حضورك بالفعل اليوم.');
+                return;
+            }
+
+            // حالة نادرة لو اتعمل السجل بدون check_in لأي سبب
+            $attendance->update(['check_in' => Carbon::now($tz)]);
+            $this->attendanceToday = $attendance->fresh();
+
+            DB::commit();
+            session()->flash('success', 'تم تسجيل الحضور بنجاح.');
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            session()->flash('error', 'حدث خطأ غير متوقع أثناء تسجيل الحضور.');
         }
-
-        $this->attendanceToday = Attendance::create([
-            'employee_id'     => $employeeId,
-            'check_in'        => now(),
-            'attendance_date' => today(),
-        ]);
-
-        session()->flash('success', 'تم تسجيل الحضور بنجاح.');
     }
 
     public function checkOut()
     {
+        $tz = config('app.timezone', 'Africa/Cairo');
+
         if (!$this->attendanceToday) {
             session()->flash('error', 'لم يتم تسجيل حضور اليوم.');
             return;
@@ -57,24 +89,37 @@ class Check extends Component
             return;
         }
 
-        $checkIn  = Carbon::parse($this->attendanceToday->check_in);
-        $checkOut = now();
+        $checkIn  = Carbon::parse($this->attendanceToday->check_in, $tz);
+        $checkOut = Carbon::now($tz);
 
-        // نحسب الفرق بالدقايق
+        if ($checkOut->lessThanOrEqualTo($checkIn)) {
+            session()->flash('error', 'وقت الانصراف يجب أن يكون بعد وقت الحضور.');
+            return;
+        }
+
+        // الفرق بالدقائق
         $totalMinutes = $checkIn->diffInMinutes($checkOut);
 
-        // ساعات ودقايق
-        $hours   = floor($totalMinutes / 60);
+        // ساعات ودقائق
+        $hours   = intdiv($totalMinutes, 60);
         $minutes = $totalMinutes % 60;
 
+        // صيغة العرض كما تحب (ساعات + دقائق)
         $formattedHours = $hours . ' ساعة ' . $minutes . ' دقيقة';
 
-        $this->attendanceToday->update([
-            'check_out' => $checkOut,
-            'hours'     => $formattedHours,
-        ]);
+        try {
+            $this->attendanceToday->update([
+                'check_out' => $checkOut,
+                'hours'     => $formattedHours,
+            ]);
 
-        session()->flash('success', 'تم تسجيل الانصراف بنجاح.');
+            // تحديت القيمة في الواجهة مباشرة
+            $this->attendanceToday = $this->attendanceToday->fresh();
+
+            session()->flash('success', 'تم تسجيل الانصراف بنجاح.');
+        } catch (\Throwable $e) {
+            session()->flash('error', 'حدث خطأ غير متوقع أثناء تسجيل الانصراف.');
+        }
     }
 
     public function render()
