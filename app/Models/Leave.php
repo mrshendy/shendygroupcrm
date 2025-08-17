@@ -8,6 +8,7 @@ class Leave extends Model
 {
     protected $fillable = [
         'employee_id',
+        'shift_id',
         'type',        // annual - sick - emergency
         'start_date',
         'end_date',
@@ -19,5 +20,10 @@ class Leave extends Model
     public function employee()
     {
         return $this->belongsTo(Employee::class);
+    }
+
+    public function shift()
+    {
+        return $this->belongsTo(Shift::class);
     }
 }

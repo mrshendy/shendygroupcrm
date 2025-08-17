@@ -1,10 +1,13 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
 class Employee extends Model
 {
+    protected $table = 'employees';
+
     protected $fillable = [
         'full_name',
         'employee_code',
@@ -22,8 +25,9 @@ class Employee extends Model
         'notes',
         'avatar',
         'status',
+        'position',
+        'basic_salary',
     ];
-
 
     // علاقة الموظف مع المرتبات
     public function salaries()
@@ -36,8 +40,28 @@ class Employee extends Model
     {
         return $this->hasMany(Leave::class);
     }
+
     // علاقة الموظف مع الحضور
-    
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
+
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class);
+    }
+    public function shifts()
+{
+    return $this->belongsToMany(Shift::class, 'employee_shift')
+                ->withPivot('custom_leave_allowance')
+                ->withTimestamps();
 }
 
 
+public function leaveBalance()
+{
+    return $this->hasOne(LeaveBalance::class)->where('year', now()->year);
+}
+
+}

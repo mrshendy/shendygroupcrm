@@ -14,10 +14,7 @@ class Attendance extends Model
         'attendance_date',
     ];
 
-    public function employee()
-    {
-        return $this->belongsTo(Employee::class);
-    }
+  
 
     // حساب الساعات تلقائيًا عند وجود check_in و check_out
     public function calculateHours()
@@ -28,6 +25,10 @@ class Attendance extends Model
             return $start->diffInHours($end);
         }
         return 0;
+    }
+       public function employee()
+    {
+        return $this->belongsTo(Employee::class);
     }
     
 }

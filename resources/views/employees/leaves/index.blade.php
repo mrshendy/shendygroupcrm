@@ -1,12 +1,9 @@
 @extends('layouts.master')
 
-@section('title', 'قائمة الإجازات')
+@section('title', 'إدارة الإجازات')
 
 @section('content')
-    <div class="card">
-        <div class="card-body">
-            <h4 class="mb-4">قائمة الإجازات</h4>
-            @livewire('employees.leaves.index')
-        </div>
-    </div>
+
+@livewire('employees.leaves.index')
+
 @endsection

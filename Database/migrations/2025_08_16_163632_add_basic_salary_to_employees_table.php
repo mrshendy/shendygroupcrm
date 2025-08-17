@@ -11,18 +11,17 @@ return new class extends Migration
      *
      * @return void
      */
-   public function up()
+    public function up()
 {
-    Schema::table('accounts', function (Blueprint $table) {
-        $table->string('bank')->nullable()->after('opening_balance');
+    Schema::table('employees', function (Blueprint $table) {
+$table->decimal('basic_salary', 10, 2)->nullable();
     });
 }
 
 public function down()
 {
-    Schema::table('accounts', function (Blueprint $table) {
-        $table->dropColumn('bank');
+    Schema::table('employees', function (Blueprint $table) {
+        $table->dropColumn('basic_salary');
     });
 }
-
 };
