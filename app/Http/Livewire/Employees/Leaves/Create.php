@@ -6,8 +6,10 @@ use Livewire\Component;
 use App\Models\Leave;
 use App\Models\LeaveBalance;
 use App\Models\Shift;
+use App\Models\Employee;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class Create extends Component
 {
@@ -35,8 +37,9 @@ class Create extends Component
         $this->validate();
 
         $employeeId = Auth::user()->employee_id;
+        $employee   = Employee::find($employeeId);
 
-        // 1️⃣ جلب رصيد الموظف
+        // ✅ جلب رصيد الموظف
         $balance = LeaveBalance::where('employee_id', $employeeId)
             ->where('year', now()->year)
             ->first();
@@ -46,38 +49,59 @@ class Create extends Component
             return;
         }
 
-        // 2️⃣ جلب الشيفت الخاص بالموظف (لو مرتبط بشيفت)
-        $shift = Shift::where('id', Auth::user()->shift_id ?? null)->first();
+        // ✅ جلب الشيفت المرتبط بالموظف
+        $employeeShift = DB::table('employee_shift')
+            ->where('employee_id', $employeeId)
+            ->first();
 
-        // 3️⃣ حساب عدد الأيام المطلوبة
-        $daysRequested = Carbon::parse($this->start_date)->diffInDays(Carbon::parse($this->end_date)) + 1;
+        $shift = null;
+        $leaveAllowance = 4; // 👈 الافتراضي دايمًا 4 لو مفيش أي حاجة
 
-        // 4️⃣ التحقق من رصيد الشيفت (لو محدد)
-        if ($shift && $daysRequested > $shift->leave_allowance) {
-            session()->flash('error', 'عدد الأيام المطلوبة أكبر من الحد المسموح به في الشيفت (المتاح: '.$shift->leave_allowance.' يوم)');
+        if ($employeeShift) {
+            $shift = Shift::find($employeeShift->shift_id);
+
+            // 👇 لو الموظف عنده قيمة خاصة نستخدمها، غير كده نرجع للي في الشيفت أو الافتراضي
+            if (!is_null($employeeShift->custom_leave_allowance)) {
+                $leaveAllowance = $employeeShift->custom_leave_allowance;
+            } elseif ($shift) {
+                $leaveAllowance = $shift->leave_allowance ?? 4;
+            }
+        }
+
+        // ✅ حساب عدد الأيام المطلوبة
+        $daysRequested = Carbon::parse($this->start_date)
+            ->diffInDays(Carbon::parse($this->end_date)) + 1;
+
+        // ✅ تحقق من الحد الأقصى
+        if ($daysRequested > $leaveAllowance) {
+            session()->flash('error', "عدد الأيام المطلوبة أكبر من المسموح به (المتاح: {$leaveAllowance} يوم)");
             return;
         }
 
-        // 5️⃣ التحقق من رصيد الإجازات حسب النوع
+        // ✅ تحقق من رصيد الإجازات حسب النوع
         if ($this->leave_type === 'casual') {
             if ($daysRequested > $balance->casual_days) {
-                session()->flash('error', 'رصيد الإجازات العارضة غير كافٍ (المتاح: '.$balance->casual_days.' يوم)');
+                session()->flash('error', "رصيد الإجازات العارضة غير كافٍ (المتاح: {$balance->casual_days} يوم)");
                 return;
             }
             $balance->casual_days -= $daysRequested;
         } else {
             if ($daysRequested > $balance->annual_days) {
-                session()->flash('error', 'رصيد الإجازات السنوية غير كافٍ (المتاح: '.$balance->annual_days.' يوم)');
+                session()->flash('error', "رصيد الإجازات السنوية غير كافٍ (المتاح: {$balance->annual_days} يوم)");
                 return;
             }
             $balance->annual_days -= $daysRequested;
         }
 
+        // ✅ تحديث إجمالي الرصيد
+        $balance->used_days      += $daysRequested;
+        $balance->remaining_days -= $daysRequested;
         $balance->save();
 
-        // 6️⃣ إنشاء طلب الإجازة
+        // ✅ إنشاء طلب الإجازة
         Leave::create([
             'employee_id' => $employeeId,
+            'shift_id'    => $shift?->id,
             'leave_type'  => $this->leave_type,
             'start_date'  => $this->start_date,
             'end_date'    => $this->end_date,
@@ -86,7 +110,7 @@ class Create extends Component
         ]);
 
         session()->flash('success', 'تم تقديم طلب الإجازة بنجاح');
-        $this->reset(['leave_type','start_date','end_date','reason']);
+        $this->reset(['leave_type', 'start_date', 'end_date', 'reason']);
     }
 
     public function render()

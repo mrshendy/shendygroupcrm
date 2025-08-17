@@ -4,6 +4,6 @@
 
 @section('content')
 
-@livewire('employees.leaves.create')
+@livewire('employees.leaves.index')
 
 @endsection

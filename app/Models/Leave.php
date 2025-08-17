@@ -8,6 +8,7 @@ class Leave extends Model
 {
     protected $fillable = [
         'employee_id',
+        'shift_id',
         'type',        // annual - sick - emergency
         'start_date',
         'end_date',

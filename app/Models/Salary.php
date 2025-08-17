@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Salary extends Model
 {
-   protected $fillable = [
+    protected $fillable = [
         'employee_id',
         'month',
         'basic_salary',
@@ -21,6 +21,4 @@ class Salary extends Model
     {
         return $this->belongsTo(Employee::class);
     }
-
-
 }

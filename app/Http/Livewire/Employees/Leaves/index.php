@@ -4,28 +4,28 @@ namespace App\Http\Livewire\Employees\Leaves;
 
 use Livewire\Component;
 use App\Models\Leave;
+use App\Models\LeaveBalance;
 
 class Index extends Component
 {
-    public $leaves;
-    public $listeners = ['leaveAdded' => 'refreshLeaves'];
+    public $leaves = [];
 
-    public function refreshLeaves()
-{
-    $this->leaves = Leave::with('employee')
-        ->latest()
-        ->get();
-}
+    protected $listeners = ['leaveAdded' => 'loadLeaves'];
+
     public function mount()
     {
-        // عرض كل الإجازات بموظفيها
-        $this->leaves = Leave::with('employee')
-            ->latest()
-            ->get();
+        $this->loadLeaves();
+    }
+
+    public function loadLeaves()
+    {
+        $this->leaves = Leave::with(['employee'])->latest()->get();
     }
 
     public function render()
     {
-        return view('livewire.employees.leaves.index');
+        return view('livewire.employees.leaves.index', [
+            'leaves' => $this->leaves,
+        ]);
     }
 }

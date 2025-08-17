@@ -8,19 +8,37 @@ return new class extends Migration
 {
     public function up(): void
     {
-       Schema::create('salaries', function (Blueprint $table) {
-    $table->id();
-    $table->foreignId('employee_id')->constrained()->onDelete('cascade');
-    $table->string('month');
-    $table->decimal('basic_salary', 10, 2)->nullable(); // 👈 ضيف هنا
-    $table->decimal('allowances', 10, 2)->default(0);
-    $table->decimal('deductions', 10, 2)->default(0);
-    $table->decimal('net_salary', 10, 2)->default(0);
-    $table->string('status')->default('pending');
-    $table->text('notes')->nullable();
-    $table->timestamps();
-});
+        Schema::create('salaries', function (Blueprint $table) {
+            $table->id();
 
+            // علاقة مع جدول employees
+            $table->foreignId('employee_id')
+                ->constrained('employees')   // 👈 حدد الجدول بشكل صريح
+                ->onDelete('cascade');
+
+            // الشهر (مثلاً 2025-08)
+            $table->string('month', 7);
+
+            // الراتب الأساسي
+            $table->decimal('basic_salary', 10, 2)->default(0);
+
+            // البدلات
+            $table->decimal('allowances', 10, 2)->default(0);
+
+            // الخصومات
+            $table->decimal('deductions', 10, 2)->default(0);
+
+            // الصافي
+            $table->decimal('net_salary', 10, 2)->default(0);
+
+            // الحالة
+            $table->enum('status', ['pending', 'paid'])->default('pending');
+
+            // ملاحظات
+            $table->text('notes')->nullable();
+
+            $table->timestamps();
+        });
     }
 
     public function down(): void

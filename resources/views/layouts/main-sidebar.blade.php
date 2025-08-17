@@ -81,12 +81,12 @@
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link menu-link font {{ request()->routeIs('attendance.*') ? 'active' : '' }}"
+                            <a class="nav-link menu-link font {{ request()->routeIs('leaves.*') ? 'active' : '' }}"
                                 href="{{ route('leaves.create') }}">
-                                <i class="mdi mdi-beach me-3 fs-5"></i>تقديم على اجازه
+                                <i class="mdi mdi-beach me-3 fs-5"></i> تقديم على اجازه
                             </a>
-
                         </li>
+
 
 
                         <li class="nav-item">
