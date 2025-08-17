@@ -1,5 +1,6 @@
 <div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
-    <div class="text-center" style="max-width: 500px; width: 100%;"> <!-- رسائل التنبيه المحسنة -->
+    <div class="text-center" style="max-width: 500px; width: 100%;">
+        <!-- رسائل التنبيه -->
         @if (session()->has('success'))
             <div class="alert alert-success alert-dismissible fade show mb-4 rounded-3 shadow-sm">
                 <div class="d-flex align-items-center justify-content-center">
@@ -8,13 +9,13 @@
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
-              @endif @if (session()->has('error'))
-                <div class="alert alert-danger alert-dismissible fade show mb-4 rounded-3 shadow-sm">
-                    <div class="d-flex align-items-center justify-content-center"> <i
-                            class="mdi mdi-alert-circle-outline me-2 fs-5"></i>
-                        <div>{{ session('error') }}</div>
-                    
-                    </div> <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        @endif
+
+        @if (session()->has('error'))
+            <div class="alert alert-danger alert-dismissible fade show mb-4 rounded-3 shadow-sm">
+                <div class="d-flex align-items-center justify-content-center">
+                    <i class="mdi mdi-alert-circle-outline me-2 fs-5"></i>
+                    <div>{{ session('error') }}</div>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
@@ -23,9 +24,12 @@
         <!-- بطاقة تسجيل الحضور -->
         <div class="card shadow-sm border-0 rounded-3 p-4">
             <div class="card-body">
-                <h4 class="mb-4"><i class="mdi mdi-clock-check-outline me-2"></i> تسجيل الحضور</h4>
+                <h4 class="mb-4">
+                    <i class="mdi mdi-clock-check-outline me-2"></i>
+                    تسجيل الحضور
+                </h4>
 
-                @if (!$attendanceToday)
+                @if (empty($attendanceToday))
                     <!-- حالة عدم تسجيل الحضور -->
                     <div class="my-4 py-2">
                         <i class="mdi mdi-login text-success" style="font-size: 3rem;"></i>
@@ -59,7 +63,7 @@
                                     <i class="mdi mdi-clock-outline me-2"></i> عدد الساعات:
                                 </span>
                                 <span class="fw-bold text-primary">
-                                    {{ $attendanceToday->hours }} ساعة
+                                    {{ $attendanceToday->hours }}
                                 </span>
                             </div>
                         @else

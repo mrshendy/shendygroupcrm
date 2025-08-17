@@ -1,24 +1,32 @@
 <?php
-// database/migrations/xxxx_xx_xx_create_employee_shift_table.php
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateEmployeeShiftTable extends Migration
+return new class extends Migration
 {
-    public function up()
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
     {
-        Schema::create('employee_shift', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('employee_id')->constrained()->onDelete('cascade');
-            $table->foreignId('shift_id')->constrained()->onDelete('cascade');
-            $table->integer('custom_leave_allowance')->nullable(); // لو حابب تحدد رصيد مختلف لكل موظف
-            $table->timestamps();
+        Schema::create('shifts', function (Blueprint $table) {
+            $table->id(); // bigint unsigned auto_increment primary key
+            $table->string('name');
+            $table->json('days'); // JSON field مع تحقق تلقائي من Laravel
+            $table->time('start_time');
+            $table->time('end_time');
+            $table->integer('leave_allowance')->default(0);
+            $table->timestamps(); // created_at, updated_at
         });
     }
 
-    public function down()
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
     {
-        Schema::dropIfExists('employee_shift');
+        Schema::dropIfExists('shifts');
     }
-}
+};

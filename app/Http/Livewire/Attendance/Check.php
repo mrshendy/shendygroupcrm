@@ -10,7 +10,7 @@ use Carbon\Carbon;
 
 class Check extends Component
 {
-    public $attendanceToday;
+    public $attendanceToday = null;
 
     public function mount()
     {
@@ -37,7 +37,6 @@ class Check extends Component
         try {
             DB::beginTransaction();
 
-            // منع التكرار في نفس اليوم (يتطلب فهرس فريد مركب في قاعدة البيانات إن أمكن)
             $attendance = Attendance::firstOrCreate(
                 [
                     'employee_id'     => $employeeId,
@@ -48,7 +47,6 @@ class Check extends Component
                 ]
             );
 
-            // لو كان موجود مسبقًا وفيه check_in فهتكون محاولة تكرار
             if ($attendance->wasRecentlyCreated) {
                 $this->attendanceToday = $attendance->fresh();
                 DB::commit();
@@ -56,14 +54,12 @@ class Check extends Component
                 return;
             }
 
-            // لو السجل موجود بالفعل
             if ($attendance->check_in) {
                 DB::rollBack();
                 session()->flash('error', 'تم تسجيل حضورك بالفعل اليوم.');
                 return;
             }
 
-            // حالة نادرة لو اتعمل السجل بدون check_in لأي سبب
             $attendance->update(['check_in' => Carbon::now($tz)]);
             $this->attendanceToday = $attendance->fresh();
 
@@ -97,14 +93,10 @@ class Check extends Component
             return;
         }
 
-        // الفرق بالدقائق
         $totalMinutes = $checkIn->diffInMinutes($checkOut);
-
-        // ساعات ودقائق
         $hours   = intdiv($totalMinutes, 60);
         $minutes = $totalMinutes % 60;
 
-        // صيغة العرض كما تحب (ساعات + دقائق)
         $formattedHours = $hours . ' ساعة ' . $minutes . ' دقيقة';
 
         try {
@@ -113,7 +105,6 @@ class Check extends Component
                 'hours'     => $formattedHours,
             ]);
 
-            // تحديت القيمة في الواجهة مباشرة
             $this->attendanceToday = $this->attendanceToday->fresh();
 
             session()->flash('success', 'تم تسجيل الانصراف بنجاح.');
@@ -124,6 +115,8 @@ class Check extends Component
 
     public function render()
     {
-        return view('livewire.attendance.check');
+        return view('livewire.attendance.check', [
+            'attendanceToday' => $this->attendanceToday, // ✅ حل مشكلة undefined
+        ]);
     }
 }
