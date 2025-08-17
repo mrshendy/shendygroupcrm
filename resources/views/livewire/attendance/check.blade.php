@@ -12,7 +12,7 @@
                     <div class="d-flex align-items-center justify-content-center"> <i
                             class="mdi mdi-alert-circle-outline me-2 fs-5"></i>
                         <div>{{ session('error') }}</div>
-                    </div> <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div> <button type="button" class="btn-zclose" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
                 @endif <!-- بطاقة تسجيل الحضور -->
                 <div class="card shadow-sm border-0 rounded-3 p-4">
