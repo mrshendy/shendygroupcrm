@@ -1,77 +1,57 @@
 <div class="container-fluid px-4 py-4">
-    <!-- Header Section - Improved with better icons and spacing -->
+    <!-- Header Section - Enhanced Design -->
     <div class="d-flex justify-content-between align-items-center mb-5">
         <div>
-            <h3 class="mb-1 text-dark fw-bold"><i class="mdi mdi-account-group-outline me-2"></i>إدارة الموظفين</h3>
+            <h3 class="mb-1 text-dark fw-bold"><i class="mdi mdi-account-group-outline me-2 text-primary"></i>إدارة الموظفين</h3>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="#"><i class="mdi mdi-home-outline"></i></a></li>
-                    <li class="breadcrumb-item active" aria-current="page"><i
-                            class="mdi mdi-account-multiple me-1"></i>الموظفين</li>
+                    <li class="breadcrumb-item"><a href="#" class="text-decoration-none"><i class="mdi mdi-home-outline"></i></a></li>
+                    <li class="breadcrumb-item active " aria-current="page"><i class="mdi mdi-account-multiple me-1"></i>الموظفين</li>
                 </ol>
             </nav>
         </div>
         <div class="d-flex gap-2">
-            <a href="{{ route('employees.create') }}" class="btn btn-primary btn-lg rounded-pill shadow-sm px-4">
+            <a href="{{ route('employees.create') }}" class="btn btn-primary btn-lg rounded-pill shadow-sm px-4 d-flex align-items-center">
                 <i class="mdi mdi-account-plus-outline me-2"></i>إضافة موظف جديد
             </a>
             <div class="dropdown">
-                <button class="btn btn-outline-secondary btn-lg rounded-pill shadow-sm px-4 dropdown-toggle"
-                    type="button" id="actionsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <button class="btn btn-outline-secondary btn-lg rounded-pill shadow-sm px-4 dropdown-toggle d-flex align-items-center" type="button" id="actionsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class="mdi mdi-cog-outline me-2"></i>الإجراءات
                 </button>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="actionsDropdown">
-                    <li><a class="dropdown-item" href="{{ route('attendance.manage') }}"><i
-                                class="mdi mdi-clock-check-outline me-2"></i>ادارة الحضور</a></li>
-                    <li><a class="dropdown-item" href="{{ route('employees.salaries') }}"><i
-                                class="mdi mdi-cash-multiple me-2"></i>المرتبات</a></li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('employees.leaves') }}">
-                            <i class="mdi mdi-calendar"></i>
-                            <span>الإجازات</span>
-                        </a>
-                    </li>
-
-<li class="nav-item">
-                        <a class="nav-link" href="{{ route('shifts.manage') }}">
-                            <i class="mdi mdi-calendar"></i>
-                            <span>الشيفتات</span>
-                        </a>
-                    </li>
-
+                <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0" aria-labelledby="actionsDropdown">
+                    <li><a class="dropdown-item d-flex align-items-center py-2" href="{{ route('attendance.manage') }}"><i class="mdi mdi-clock-check-outline me-2 text-primary"></i>ادارة الحضور</a></li>
+                    <li><a class="dropdown-item d-flex align-items-center py-2" href="{{ route('employees.salaries') }}"><i class="mdi mdi-cash-multiple me-2 text-success"></i>المرتبات</a></li>
+                    <li><a class="dropdown-item d-flex align-items-center py-2" href="{{ route('employees.leaves') }}"><i class="mdi mdi-calendar me-2 text-warning"></i>الإجازات</a></li>
+                    <li><a class="dropdown-item d-flex align-items-center py-2" href="{{ route('shifts.manage') }}"><i class="mdi mdi-calendar-clock me-2 text-info"></i>الشيفتات</a></li>
                 </ul>
             </div>
         </div>
     </div>
 
-    <!-- Search and Filters - Enhanced with better icons -->
+    <!-- Search and Filters - Enhanced Design -->
     <div class="card shadow-sm border-0 rounded-3 mb-4">
         <div class="card-body p-4">
             <div class="row g-3 align-items-center">
                 <div class="col-md-8">
-                    <div class="input-group border rounded-pill">
-                        <span class="input-group-text bg-transparent border-0"><i class="mdi mdi-magnify"></i></span>
-                        <input type="text" wire:model.debounce.500ms="search"
-                            class="form-control border-0 shadow-none"
-                            placeholder="ابحث عن موظف بالاسم، الكود أو البريد الإلكتروني...">
-
+                    <div class="input-group border rounded-pill bg-light">
+                        <span class="input-group-text bg-transparent border-0"><i class="mdi mdi-magnify text-muted"></i></span>
+                        <input type="text" wire:model.debounce.500ms="search" class="form-control border-0 shadow-none bg-transparent" placeholder="ابحث عن موظف بالاسم، الكود أو البريد الإلكتروني...">
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
 
-    <!-- Employees Table - Enhanced with better styling -->
+    <!-- Employees Table - Enhanced Design -->
     <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
         <div class="card-header bg-light py-3 border-0">
             <div class="d-flex justify-content-between align-items-center">
                 <h5 class="mb-0 fw-bold text-dark">
                     <i class="mdi mdi-table-account me-2 text-primary"></i>سجل الموظفين
                 </h5>
-                <div class="text-muted small">
+                <div class="text-muted small d-flex align-items-center">
                     <i class="mdi mdi-information-outline me-1"></i>
-                    إجمالي الموظفين: {{ $employees->total() }}
+                    إجمالي الموظفين: <span class="fw-bold mx-1">{{ $employees->total() }}</span>
                 </div>
             </div>
         </div>
@@ -85,10 +65,8 @@
                             <th class="fw-bold"><i class="mdi mdi-account-outline me-1"></i>الموظف</th>
                             <th class="fw-bold"><i class="mdi mdi-information-outline me-1"></i>المعلومات</th>
                             <th class="fw-bold"><i class="mdi mdi-briefcase-outline me-1"></i>الوظيفة</th>
-                            <th class="fw-bold text-center"><i class="mdi mdi-account-check-outline me-1"></i>الحالة
-                            </th>
-                            <th width="150" class="fw-bold text-center"><i
-                                    class="mdi mdi-cog-outline me-1"></i>الإجراءات</th>
+                            <th class="fw-bold text-center"><i class="mdi mdi-account-check-outline me-1"></i>الحالة</th>
+                            <th width="150" class="fw-bold text-center"><i class="mdi mdi-cog-outline me-1"></i>الإجراءات</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -99,69 +77,51 @@
                                     <div class="d-flex align-items-center">
                                         <div class="me-3 position-relative">
                                             @if ($employee->avatar)
-                                                <img src="{{ asset('storage/' . $employee->avatar) }}"
-                                                    class="rounded-circle border" width="40" height="40"
-                                                    alt="صورة الموظف">
+                                                <img src="{{ asset('storage/' . $employee->avatar) }}" class="rounded-circle border shadow-sm" width="40" height="40" alt="صورة الموظف">
                                                 @if ($employee->status == 'مفعل')
-                                                    <span
-                                                        class="position-absolute bottom-0 end-0 bg-success rounded-circle p-1 border-2 border-white"></span>
+                                                    <span class="position-absolute bottom-0 end-0 bg-success rounded-circle p-1 border-2 border-white"></span>
                                                 @else
-                                                    <span
-                                                        class="position-absolute bottom-0 end-0 bg-danger rounded-circle p-1 border-2 border-white"></span>
+                                                    <span class="position-absolute bottom-0 end-0 bg-danger rounded-circle p-1 border-2 border-white"></span>
                                                 @endif
                                             @else
-                                                <div
-                                                    class="avatar bg-{{ $employee->status == 'مفعل' ? 'primary' : 'secondary' }} text-white rounded-circle d-flex align-items-center justify-content-center">
+                                                <div class="avatar bg-{{ $employee->status == 'مفعل' ? 'primary' : 'secondary' }} text-white rounded-circle d-flex align-items-center justify-content-center shadow-sm">
                                                     {{ substr($employee->full_name, 0, 1) }}
                                                 </div>
                                             @endif
                                         </div>
                                         <div>
                                             <h6 class="mb-0">{{ $employee->full_name }}</h6>
-                                            <small class="text-muted"><i class="mdi mdi-identifier me-1"></i>كود:
-                                                {{ $employee->employee_code }}</small>
+                                            <small class="text-muted"><i class="mdi mdi-identifier me-1"></i>كود: {{ $employee->employee_code }}</small>
                                         </div>
                                     </div>
                                 </td>
                                 <td>
                                     <div>
-                                        <small class="text-muted d-block"><i class="mdi mdi-email-outline me-1"></i>
-                                            {{ $employee->email ?? '--' }}</small>
-                                        <small class="text-muted"><i class="mdi mdi-phone-outline me-1"></i>
-                                            {{ $employee->phone ?? '--' }}</small>
+                                        <small class="text-muted d-block"><i class="mdi mdi-email-outline me-1"></i>{{ $employee->email ?? '--' }}</small>
+                                        <small class="text-muted"><i class="mdi mdi-phone-outline me-1"></i>{{ $employee->phone ?? '--' }}</small>
                                     </div>
                                 </td>
                                 <td>
                                     <div>
-                                        <div class="fw-semibold"><i
-                                                class="mdi mdi-briefcase-outline me-1 text-secondary"></i>{{ $employee->job_title }}
-                                        </div>
-                                        <small class="text-muted"><i
-                                                class="mdi mdi-office-building-outline me-1 text-secondary"></i>{{ $employee->department }}</small>
+                                        <div class="fw-semibold"><i class="mdi mdi-briefcase-outline me-1 text-secondary"></i>{{ $employee->job_title }}</div>
+                                        <small class="text-muted"><i class="mdi mdi-office-building-outline me-1 text-secondary"></i>{{ $employee->department }}</small>
                                     </div>
                                 </td>
                                 <td class="text-center">
-                                    <span
-                                        class="badge rounded-pill bg-{{ $employee->status == 'مفعل' ? 'success' : 'danger' }} d-inline-flex align-items-center">
-                                        <i
-                                            class="mdi mdi-{{ $employee->status == 'مفعل' ? 'check-circle-outline' : 'close-circle-outline' }} me-1"></i>
+                                    <span class="badge rounded-pill bg-{{ $employee->status == 'مفعل' ? 'success' : 'danger' }} d-inline-flex align-items-center shadow-sm">
+                                        <i class="mdi mdi-{{ $employee->status == 'مفعل' ? 'check-circle-outline' : 'close-circle-outline' }} me-1"></i>
                                         {{ $employee->status }}
                                     </span>
                                 </td>
                                 <td>
                                     <div class="d-flex justify-content-center gap-2">
-                                        <a href="{{ route('employees.show', $employee->id) }}"
-                                            class="btn btn-sm btn-outline-primary rounded-circle p-2"
-                                            data-bs-toggle="tooltip" title="عرض التفاصيل">
+                                        <a href="{{ route('employees.show', $employee->id) }}" class="btn btn-sm btn-outline-primary rounded-circle p-2 shadow-sm" data-bs-toggle="tooltip" title="عرض التفاصيل">
                                             <i class="mdi mdi-eye-outline"></i>
                                         </a>
-                                        <a href="{{ route('employees.edit', $employee->id) }}"
-                                            class="btn btn-sm btn-outline-warning rounded-circle p-2"
-                                            data-bs-toggle="tooltip" title="تعديل البيانات">
+                                        <a href="{{ route('employees.edit', $employee->id) }}" class="btn btn-sm btn-outline-warning rounded-circle p-2 shadow-sm" data-bs-toggle="tooltip" title="تعديل البيانات">
                                             <i class="mdi mdi-pencil-outline"></i>
                                         </a>
-                                        <button class="btn btn-sm btn-outline-danger rounded-circle p-2"
-                                            data-bs-toggle="tooltip" title="حذف الموظف">
+                                        <button class="btn btn-sm btn-outline-danger rounded-circle p-2 shadow-sm" data-bs-toggle="tooltip" title="حذف الموظف">
                                             <i class="mdi mdi-trash-can-outline"></i>
                                         </button>
                                     </div>
@@ -174,8 +134,7 @@
                                         <i class="mdi mdi-account-off-outline fs-1 text-muted mb-3"></i>
                                         <h5 class="text-muted mb-2">لا يوجد موظفين</h5>
                                         <p class="text-muted">قم بإضافة موظفين جديدين للبدء</p>
-                                        <a href="{{ route('employees.create') }}"
-                                            class="btn btn-primary mt-2 rounded-pill">
+                                        <a href="{{ route('employees.create') }}" class="btn btn-primary mt-2 rounded-pill shadow-sm">
                                             <i class="mdi mdi-plus me-1"></i> إضافة موظف جديد
                                         </a>
                                     </div>
@@ -187,13 +146,11 @@
             </div>
         </div>
 
-        <!-- Pagination with better styling -->
+        <!-- Pagination - Enhanced Design -->
         <div class="card-footer bg-white py-3 border-0">
             <div class="d-flex justify-content-between align-items-center">
                 <div class="text-muted small">
-                    عرض <span class="fw-bold">{{ $employees->firstItem() }}</span> إلى <span
-                        class="fw-bold">{{ $employees->lastItem() }}</span> من <span
-                        class="fw-bold">{{ $employees->total() }}</span> موظف
+                    عرض <span class="fw-bold">{{ $employees->firstItem() }}</span> إلى <span class="fw-bold">{{ $employees->lastItem() }}</span> من <span class="fw-bold">{{ $employees->total() }}</span> موظف
                 </div>
                 <div>
                     {{ $employees->links('pagination::bootstrap-5') }}
@@ -235,6 +192,11 @@
     .card {
         border: none;
         box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        transition: all 0.3s ease;
+    }
+
+    .card:hover {
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
     }
 
     .table th {
@@ -266,6 +228,15 @@
     .dropdown-menu {
         border: none;
         box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+        border-radius: 0.5rem;
+    }
+
+    .dropdown-item {
+        transition: all 0.2s;
+    }
+
+    .dropdown-item:hover {
+        background-color: rgba(13, 110, 253, 0.1);
     }
 
     .pagination .page-item.active .page-link {
@@ -275,6 +246,7 @@
 
     .pagination .page-link {
         color: #0d6efd;
+        border-radius: 0.375rem;
     }
 
     .input-group-text {
@@ -283,6 +255,10 @@
 
     .table-hover tbody tr:hover {
         background-color: rgba(13, 110, 253, 0.05);
+    }
+
+    .shadow-sm {
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
     }
 </style>
 

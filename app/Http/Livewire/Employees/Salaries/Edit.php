@@ -10,13 +10,17 @@ class Edit extends Component
 {
     public $salaryId;
     public $employee_id, $month, $basic_salary, $allowances, $deductions, $net_salary, $status, $notes;
-    public $employees = []; // ✅ عشان تستخدمه في الواجهة
+    public $employees = [];
 
     public function mount($salaryId)
     {
-        $this->employees = Employee::select('id', 'full_name')->get(); // جلب الموظفين
+        // جلب كل الموظفين عشان نعرضهم في select
+        $this->employees = Employee::select('id', 'full_name')->get();
 
+        // جلب السجل المراد تعديله
         $salary = Salary::findOrFail($salaryId);
+
+        // تعبئة الخصائص من قاعدة البيانات
         $this->salaryId     = $salary->id;
         $this->employee_id  = $salary->employee_id;
         $this->month        = $salary->month;
@@ -30,12 +34,24 @@ class Edit extends Component
 
     public function update()
     {
+
+        
+        // التحقق
         $this->validate([
             'employee_id'  => 'required|exists:employees,id',
             'month'        => 'required|date',
-            'basic_salary' => 'required|numeric',
+            'basic_salary' => 'required|numeric|min:0',
+            'allowances'   => 'nullable|numeric|min:0',
+            'deductions'   => 'nullable|numeric|min:0',
+            'net_salary'   => 'nullable|numeric|min:0',
+            'status'       => 'required|string',
+        ], [
+            'employee_id.required'  => 'يجب اختيار الموظف',
+            'month.required'        => 'يجب إدخال الشهر',
+            'basic_salary.required' => 'يجب إدخال الراتب الأساسي',
         ]);
 
+        // تعديل السجل
         $salary = Salary::findOrFail($this->salaryId);
 
         $salary->update([
@@ -49,12 +65,19 @@ class Edit extends Component
             'notes'        => $this->notes,
         ]);
 
-        $this->dispatch('salaryUpdated');
-        session()->flash('success', 'تم تحديث المرتب بنجاح');
+        session()->flash('success', 'تم تحديث المرتب بنجاح ✅');
+
+        // مع Livewire v2
+        $this->emit('salaryUpdated');
+
+        // مع Livewire v3 (لو محتاج)
+        // $this->dispatch('salaryUpdated')->to(\App\Http\Livewire\Employees\Salaries\Index::class);
     }
-    public function save()
+    public function updated($property)
 {
-    return $this->update();
+    if (in_array($property, ['basic_salary', 'allowances', 'deductions'])) {
+        $this->net_salary = ($this->basic_salary + $this->allowances) - $this->deductions;
+    }
 }
 
 

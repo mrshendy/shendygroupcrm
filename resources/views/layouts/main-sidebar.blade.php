@@ -74,7 +74,7 @@
 
                         <li class="nav-item">
                             <a class="nav-link menu-link font {{ request()->routeIs('attendance.*') ? 'active' : '' }}"
-                                 href="{{ route('attendance.check') }}">
+                                href="{{ route('attendance.check') }}">
                                 <i class="mdi mdi-clock-outline"></i> تسجيل حضور وانصراف
                             </a>
 
@@ -82,8 +82,8 @@
 
                         <li class="nav-item">
                             <a class="nav-link menu-link font {{ request()->routeIs('attendance.*') ? 'active' : '' }}"
-                                 href="{{ route('leaves.create') }}">
-                                <i class="mdi mdi-clock-outline"></i> تقديم على اجازه 
+                                href="{{ route('leaves.create') }}">
+                                <i class="mdi mdi-beach me-3 fs-5"></i>تقديم على اجازه
                             </a>
 
                         </li>
