@@ -1,202 +1,81 @@
-<div class="container-fluid p-4">
-    <!-- رسائل الفلاش - تصميم محسن -->
+<div class="container" dir="rtl">
+    {{-- تنبيهات --}}
     @if (session()->has('success'))
-        <div class="alert alert-success alert-dismissible fade show d-flex align-items-center" role="alert">
-            <i class="mdi mdi-check-circle-outline me-2 fs-4"></i>
-            <div>{{ session('success') }}</div>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
+        <div class="alert alert-success mt-3">{{ session('success') }}</div>
     @endif
-
     @if (session()->has('error'))
-        <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center" role="alert">
-            <i class="mdi mdi-alert-circle-outline me-2 fs-4"></i>
-            <div>{{ session('error') }}</div>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
+        <div class="alert alert-danger mt-3">{{ session('error') }}</div>
     @endif
 
-    <!-- بطاقة نموذج تقديم الإجازة -->
-    <div class="card shadow-sm border-0 mb-4">
-        <div class="card-header bg-light py-3">
-            <h5 class="mb-0 fw-bold">
-                <i class="mdi mdi-beach me-2"></i>
-                تقديم طلب إجازة جديد
-            </h5>
+    <div class="card mt-3 shadow-sm">
+        <div class="card-header fw-bold">
+            {{ $leave_id ? 'تعديل طلب إجازة' : 'تقديم طلب إجازة' }}
         </div>
-        <div class="card-body">
-            <form wire:submit.prevent="save" class="needs-validation" novalidate>
-                <div class="row g-3">
-                    <!-- حقل نوع الإجازة -->
-                    <div class="col-md-6">
-                        <label for="leave_type" class="form-label fw-bold">نوع الإجازة</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light"><i class="mdi mdi-format-list-checks"></i></span>
-                            <select wire:model="leave_type" id="leave_type" class="form-select">
-                                <option value="annual">إجازة سنوية</option>
-                                <option value="casual">إجازة عارضة</option>
-                                <option value="sick">إجازة مرضية</option>
-                                <option value="unpaid">إجازة بدون راتب</option>
-                                <option value="other">إجازة أخرى</option>
-                            </select>
-                        </div>
-                        @error('leave_type') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
-                    </div>
 
-                    <!-- حقل تاريخ البداية -->
-                    <div class="col-md-3">
-                        <label for="start_date" class="form-label fw-bold">تاريخ البداية</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light"><i class="mdi mdi-calendar-start"></i></span>
-                            <input type="date" wire:model="start_date" id="start_date" class="form-control">
-                        </div>
-                        @error('start_date') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
-                    </div>
+        <div class="card-body row g-3">
 
-                    <!-- حقل تاريخ النهاية -->
-                    <div class="col-md-3">
-                        <label for="end_date" class="form-label fw-bold">تاريخ النهاية</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light"><i class="mdi mdi-calendar-end"></i></span>
-                            <input type="date" wire:model="end_date" id="end_date" class="form-control">
-                        </div>
-                        @error('end_date') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
-                    </div>
-
-                    <!-- حقل السبب -->
-                    <div class="col-12">
-                        <label for="reason" class="form-label fw-bold">السبب <small class="text-muted">(اختياري)</small></label>
-                        <textarea wire:model="reason" id="reason" rows="3" class="form-control" placeholder="يمكنك كتابة سبب الإجازة هنا..."></textarea>
-                        @error('reason') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
-                    </div>
-
-                    <!-- زر التقديم -->
-                    <div class="col-12 text-end">
-                        <button type="submit" class="btn btn-primary px-4">
-                            <i class="mdi mdi-send-check me-1"></i> تقديم الطلب
-                        </button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- بطاقة طلبات الإجازة السابقة -->
-    <div class="card shadow-sm border-0">
-        <div class="card-header bg-light py-3">
-            <h5 class="mb-0 fw-bold">
-                <i class="mdi mdi-history me-2"></i>
-                طلبات الإجازة السابقة
-            </h5>
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th class="fw-bold">النوع</th>
-                            <th class="fw-bold">من</th>
-                            <th class="fw-bold">إلى</th>
-                            <th class="fw-bold">المدة</th>
-                            <th class="fw-bold text-center">الحالة</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @php
-                            $employeeId = Auth::user()->employee_id ?? null;
-                            $leaves = \App\Models\Leave::where('employee_id', $employeeId)
-                                        ->orderBy('start_date','desc')->limit(5)->get();
-                        @endphp
-
-                        @forelse ($leaves as $leave)
-                            <tr>
-                                <td>
-                                    @switch($leave->leave_type)
-                                        @case('annual') <i class="mdi mdi-calendar-star me-1 text-success"></i> سنوية @break
-                                        @case('casual') <i class="mdi mdi-calendar-blank me-1 text-primary"></i> عارضة @break
-                                        @case('sick') <i class="mdi mdi-hospital-box me-1 text-danger"></i> مرضية @break
-                                        @case('unpaid') <i class="mdi mdi-cash-remove me-1 text-warning"></i> بدون راتب @break
-                                        @default <i class="mdi mdi-calendar-question me-1 text-info"></i> أخرى
-                                    @endswitch
-                                </td>
-                                <td>{{ \Carbon\Carbon::parse($leave->start_date)->format('Y-m-d') }}</td>
-                                <td>{{ \Carbon\Carbon::parse($leave->end_date)->format('Y-m-d') }}</td>
-                                <td>
-                                    {{ \Carbon\Carbon::parse($leave->start_date)->diffInDays($leave->end_date) + 1 }} يوم
-                                </td>
-                                <td class="text-center">
-                                    @if ($leave->status == 'pending')
-                                        <span class="badge bg-warning text-dark rounded-pill py-2 px-3">
-                                            <i class="mdi mdi-clock-outline me-1"></i> قيد المراجعة
-                                        </span>
-                                    @elseif ($leave->status == 'approved')
-                                        <span class="badge bg-success rounded-pill py-2 px-3">
-                                            <i class="mdi mdi-check-circle-outline me-1"></i> موافق عليها
-                                        </span>
-                                    @elseif ($leave->status == 'rejected')
-                                        <span class="badge bg-danger rounded-pill py-2 px-3">
-                                            <i class="mdi mdi-close-circle-outline me-1"></i> مرفوضة
-                                        </span>
-                                    @endif
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="5" class="text-center py-4 text-muted">
-                                    <i class="mdi mdi-beach-off fs-1"></i>
-                                    <p class="mt-2">لا توجد طلبات إجازة سابقة</p>
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+            <div class="col-md-4">
+                <label class="form-label">الموظف</label>
+                <select class="form-select" wire:model="leave_employee_id">
+                    <option value="">— اختر موظف —</option>
+                    @foreach ($employees as $e)
+                        <option value="{{ $e->id }}">{{ $e->full_name }}</option>
+                    @endforeach
+                </select>
+                @error('leave_employee_id') <div class="text-danger small">{{ $message }}</div> @enderror
             </div>
+
+            <div class="col-md-4">
+                <label class="form-label">الشيفت</label>
+                <select class="form-select" wire:model="leave_shift_id">
+                    <option value="">— اختر الشيفت —</option>
+                    @foreach ($shifts as $s)
+                        <option value="{{ $s->id }}">{{ $s->name }}</option>
+                    @endforeach
+                </select>
+                @error('leave_shift_id') <div class="text-danger small">{{ $message }}</div> @enderror
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">نوع الإجازة</label>
+                <select class="form-select" wire:model="leave_type">
+                    <option value="annual">سنوية</option>
+                    <option value="casual">عارضة</option>
+                    <option value="sick">مرضية</option>
+                    <option value="unpaid">بدون أجر</option>
+                    <option value="other">أخرى</option>
+                </select>
+                @error('leave_type') <div class="text-danger small">{{ $message }}</div> @enderror
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">من</label>
+                <input type="date" class="form-control" wire:model="leave_start_date">
+                {{-- الأخطاء تخص start_date (مش alias) --}}
+                @error('start_date') <div class="text-danger small">{{ $message }}</div> @enderror
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">إلى</label>
+                <input type="date" class="form-control" wire:model="leave_end_date">
+                @error('end_date') <div class="text-danger small">{{ $message }}</div> @enderror
+            </div>
+
+            <div class="col-12">
+                <label class="form-label">سبب/ملاحظات</label>
+                <textarea class="form-control" rows="2" wire:model="reason"></textarea>
+                @error('reason') <div class="text-danger small">{{ $message }}</div> @enderror
+            </div>
+
+            <div class="col-12 d-flex gap-2">
+                <button type="button" class="btn btn-success" wire:click="saveLeave">
+                    <i class="mdi mdi-content-save-outline me-1"></i> حفظ
+                </button>
+                @if($leave_id)
+                    <a href="{{ request()->url() }}" class="btn btn-outline-secondary">بدء طلب جديد</a>
+                @endif
+            </div>
+
         </div>
     </div>
 </div>
-
-<style>
-    .card {
-        border-radius: 0.5rem;
-    }
-    
-    .table th {
-        white-space: nowrap;
-    }
-    
-    .badge {
-        font-weight: 500;
-        letter-spacing: 0.5px;
-    }
-    
-    .form-select, .form-control {
-        border-radius: 0.375rem;
-    }
-    
-    .input-group-text {
-        background-color: #f8f9fa;
-    }
-    
-    textarea {
-        min-height: 100px;
-    }
-    
-    .table-hover tbody tr:hover {
-        background-color: rgba(13, 110, 253, 0.05);
-    }
-</style>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // إضافة تأثيرات للتاريخ عند التركيز
-        const dateInputs = document.querySelectorAll('input[type="date"]');
-        dateInputs.forEach(input => {
-            input.addEventListener('focus', function() {
-                this.type = 'date';
-            });
-            input.addEventListener('blur', function() {
-                if (!this.value) this.type = 'text';
-            });
-        });
-    });
-</script>

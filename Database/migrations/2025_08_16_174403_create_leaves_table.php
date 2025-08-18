@@ -17,7 +17,7 @@ return new class extends Migration
         $table->id();
         $table->foreignId('employee_id')->constrained()->onDelete('cascade');
         $table->foreignId('shift_id')->nullable()->constrained()->onDelete('set null');
-        $table->enum('leave_type', ['annual','sick','unpaid','other']);
+        $table->enum('leave_type', ['sick','normal','casual','other']);
         $table->date('start_date');
         $table->date('end_date');
         $table->string('reason')->nullable();

@@ -34,7 +34,10 @@ public function salaries()
     {
         return view('employees.leaves.create');
     }
-
+    public function leaveBalances()
+    {
+        return view('leave-balances.manage');
+    }
     public function store(Request $request)
     {
 

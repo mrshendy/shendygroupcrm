@@ -14,8 +14,8 @@ return new class extends Migration
    public function up(): void
 {
     Schema::table('leave_balances', function (Blueprint $table) {
-        $table->integer('annual_days')->default(8);   // رصيد سنوي
-        $table->integer('casual_days')->default(4);   // عارضة
+        $table->integer('annual_days')->default(15);   // رصيد سنوي
+        $table->integer('casual_days')->default(6);   // عارضة
     });
 }
 
