@@ -7,9 +7,9 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::table('employees', function (Blueprint $table) {
+        Schema::table('employee', function (Blueprint $table) {
             // أضف العمود لو مش موجود
-            if (!Schema::hasColumn('employees', 'shift_id')) {
+            if (!Schema::hasColumn('employee', 'shift_id')) {
                 // الطريقة الحديثة مع مفتاح خارجي
                 $table->foreignId('shift_id')
                     ->nullable()
@@ -22,8 +22,8 @@ return new class extends Migration {
 
     public function down(): void
     {
-        Schema::table('employees', function (Blueprint $table) {
-            if (Schema::hasColumn('employees', 'shift_id')) {
+        Schema::table('employee', function (Blueprint $table) {
+            if (Schema::hasColumn('employee', 'shift_id')) {
                 $table->dropConstrainedForeignId('shift_id'); // يحذف المفتاح والعمود
             }
         });

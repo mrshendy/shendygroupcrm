@@ -15,5 +15,8 @@ return [
 
     'failed' => 'These credentials do not match our records.',
     'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
+    'permission_not' => 'Sorry, you do not have permission for this page. Please contact the administrator. Thank you.',
+    'Back_to_home' => 'Back to homepage',
+    'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
 
 ];

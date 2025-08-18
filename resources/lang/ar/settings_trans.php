@@ -4,37 +4,77 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Pagination Language Lines
+    | خطوط اللغة للتصفح
     |--------------------------------------------------------------------------
     |
-    | The following language lines are used by the paginator library to build
-    | the simple pagination links. You are free to change them to anything
-    | you want to customize your views to better match your application.
+    | السطور التالية تُستخدم من مكتبة التصفح لإنشاء روابط التصفح البسيطة.
+    | يمكنك تعديلها بأي طريقة ترغب بها لتتناسب مع تطبيقك.
     |
     */
-    // Patient management
-    'system_settings' => 'اعدادات النظام',
-    'settings' => 'الاعدادات',
-    'Go_to_settings_now' => 'اذهب الان الي الاعدادات',
-    'Place_settings' => 'اعدادات الاماكن',
-    'specialization_settings' => 'اعدادات التخصصات',
-    'medical_settings' => 'اعدادات الطبية',
-    'currency_settings' => 'اعدادات العملاء',
-    'nationalities_settings' => 'اعدادات الجنسيات',
-    'contract_settings' => 'اعدادات التعاقدات',
-    'clinic_settings' => 'اعدادات العيادة',
-    'general_settings' => 'اعدادات عامة',
-    'scheduling_settings' => 'اعدادات الجدولة',
 
-
-    //Control buttons
-    'add' => 'اضافة',
+    // الروابط
+    'location' => 'الموقع',
+    'settings' => 'الإعدادات',
+    'line' => 'الخط',
+    'line_settings' => 'إعدادات الخط',
+    'isolated_part' => 'الجزء المعزول',
+    'isolated_part_settings' => 'إعدادات الجزء المعزول',
+    'reason' => 'السبب',
+    'reason_settings' => 'إعدادات السبب',
+    'shift' => 'الوردية',
+    'shift_settings' => 'إعدادات الوردية',
+    'system_settings' => 'إعدادات النظام ',
+    // أزرار التحكم
+    'add' => 'إضافة',
     'update' => 'تحديث',
     'delete' => 'حذف',
+    'submit' => 'حفظ',
 
-    
-    
+    // الموقع
+    'add_new_location' => 'إضافة موقع جديد',
+    'name_ar' => 'الاسم بالعربية',
+    'name_en' => 'الاسم بالإنجليزية',
+    'name_location' => 'اسم الموقع',
+    'location_settings' => 'إعدادات الموقع',
+    'location_select' => 'اختر الموقع',
 
-   
-    
+    // إدخال البيانات
+    'name_ar_enter' => 'أدخل البيانات بالاسم العربي هنا',
+    'name_en_enter' => 'أدخل البيانات بالاسم الإنجليزي هنا',
+
+    // جدول البيانات
+    'sr_no' => 'الرقم التسلسلي',
+    'id' => 'المعرف',
+    'created_by' => 'تم الإنشاء بواسطة',
+    'create_date' => 'تاريخ الإنشاء',
+    'status' => 'الحالة',
+    'action' => 'الإجراء',
+
+    'add_new_line' => 'إضافة خط جديد',
+    'add_new_isolated_part' => 'إضافة جزء معزول جديد',
+    'add_new_reason' => 'إضافة سبب جديد',
+    'add_new_shift' => 'إضافة وردية جديدة',
+
+    'update_location' => 'تحديث الموقع',
+    'update_line' => 'تحديث الخط',
+    'update_isolated_part' => 'تحديث الجزء المعزول',
+    'update_reason' => 'تحديث السبب',
+
+    'massagedeletelocation' => 'حذف الموقع',
+    'massagedeleteline' => 'حذف الخط',
+    'massagedeleteisolated_part' => 'حذف الجزء المعزول',
+    'massagedeletereason' => 'حذف السبب',
+
+    'massagedelete_p' => 'هل تريد حذف',
+    'massagedelete_d' => 'أنت على وشك حذف البيانات الآن',
+
+    // الحالة
+    'default' => 'افتراضي',
+    'status' => 'الحالة',
+    'default_true' => 'نشط',
+    'default_false' => 'غير نشط',
+
+    // الرسالة
+    'existes' => 'هذه البيانات موجودة بالفعل',
+
 ];

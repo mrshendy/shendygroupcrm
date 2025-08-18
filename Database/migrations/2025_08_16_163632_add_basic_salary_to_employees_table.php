@@ -13,14 +13,14 @@ return new class extends Migration
      */
     public function up()
 {
-    Schema::table('employees', function (Blueprint $table) {
+    Schema::table('employee', function (Blueprint $table) {
 $table->decimal('basic_salary', 10, 2)->nullable();
     });
 }
 
 public function down()
 {
-    Schema::table('employees', function (Blueprint $table) {
+    Schema::table('employee', function (Blueprint $table) {
         $table->dropColumn('basic_salary');
     });
 }

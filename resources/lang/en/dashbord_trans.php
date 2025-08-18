@@ -3,22 +3,22 @@
 return [
 
 
-    // Patient management
     'dashboard' => 'Dashboard',
-    'total_patient' => 'Total Patient',
-    'total_male_patient' => 'Total Male Patient',
-    'total_female_patient' => 'Total Female Patient',
-    'total_employees' => 'Total Employees',
-    'total_visits_today' => 'Total Visits Today',
-    'total_examination_today' => 'Total Examination Today',
-    'total_follow_up_today' => 'Total Follow up Today',
-    'total_cash_today' => 'Total Cash Today',
-    'financial_analysis' => 'Financial Analysis',
-    'number_reservations' => 'Number Of Reservations',
-    'total_income' => 'Total Income',
-    'patients_by_region' => 'Patients By Region',
-    'top_diseases' => 'Top 5 Diseases',
-    'total_cost' => 'Total Cost',
+    'total_location' => 'Total location',
+    'total_line' => 'Total Lines',
+    'total_isolated_part' => 'Total Isolated Part',
+    'total_Reason' => 'Total Reason',
+    'total_order_today' => 'Total Order Today',
+    'total_open_order' => 'Total Order Open',
+    'total_Order_Complete_today' => 'Total Order Complete Today',
+    'total_handover_today' => 'Total Handover Today',
+    'order_analysis' => 'Order Analysis',
+    'number_order' => 'Number Of Order',
+    'total_order' => 'Total Order',
+    'patients_by_region' => 'Order By location',
+    'top_order' => 'Top 5 Reason',
+    'total_handover' => 'Total Handover Order',
+    'total_Order_Complete' => 'Total Complete Order',
 
     
     

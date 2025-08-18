@@ -16,7 +16,7 @@ return new class extends Migration
     Schema::create('attendances', function (Blueprint $table) {
         $table->id();
         $table->unsignedBigInteger('employee_id')->nullable();
-        $table->foreign('employee_id')->references('id')->on('employees')->onDelete('cascade');
+        $table->foreign('employee_id')->references('id')->on('employee')->onDelete('cascade');
         $table->timestamp('check_in')->nullable();   // وقت الحضور
         $table->timestamp('check_out')->nullable();  // وقت الانصراف
         $table->integer('hours')->nullable();        // عدد ساعات الحضور

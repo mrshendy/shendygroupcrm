@@ -1,7 +1,6 @@
 <?php
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Pagination Language Lines
@@ -12,51 +11,49 @@ return [
     | you want to customize your views to better match your application.
     |
     */
-    'title' => 'Clinic management software',
+    'title' => 'Pepsico',
 
-    // Patient management
-    'patients' => 'patients',
-    'add_patients' => 'Create a patient',
-    'Patient_management' => 'Patient management',
-
-    // Reservations management
-
-    'reservations' => 'Reservations',
-    'reservations_management' => 'Reservations management',
-
-    // doctors 
-
-    'doctors' => 'Doctors App',
-    'doctors_management' => 'Doctors management',
-
-    //safes management
-
-    'safes' => 'Treasury accounts',
-    'safes_management' => 'Treasury management',
-    //Account management
-
-    'accounts' => 'Accounts',
-    'account_management' => 'Account management',
-    'collections_expenses' => 'Collections and expenses',
-    'claims_management' => 'Claims management',
-
-     //Q system management
-
-     'q_system' => 'Queue System',
+    //Order management
+    'Order management' => 'Order management',
+    'my_order' => 'My Orders',
+    'Order create' => 'Create Order',
+    'verified' => 'Verified Orders',
+    'handover' => 'Handover Orders',
+    'Order' => 'Orders',
+    'all_order' => 'All Orders',
+    'Order edit' => 'Edit Order',
+    'Order show' => 'show Order',
+    'Order hanover' => 'Hanover Order',
+    'Order complete' => 'Complete Order',
 
     //User management
-        'user_management' => 'User management',
-        'user_add' => 'Create User',
-        'users' => 'Users',
-    //reports 
-    'reports' => 'Reports',
+    'user_management' => 'User management',
     'user_add' => 'Create User',
     'users' => 'Users',
+    'role_management' => 'Role Management',
 
-     //Settings
+    //reports
+    'reports' => 'Reports',
+    'order_report' => 'Orders Report',
+
+    //Settings
     'settings' => 'Settings',
+    'location' => 'location',
+    'line' => 'Line',
+    'isolated_part' => 'Isolated Part',
+    'reason' => 'Reason',
+    'shift' => 'Shift',
 
-       //Settings
+    //Settings
     'dashboards' => 'Dashboards',
-    'logout'=>'Logout'
+    'change photo' => 'Change profile picture',
+    'logout' => 'Logout',
+    'Update' => 'Update',
+    'Close' => 'Close',
+    'ChangePassword' => 'Change Password',
+    'CurrentPassword' => 'Current Password',
+    'NewPassword' => 'New Password',
+    'ConfirmPassword' => 'Confirm New Password',
+    'PasswordChanged' => 'Password changed successfully',
+    'CurrentPasswordWrong' => 'The current password is incorrect',
 ];

@@ -13,7 +13,10 @@ return [
     |
     */
 
-    'failed' => 'These credentials do not match our records.',
-    'throttle' => 'Too many login attempts. Please try again in :seconds seconds.',
+    'failed' => 'بيانات الاعتماد هذه لا تتطابق مع سجلاتنا.',
+    'throttle' => 'عدد كبير جدًا من محاولات تسجيل الدخول. يرجى المحاولة مرة أخرى بعد :seconds ثواني.',
+    'permission_not' => 'عفواً، ليس لديك صلاحية لهذه الصفحة. يُرجى التواصل مع المسؤول. شكراً لك.',
+    'Back_to_home' => 'الرجوع إلى الصفحة الرئيسية',
+    'throttle' => 'عدد كبير جدًا من محاولات تسجيل الدخول. يرجى المحاولة مرة أخرى بعد :seconds ثواني.',
 
 ];

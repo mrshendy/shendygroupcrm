@@ -3,9 +3,12 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\User;
-use Spatie\Permission\Models\Role;
+use App\Models\employee;
+use Illuminate\Support\Facades\Auth;
+use Spatie\Permission\models\Role;
 use DB;
 use Hash;
+use Illuminate\Support\Arr;
 class UserController extends Controller
 {
 /**
@@ -13,11 +16,20 @@ class UserController extends Controller
 *
 * @return \Illuminate\Http\Response
 */
+
+function __construct(){
+    $this->middleware('permission:users|users-list|users-create|users-edit|users-delete', ['only' => ['index','store']]);
+    $this->middleware('permission:users-create', ['only' => ['create','store']]);
+    $this->middleware('permission:users-edit', ['only' => ['edit','update']]);
+    $this->middleware('permission:users-delete', ['only' => ['destroy']]);
+}
+
 public function index(Request $request)
 {
 $data = User::orderBy('id','DESC')->paginate(100);
 return view('users.show_users',compact('data'))
 ->with('i', ($request->input('page', 1) - 1) * 5);
+
 }
 
 
@@ -29,8 +41,8 @@ return view('users.show_users',compact('data'))
 public function create()
 {
 $roles = Role::pluck('name','name')->all();
-
-return view('users.Add_user',compact('roles'));
+$employee=employee::all();
+return view('users.Add_user',compact('roles','employee'));
 
 }
 /**
@@ -78,10 +90,11 @@ return view('users.show',compact('user'));
 */
 public function edit($id)
 {
-$user = User::find($id);
+    $employee=employee::all();
+    $user = User::find($id);
 $roles = Role::pluck('name','name')->all();
 $userRole = $user->roles->pluck('name','name')->all();
-return view('users.edit',compact('user','roles','userRole'));
+return view('users.edit',compact('user','roles','userRole','employee'));
 }
 /**
 * Update the specified resource in storage.
@@ -102,7 +115,7 @@ $input = $request->all();
 if(!empty($input['password'])){
 $input['password'] = Hash::make($input['password']);
 }else{
-$input = array_except($input,array('password'));
+    $input = Arr::except($input, ['password']);
 }
 $user = User::find($id);
 $user->update($input);
@@ -119,7 +132,7 @@ return redirect()->route('users.index')
 */
 public function destroy(Request $request)
 {
-User::find($request->user_id)->delete();
+User::find($request->id)->delete();
 return redirect()->route('users.index')->with('success','تم حذف المستخدم بنجاح');
 }
 }

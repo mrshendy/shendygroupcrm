@@ -11,9 +11,9 @@ return new class extends Migration
         Schema::create('salaries', function (Blueprint $table) {
             $table->id();
 
-            // علاقة مع جدول employees
+            // علاقة مع جدول employee
             $table->foreignId('employee_id')
-                ->constrained('employees')   // 👈 حدد الجدول بشكل صريح
+                ->constrained('employee')   // 👈 حدد الجدول بشكل صريح
                 ->onDelete('cascade');
 
             // الشهر (مثلاً 2025-08)

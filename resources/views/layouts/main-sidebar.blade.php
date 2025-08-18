@@ -95,13 +95,51 @@
                                 <i class="mdi mdi-account-tie-outline"></i> موظفي الشركة
                             </a>
                         </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link menu-link font {{ request()->routeIs('users.*') || request()->routeIs('roles.*') ? 'active' : '' }}"
-                                href="{{ route('users.index') }}">
-                                <i class="mdi mdi-shield-account-outline"></i> إدارة المستخدمين
-                            </a>
-                        </li>
+                        @can('users')
+                            <!--user management-->
+                            <li class="menu-title"><i class="ri-more-fill"></i> <span
+                                    data-key="t-components">{{ trans('main_trans.user_management') }}</span></li>
+                            <li class="nav-item">
+                                <a class="nav-link menu-link font @if (Route::currentRouteName() == 'roles.create' or
+                                        Route::currentRouteName() == 'roles.index' or
+                                        Route::currentRouteName() == 'roles.edit' or
+                                        Route::currentRouteName() == 'roles.show') active @endif "
+                                    href="#sidebaruser_management" data-bs-toggle="collapse" role="button"
+                                    aria-expanded="false" aria-controls="sidebarAuth">
+                                    <i class="mdi mdi-account-lock-outline"></i> <span
+                                        data-key="t-authentication">{{ trans('main_trans.users') }}</span>
+                                </a>
+                                <div class="collapse menu-dropdown  @if (Route::currentRouteName() == 'roles.create' ||
+                                        Route::currentRouteName() == 'roles.index' ||
+                                        Route::currentRouteName() == 'roles.show' ||
+                                        Route::currentRouteName() == 'roles.index' ||
+                                        Route::currentRouteName() == 'users.create' ||
+                                        Route::currentRouteName() == 'users.index' ||
+                                        Route::currentRouteName() == 'users.edit' ||
+                                        Route::currentRouteName() == 'users.show') collapse show @endif "
+                                    id="sidebaruser_management">
+                                    <ul class="nav nav-sm flex-column">
+                                        <li class="nav-item">
+                                            <a href="{{ url('/' . ($page = 'roles')) }}"
+                                                class="nav-link font @if (Route::currentRouteName() == 'roles.create' ||
+                                                        Route::currentRouteName() == 'roles.index' ||
+                                                        Route::currentRouteName() == 'roles.edit' ||
+                                                        Route::currentRouteName() == 'roles.show') active @endif">
+                                                {{ trans('main_trans.role_management') }}</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="{{ url('/' . ($page = 'users')) }}"
+                                                class="nav-link font @if (Route::currentRouteName() == 'users.create' ||
+                                                        Route::currentRouteName() == 'users.index' ||
+                                                        Route::currentRouteName() == 'users.edit' ||
+                                                        Route::currentRouteName() == 'users.show') active @endif">
+                                                {{ trans('main_trans.user_management') }}</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+                        @endcan
+                        <!--user management-->
 
                         <li class="nav-item">
                             <a class="nav-link menu-link font {{ request()->routeIs('notifications.*') ? 'active' : '' }}"

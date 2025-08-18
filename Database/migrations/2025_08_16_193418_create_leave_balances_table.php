@@ -17,7 +17,7 @@ return new class extends Migration
             $table->integer('remaining_days')->default(28); // الأيام المتبقية
             $table->timestamps();
 
-            $table->foreign('employee_id')->references('id')->on('employees')->onDelete('cascade');
+            $table->foreign('employee_id')->references('id')->on('employee')->onDelete('cascade');
         });
     }
 

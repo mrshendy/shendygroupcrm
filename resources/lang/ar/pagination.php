@@ -4,16 +4,15 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Pagination Language Lines
+    | خطوط اللغة للتصفح
     |--------------------------------------------------------------------------
     |
-    | The following language lines are used by the paginator library to build
-    | the simple pagination links. You are free to change them to anything
-    | you want to customize your views to better match your application.
+    | السطور التالية تُستخدم من مكتبة التصفح لإنشاء روابط التصفح البسيطة.
+    | يمكنك تعديلها بأي طريقة ترغب بها لتتناسب مع تطبيقك.
     |
     */
 
-    'previous' => '&laquo; Previous',
-    'next' => 'Next &raquo;',
+    'previous' => '&laquo; السابق',
+    'next' => 'التالي &raquo;',
 
 ];

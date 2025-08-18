@@ -30,7 +30,11 @@ class PermissionTableSeeder extends Seeder
                 'title' => ['en' => 'Dashboard', 'ar' => 'الداش بور'],
                 'category' => ['en' => 'Programs', 'ar' => 'البرامج'],
             ],
-   
+             [
+                'name' => 'reports',
+                'title' => ['en' => 'Reports', 'ar' => 'التقارير'],
+                'category' => ['en' => 'Programs', 'ar' => 'البرامج'],
+            ],
             [
                 'name' => 'settings',
                 'title' => ['en' => 'Settings', 'ar' => 'الاعدادات'],
@@ -104,17 +108,20 @@ class PermissionTableSeeder extends Seeder
                 'category' => ['en' => 'Users', 'ar' => 'المستخدمين'],
             ],
             
-      
+         
         ];
 
         foreach ($permissions as $permissionData) {
-            $permission = Permission::where('name', $permissionData['name'])->first();
+            $permission = Permission::where('name', $permissionData['name'])
+                ->where('guard_name', 'web')
+                ->first();
 
             if (!$permission) {
                 Permission::create([
                     'name' => $permissionData['name'],
                     'title' => $permissionData['title'],
                     'category' => $permissionData['category'],
+                    'guard_name' => 'web',
                 ]);
             }
         }

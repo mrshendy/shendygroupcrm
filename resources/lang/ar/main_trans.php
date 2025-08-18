@@ -4,59 +4,50 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Pagination Language Lines
+    | خطوط اللغة للتصفح
     |--------------------------------------------------------------------------
     |
-    | The following language lines are used by the paginator library to build
-    | the simple pagination links. You are free to change them to anything
-    | you want to customize your views to better match your application.
+    | السطور التالية تُستخدم من مكتبة التصفح لإنشاء روابط التصفح البسيطة.
+    | يمكنك تعديلها بأي طريقة ترغب بها لتتناسب مع تطبيقك.
     |
     */
-    'title' => 'نظام ادارة العيادات',
+    'title' => 'بيبسيكو',
 
-    // Patient management
-    'patients' => 'المرضي',
-    'add_patients' => 'انشاء مريض جديد',
-    'Patient_management' => 'ادارة المرضي',
+    // إدارة الطلبات
+    'Order management' => 'إدارة الطلبات',
+    'my_order' => 'طلباتي',
+    'Order create' => 'إنشاء طلب',
+    'verified' => 'الطلبات المُعتمدة',
+    'handover' => 'الطلبات المُسلمة',
+    'Order' => 'الطلبات',
+    'all_order' => 'كل الطلبات',
+    'Order edit' => 'تعديل الطلب',
+    'Order show' => 'عرض الطلب',
+    'Order hanover' => 'تسليم الطلب',
+    'Order complete' => 'إتمام الطلب',
 
-    // Reservations management
+    // إدارة المستخدمين
+    'user_management' => 'إدارة المستخدمين',
+    'user_add' => 'إنشاء مستخدم',
+    'users' => 'المستخدمين',
+    'role_management' => 'ادارة الصلاحيات',
 
-    'reservations' => 'الحجوزات',
-    'reservations_management' => 'ادارة الحجوزات',
-
-    // doctors 
-
-    'doctors' => 'الاطباء',
-    'doctors_management' => 'تطبيقات الاطباء',
-
-    //safes management
-
-    'safes' => 'الخزائن',
-    'safes_management' => 'ادارة الخزائن',
-    //Account management
-
-    'accounts' => 'الحسابات',
-    'account_management' => 'ادارة الحسابات',
-    'collections_expenses' => 'التحصيلات والمصروفات',
-    'claims_management' => 'ادارة المطالبات',
-
-     //Q system management
-
-     'q_system' => 'كيو سيستم',
-
-    //User management
-        'user_management' => 'ادارة المستخدمين',
-        'user_add' => 'انشاء مستخدم',
-        'users' => 'مستخدمين',
-    //reports 
+    // التقارير
     'reports' => 'التقارير',
+    'order_report' => 'تقرير الطلبات',
 
+    
+    // الإعدادات
+    'settings' => 'الإعدادات',
+    'location' => 'الموقع',
+    'line' => 'الخط',
+    'isolated_part' => 'الجزء المعزول',
+    'reason' => 'السبب',
+    'shift' => 'الوردية',
 
-     //Settings
-    'settings' => 'الاعدادات',
+    // لوحات التحكم
+    'dashboards' => 'لوحات التحكم',
 
-    'more' => 'More',
-    'Welcome'=>'مرحبا بك',
-    'logout'=>'تسجيل خروج',
+    'logout' => 'تسجيل الخروج',
 
 ];

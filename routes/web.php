@@ -7,7 +7,7 @@ use App\Http\Controllers\Finance\TransactionsController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
-
+use App\Http\Controllers\UserController;
 // (اختياري) لو هتستخدمه في مكان تاني
 // use App\Http\Livewire\Clients\Show as ClientShow;
 
@@ -25,6 +25,10 @@ Route::group(
         'middleware' => ['localeSessionRedirect', 'localizationRedirect', 'localeViewPath', 'auth', 'verified'],
     ],
     function () {
+        Route::resource('users', 'UserController');
+        Route::resource('roles', 'RoleController');
+        Route::post('/profile/update', [UserController::class, 'updateProfile'])->name('profile.update');
+        Route::post('/profile/change-password', [UserController::class, 'changePassword'])->name('profile.change-password');       
         // إعدادات المالية
         Route::get('finance/settings', [application_settingsController::class, 'financeSettings'])->name('finance.settings');
         Route::get('finance/', [application_settingsController::class, 'mainIndex'])->name('finance.accounts.index');
@@ -88,8 +92,7 @@ Route::group(
             //Employees
             Route::resource('employees', 'EmployeesController');
 
-            Route::resource('users', 'UsersController');
-            Route::resource('roles', 'RolesController');
+           
             Route::resource('notifications', 'NotificationsController');
         });
 
