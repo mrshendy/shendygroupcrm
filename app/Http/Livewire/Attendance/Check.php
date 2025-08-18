@@ -12,22 +12,32 @@ class Check extends Component
 {
     public $attendanceToday = null;
 
+    /** ✅ جلب رقم الموظف من المستخدم */
+    protected function getEmployeeId(): ?int
+    {
+        $user = Auth::user();
+        if (!$user) return null;
+
+        return $user->employee_id ?? null;
+    }
+
     public function mount()
     {
-        $employeeId = Auth::user()->employee_id ?? null;
         $tz = config('app.timezone', 'Africa/Cairo');
+        $employeeId = $this->getEmployeeId();
 
         if ($employeeId) {
             $this->attendanceToday = Attendance::where('employee_id', $employeeId)
-                ->whereDate('attendance_date', Carbon::today($tz))
+                ->whereDate('attendance_date', Carbon::today($tz)->toDateString())
                 ->first();
         }
     }
 
+    /** ✅ تسجيل الحضور */
     public function checkIn()
     {
-        $employeeId = Auth::user()->employee_id;
         $tz = config('app.timezone', 'Africa/Cairo');
+        $employeeId = $this->getEmployeeId();
 
         if (!$employeeId) {
             session()->flash('error', 'لا يوجد موظف مرتبط بهذا الحساب.');
@@ -71,6 +81,7 @@ class Check extends Component
         }
     }
 
+    /** ✅ تسجيل الانصراف */
     public function checkOut()
     {
         $tz = config('app.timezone', 'Africa/Cairo');
@@ -94,15 +105,11 @@ class Check extends Component
         }
 
         $totalMinutes = $checkIn->diffInMinutes($checkOut);
-        $hours   = intdiv($totalMinutes, 60);
-        $minutes = $totalMinutes % 60;
-
-        $formattedHours = $hours . ' ساعة ' . $minutes . ' دقيقة';
 
         try {
             $this->attendanceToday->update([
                 'check_out' => $checkOut,
-                'hours'     => $formattedHours,
+                'hours'     => $totalMinutes, // نخزن دقائق فقط
             ]);
 
             $this->attendanceToday = $this->attendanceToday->fresh();
@@ -116,7 +123,7 @@ class Check extends Component
     public function render()
     {
         return view('livewire.attendance.check', [
-            'attendanceToday' => $this->attendanceToday, // ✅ حل مشكلة undefined
+            'attendanceToday' => $this->attendanceToday,
         ]);
     }
 }

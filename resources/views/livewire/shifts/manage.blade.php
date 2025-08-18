@@ -178,7 +178,7 @@
                                 <td>{{ \Carbon\Carbon::parse($shift->start_time)->format('H:i') }}</td>
                                 <td>{{ \Carbon\Carbon::parse($shift->end_time)->format('H:i') }}</td>
                                 <td>{{ (int) $shift->leave_allowance }} يوم</td>
-                                <td>{{ $shift->employees->count()+1 }}</td>
+                                <td>{{ $shift->employees->count() }}</td>
                                 <td class="text-center">
                                     <button wire:click="edit({{ $shift->id }})"
                                             class="btn btn-sm btn-outline-primary me-1" title="تعديل">
