@@ -12,9 +12,9 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('employee_id');
             $table->year('year'); // سنة الرصيد
-            $table->integer('total_days')->default(30); // الرصيد الكلي
+            $table->integer('total_days')->default(28); // الرصيد الكلي
             $table->integer('used_days')->default(0);   // الأيام المستخدمة
-            $table->integer('remaining_days')->default(30); // الأيام المتبقية
+            $table->integer('remaining_days')->default(28); // الأيام المتبقية
             $table->timestamps();
 
             $table->foreign('employee_id')->references('id')->on('employees')->onDelete('cascade');

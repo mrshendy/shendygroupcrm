@@ -26,4 +26,21 @@ class Leave extends Model
     {
         return $this->belongsTo(Shift::class);
     }
+
+    public function balance()
+    {
+        return $this->hasOne(LeaveBalance::class, 'employee_id', 'employee_id')
+            ->whereColumn('leave_balances.year', 'leaves.year');
+    }
+
+    /** سكوبات مفيدة */
+    public function scopeApproved($q)
+    {
+        return $q->where('status', 'approved');
+    }
+
+    public function scopeForYear($q, int $year)
+    {
+        return $q->where('year', $year);
+    }
 }

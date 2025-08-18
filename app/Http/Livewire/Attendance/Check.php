@@ -10,24 +10,34 @@ use Carbon\Carbon;
 
 class Check extends Component
 {
-    public $attendanceToday;
+    public $attendanceToday = null;
+
+    /** ✅ جلب رقم الموظف من المستخدم */
+    protected function getEmployeeId(): ?int
+    {
+        $user = Auth::user();
+        if (!$user) return null;
+
+        return $user->employee_id ?? null;
+    }
 
     public function mount()
     {
-        $employeeId = Auth::user()->employee_id ?? null;
         $tz = config('app.timezone', 'Africa/Cairo');
+        $employeeId = $this->getEmployeeId();
 
         if ($employeeId) {
             $this->attendanceToday = Attendance::where('employee_id', $employeeId)
-                ->whereDate('attendance_date', Carbon::today($tz))
+                ->whereDate('attendance_date', Carbon::today($tz)->toDateString())
                 ->first();
         }
     }
 
+    /** ✅ تسجيل الحضور */
     public function checkIn()
     {
-        $employeeId = Auth::user()->employee_id;
         $tz = config('app.timezone', 'Africa/Cairo');
+        $employeeId = $this->getEmployeeId();
 
         if (!$employeeId) {
             session()->flash('error', 'لا يوجد موظف مرتبط بهذا الحساب.');
@@ -37,7 +47,6 @@ class Check extends Component
         try {
             DB::beginTransaction();
 
-            // منع التكرار في نفس اليوم (يتطلب فهرس فريد مركب في قاعدة البيانات إن أمكن)
             $attendance = Attendance::firstOrCreate(
                 [
                     'employee_id'     => $employeeId,
@@ -48,7 +57,6 @@ class Check extends Component
                 ]
             );
 
-            // لو كان موجود مسبقًا وفيه check_in فهتكون محاولة تكرار
             if ($attendance->wasRecentlyCreated) {
                 $this->attendanceToday = $attendance->fresh();
                 DB::commit();
@@ -56,14 +64,12 @@ class Check extends Component
                 return;
             }
 
-            // لو السجل موجود بالفعل
             if ($attendance->check_in) {
                 DB::rollBack();
                 session()->flash('error', 'تم تسجيل حضورك بالفعل اليوم.');
                 return;
             }
 
-            // حالة نادرة لو اتعمل السجل بدون check_in لأي سبب
             $attendance->update(['check_in' => Carbon::now($tz)]);
             $this->attendanceToday = $attendance->fresh();
 
@@ -75,6 +81,7 @@ class Check extends Component
         }
     }
 
+    /** ✅ تسجيل الانصراف */
     public function checkOut()
     {
         $tz = config('app.timezone', 'Africa/Cairo');
@@ -97,23 +104,14 @@ class Check extends Component
             return;
         }
 
-        // الفرق بالدقائق
         $totalMinutes = $checkIn->diffInMinutes($checkOut);
-
-        // ساعات ودقائق
-        $hours   = intdiv($totalMinutes, 60);
-        $minutes = $totalMinutes % 60;
-
-        // صيغة العرض كما تحب (ساعات + دقائق)
-        $formattedHours = $hours . ' ساعة ' . $minutes . ' دقيقة';
 
         try {
             $this->attendanceToday->update([
                 'check_out' => $checkOut,
-                'hours'     => $formattedHours,
+                'hours'     => $totalMinutes, // نخزن دقائق فقط
             ]);
 
-            // تحديت القيمة في الواجهة مباشرة
             $this->attendanceToday = $this->attendanceToday->fresh();
 
             session()->flash('success', 'تم تسجيل الانصراف بنجاح.');
@@ -124,6 +122,8 @@ class Check extends Component
 
     public function render()
     {
-        return view('livewire.attendance.check');
+        return view('livewire.attendance.check', [
+            'attendanceToday' => $this->attendanceToday,
+        ]);
     }
 }

@@ -1,15 +1,13 @@
 @extends('layouts.master')
 
-@section('title', 'الحضور والإجازات')
+@section('title', 'قائمة العملاء')
 
 @section('content')
-<div class="row">
-    <div class="col-md-6">
-        <div class="card mb-4">
-            <div class="card-body">
-                <h4 class="mb-4">قائمة الحضور والانصراف</h4>
-                @livewire('attendance.check')
-            </div>
+    <div class="card">
+        <div class="card-body">
+            <h4 class="mb-4">ادارة تسجيل الحضور </h4>
+@livewire('attendance.check')
         </div>
-    </div>  
+    </div>
 @endsection
+@section('scripts')

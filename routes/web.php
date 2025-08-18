@@ -77,6 +77,7 @@ Route::group(
             Route::get('employees/salaries/{id}/edit', 'EmployeesController@editSalary')->name('salaries.edit');
             Route::get('employees/leaves', 'EmployeesController@leaves')->name('employees.leaves');
             Route::get('employees/leaves/create', 'EmployeesController@createLeave')->name('leaves.create');
+            Route::get('employees/leave-balances', 'EmployeesController@leaveBalances')->name('leave-balances.manage');
             Route::get('employees/shifts', 'EmployeesController@shifts')->name('shifts.manage');
 
             //  الحضور والانصراف
