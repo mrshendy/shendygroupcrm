@@ -20,7 +20,7 @@
             Livewire.on('clientUpdated', () => {
                 alert('تم تحديث بيانات العميل بنجاح!');
             });
-
+2
             Livewire.on('clientDeleted', () => {
                 alert('تم حذف العميل بنجاح!');
             });

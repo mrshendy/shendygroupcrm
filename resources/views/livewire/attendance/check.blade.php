@@ -32,6 +32,7 @@
                 @if ($attendanceToday)
                     <!-- حالة تسجيل الحضور -->
                     <div class="text-start mb-4">
+                       
                         <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
                             <span class="text-muted">
                                 <i class="mdi mdi-login me-2"></i> وقت الدخول:
@@ -43,6 +44,7 @@
 
                         @if ($attendanceToday->check_out)
                             <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                               
                                 <span class="text-muted">
                                     <i class="mdi mdi-logout me-2"></i> وقت الانصراف:
                                 </span>
@@ -62,11 +64,13 @@
                                 </span>
                             </div>
                         @else
+                        @can('attendance-check-out')
                             <div class="mt-4 pt-3">
                                 <button type="button" wire:click="checkOut" class="btn btn-danger btn-lg rounded-pill px-5 py-3 shadow-sm w-100">
                                     <i class="mdi mdi-logout me-2"></i> تسجيل الانصراف
                                 </button>
                             </div>
+                            @endcan
                         @endif
                     </div>
                 @else
@@ -74,9 +78,12 @@
                     <div class="my-4 py-2">
                         <i class="mdi mdi-login text-success" style="font-size: 3rem;"></i>
                     </div>
-                    <button type="button" wire:click="checkIn" class="btn btn-success btn-lg rounded-pill px-5 py-3 shadow-sm w-100">
-                        <i class="mdi mdi-login me-2"></i> تسجيل الحضور
-                    </button>
+                    @can('attendance-check-in')
+                        <button type="button" wire:click="checkIn" class="btn btn-success btn-lg rounded-pill px-5 py-3 shadow-sm w-100">
+                            <i class="mdi mdi-login me-2"></i> تسجيل الحضور
+                        </button>
+                    @endcan
+                
                 @endif
 
                 <div class="mt-3 text-muted small">

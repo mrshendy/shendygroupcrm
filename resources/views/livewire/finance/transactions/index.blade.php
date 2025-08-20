@@ -12,12 +12,16 @@
                 </div>
             </div>
             <div class="d-flex flex-wrap gap-3">
+                @can('finance-create.expense')
                 <a href="{{ route('finance.transactions.create.expense') }}" class="btn btn-danger px-4 py-2 rounded-pill shadow-sm">
                     <i class="mdi mdi-cash-minus me-2"></i> إضافة مصروفات
                 </a>
+                @endcan
+                @can('finance-create.income')
                 <a href="{{ route('finance.transactions.create.income') }}" class="btn btn-success px-4 py-2 rounded-pill shadow-sm">
                     <i class="mdi mdi-cash-plus me-2"></i> إضافة إيراد
                 </a>
+                @endcan
             </div>
         </div>
 
@@ -119,21 +123,27 @@
                             </td>
                             <td class="text-center pe-4">
                                 <div class="d-flex gap-2 justify-content-center">
+                                    @can('finance-view')
                                     <a href="{{ route('finance.transactions.show', $t->id) }}"
                                         class="btn btn-sm btn-outline-info px-3 rounded-pill"
                                         data-bs-toggle="tooltip" title="عرض التفاصيل">
                                         <i class="mdi mdi-eye-outline me-1"></i> عرض
                                     </a>
+                                    @endcan
+                                    @can('finance-edit')
                                     <a href="{{ route('finance.transactions.edit', $t->id) }}"
                                         class="btn btn-sm btn-primary px-3 rounded-pill"
                                         data-bs-toggle="tooltip" title="تعديل الحركة">
                                         <i class="mdi mdi-pencil-outline me-1"></i> تعديل
                                     </a>
+                                    @endcan
+                                    @can('finance-delete')
                                     <button wire:click="confirmDelete({{ $t->id }})"
                                         class="btn btn-sm btn-outline-danger px-3 rounded-pill"
                                         data-bs-toggle="tooltip" title="حذف الحركة">
                                         <i class="mdi mdi-delete-outline me-1"></i> حذف
                                     </button>
+                                    @endcan
                                 </div>
                             </td>
                         </tr>

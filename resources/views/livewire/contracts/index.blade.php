@@ -4,9 +4,11 @@
             <i class="mdi mdi-file-document-multiple-outline me-2"></i>قائمة العقود
         </h3>
         <div class="d-flex gap-2">
+            @can('contract-create')
             <a href="{{ route('contracts.create') }}" class="btn btn-primary btn-sm rounded-pill">
                 <i class="mdi mdi-plus-circle-outline me-1"></i> عقد جديد 
             </a>
+            @endcan
         </div>
     </div>
 
@@ -83,16 +85,22 @@
                     </span>
                 </div>
                 <div class="d-flex gap-2">
+                    @can('contract-show')
                     <a href="{{ route('contracts.show', $c) }}" class="btn btn-sm btn-outline-primary rounded-pill">
                         <i class="mdi mdi-eye-outline me-1"></i> عرض 
                     </a>
+                    @endcan
+                    @can('contract-edit')
                     <a href="{{ route('contracts.edit', $c) }}" class="btn btn-sm btn-outline-warning rounded-pill">
                         <i class="mdi mdi-pencil-outline me-1"></i> تعديل 
                     </a>
+                    @endcan
+                    @can('contract-delete')
                     <button class="btn btn-sm btn-outline-danger rounded-pill"
                             onclick="if(confirm('حذف العقد؟')) @this.delete({{ $c->id }})">
                         <i class="mdi mdi-delete-outline me-1"></i> حذف
                     </button>
+                    @endcan
                 </div>
             </div>
 

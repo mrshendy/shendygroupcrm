@@ -9,9 +9,11 @@
                 </ol>
             </nav>
         </div>
+        @can('offer-create')
         <a href="{{ route('offers.create') }}" class="btn btn-primary rounded-pill shadow-sm">
             <i class="mdi mdi-plus-circle-outline me-1"></i>عرض جديد
         </a>
+        @endcan
     </div>
 
     <!-- Stats Cards -->
@@ -162,31 +164,38 @@
                             <td>{{ Auth::user()->name }}</td>
                             <td>
                                 <div class="d-flex justify-content-end gap-2">
-                                    <a href="{{ route('offers.show', $offer->id) }}" class="btn btn-sm btn-light rounded-circle" data-bs-toggle="tooltip" title="عرض">
+                              @can('offer-show')      <a href="{{ route('offers.show', $offer->id) }}" class="btn btn-sm btn-light rounded-circle" data-bs-toggle="tooltip" title="عرض">
                                         <i class="mdi mdi-eye-outline"></i>
                                     </a>
+                                    @endcan
+                                    @can('offer-edit')
                                     <a href="{{ route('offers.edit', $offer->id) }}" class="btn btn-sm btn-light rounded-circle" data-bs-toggle="tooltip" title="تعديل">
                                         <i class="mdi mdi-pencil-outline"></i>
                                     </a>
+                                    @endcan
+                                    @can('offer-delete')
                                     <button class="btn btn-sm btn-light rounded-circle" 
                                         onclick="if(!confirm('هل أنت متأكد من حذف هذا العرض؟')) { event.stopImmediatePropagation(); }"
                                         wire:click="delete({{ $offer->id }})" data-bs-toggle="tooltip" title="حذف">
                                         <i class="mdi mdi-delete-outline"></i>
                                     </button>
+                                    @endcan
                                     <div class="dropdown">
                                         <button class="btn btn-sm btn-light rounded-circle" type="button" data-bs-toggle="dropdown">
                                             <i class="mdi mdi-dots-vertical"></i>
                                         </button>
                                         <ul class="dropdown-menu dropdown-menu-end">
                                             <li>
-                                                <a class="dropdown-item" href="{{ route('offers.followup', $offer->id) }}">
+                                            @can('offer-followup') <a class="dropdown-item" href="{{ route('offers.followup', $offer->id) }}">
                                                     <i class="mdi mdi-chat-processing-outline me-2"></i>متابعة
                                                 </a>
+                                            @endcan
                                             </li>
                                             <li>
-                                                <a class="dropdown-item" href="{{ route('offers.status', $offer) }}">
+                                              @can('offer-status')  <a class="dropdown-item" href="{{ route('offers.status', $offer) }}">
                                                     <i class="mdi mdi-swap-horizontal me-2"></i>تغيير الحالة
                                                 </a>
+                                            @endcan
                                             </li>
                                         </ul>
                                     </div>

@@ -7,6 +7,12 @@ use Illuminate\Http\Request;
 
 class EmployeesController extends Controller
 {
+      function __construct(){
+        $this->middleware('permission:client-list|client-create|client-edit|client-delete', ['only' => ['index','store']]);
+        $this->middleware('permission:client-create', ['only' => ['create','store']]);
+        $this->middleware('permission:client-edit', ['only' => ['edit','update']]);
+        $this->middleware('permission:client-delete', ['only' => ['destroy']]);
+    }
     public function index()
     {
         return view('employees.index');

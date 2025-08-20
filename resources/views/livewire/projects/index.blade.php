@@ -11,13 +11,18 @@
                     <span class="input-group-text bg-white border-end-0">
                         <i class="mdi mdi-clipboard-search text-muted"></i>
                     </span>
-                    <input wire:model.debounce.300ms="search" class="form-control border-start-0" placeholder="ابحث باسم المشروع أو الوصف...">
+                    <input wire:model.debounce.300ms="search" class="form-control border-start-0"
+                        placeholder="ابحث باسم المشروع أو الوصف...">
                 </div>
             </div>
             <!-- Add Project Button -->
-            <a href="{{ route('projects.create') }}" class="btn btn-primary-gradient">
-                <i class="mdi mdi-plus-circle me-2"></i>إضافة مشروع جديد
-            </a>
+            @can('project-create')
+                <a href="{{ route('projects.create') }}" class="btn btn-primary-gradient">
+
+                    <i class="mdi mdi-plus-circle me-2"></i>إضافة مشروع جديد
+                </a>
+            @endcan
+
         </div>
     </div>
 
@@ -53,11 +58,12 @@
                                 <td><span class="text-muted">{{ $project->client->name ?? '-' }}</span></td>
                                 <td><span class="text-muted">{{ $project->country->name_ar ?? '-' }}</span></td>
                                 <td>
-                                    @if($project->start_date && $project->end_date)
+                                    @if ($project->start_date && $project->end_date)
                                         <span class="text-muted small">
-                                            {{ $project->start_date->format('Y-m-d') }} → {{ $project->end_date->format('Y-m-d') }}
+                                            {{ $project->start_date->format('Y-m-d') }} →
+                                            {{ $project->end_date->format('Y-m-d') }}
                                         </span>
-                                        @if($project->end_date->diffInDays(now(), false) <= 3 && $project->end_date >= now())
+                                        @if ($project->end_date->diffInDays(now(), false) <= 3 && $project->end_date >= now())
                                             <span class="badge bg-warning bg-opacity-25 text-warning ms-1">
                                                 <i class="mdi mdi-alert-outline me-1"></i>قرب الانتهاء
                                             </span>
@@ -72,10 +78,11 @@
                                             'low' => 'bg-secondary text-dark',
                                             'medium' => 'bg-info text-white',
                                             'high' => 'bg-danger text-white',
-                                            'critical' => 'bg-dark text-white'
+                                            'critical' => 'bg-dark text-white',
                                         ];
                                     @endphp
-                                    <span class="badge {{ $priorityColors[$project->priority] ?? 'bg-light text-dark' }}">
+                                    <span
+                                        class="badge {{ $priorityColors[$project->priority] ?? 'bg-light text-dark' }}">
                                         {{ $project->priority }}
                                     </span>
                                 </td>
@@ -84,15 +91,27 @@
                                         $statusBadges = [
                                             'new' => ['text-primary', 'mdi-new-box', 'جديد'],
                                             'in_progress' => ['text-warning', 'mdi-reload', 'جاري العمل'],
-                                            'waiting_approval' => ['text-info', 'mdi-clock-outline', 'بانتظار الموافقة'],
+                                            'waiting_approval' => [
+                                                'text-info',
+                                                'mdi-clock-outline',
+                                                'بانتظار الموافقة',
+                                            ],
                                             'evaluation' => ['text-secondary', 'mdi-eye-check-outline', 'قيد التقييم'],
-                                            'partial_complete' => ['text-success', 'mdi-progress-check', 'مكتمل جزئيًا'],
+                                            'partial_complete' => [
+                                                'text-success',
+                                                'mdi-progress-check',
+                                                'مكتمل جزئيًا',
+                                            ],
                                             'completed' => ['text-success', 'mdi-check-circle-outline', 'مكتمل'],
                                             'closed' => ['text-danger', 'mdi-close-circle-outline', 'مغلق'],
                                             'delayed' => ['text-danger', 'mdi-alert', 'مؤجل'],
                                             'canceled' => ['text-muted', 'mdi-cancel', 'ملغي'],
                                         ];
-                                        [$color, $icon, $label] = $statusBadges[$project->status] ?? ['text-muted', 'mdi-help', $project->status];
+                                        [$color, $icon, $label] = $statusBadges[$project->status] ?? [
+                                            'text-muted',
+                                            'mdi-help',
+                                            $project->status,
+                                        ];
                                     @endphp
                                     <span class="badge bg-opacity-10 {{ $color }}">
                                         <i class="mdi {{ $icon }} me-1"></i>{{ $label }}
@@ -100,15 +119,24 @@
                                 </td>
                                 <td class="text-end pe-4">
                                     <div class="btn-group" role="group">
-                                        <a href="{{ route('projects.show', $project->id) }}" class="btn btn-sm btn-outline-secondary" title="عرض التفاصيل">
+                                        @can('project-show')
+                                        <a href="{{ route('projects.show', $project->id) }}"
+                                            class="btn btn-sm btn-outline-secondary" title="عرض التفاصيل">
                                             <i class="mdi mdi-eye"></i>
                                         </a>
-                                        <a href="{{ route('projects.edit', $project->id) }}" class="btn btn-sm btn-outline-primary" title="تعديل">
+                                        @endcan
+                                        @can('project-edit')
+                                        <a href="{{ route('projects.edit', $project->id) }}"
+                                            class="btn btn-sm btn-outline-primary" title="تعديل">
                                             <i class="mdi mdi-tooltip-edit-outline"></i>
                                         </a>
-                                        <button wire:click="confirmDelete({{ $project->id }})" class="btn btn-sm btn-outline-danger" title="حذف">
+                                        @endcan
+                                        @can('project-delete')
+                                        <button wire:click="confirmDelete({{ $project->id }})"
+                                            class="btn btn-sm btn-outline-danger" title="حذف">
                                             <i class="mdi mdi-trash-can"></i>
                                         </button>
+                                        @endcan
                                     </div>
                                 </td>
                             </tr>
@@ -119,9 +147,11 @@
                                         <i class="fas fa-project-diagram fa-3x text-muted mb-3"></i>
                                         <h5 class="text-muted">لا توجد مشاريع متاحة</h5>
                                         <p class="text-muted mb-4">يمكنك البدء بإضافة مشروع جديد</p>
-                                        <a href="{{ route('projects.create') }}" class="btn btn-primary">
-                                            <i class="fas fa-plus me-2"></i>إضافة مشروع
-                                        </a>
+                                      @can('project-create')
+                                           <a href="{{ route('projects.create') }}" class="btn btn-primary">
+                                                <i class="fas fa-plus me-2"></i>إضافة مشروع
+                                            </a>
+                                      @endcan
                                     </div>
                                 </td>
                             </tr>
@@ -131,12 +161,12 @@
             </div>
 
             <!-- Pagination -->
-            @if($projects->hasPages())
+            @if ($projects->hasPages())
                 <div class="card-footer bg-transparent border-top-0 pt-3 pb-4">
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="text-muted small">
-                            عرض <span class="fw-semibold">{{ $projects->firstItem() }}</span> 
-                            إلى <span class="fw-semibold">{{ $projects->lastItem() }}</span> 
+                            عرض <span class="fw-semibold">{{ $projects->firstItem() }}</span>
+                            إلى <span class="fw-semibold">{{ $projects->lastItem() }}</span>
                             من <span class="fw-semibold">{{ $projects->total() }}</span> مشروع
                         </div>
                         {{ $projects->links() }}

@@ -35,66 +35,78 @@
                     </div>
                     <ul class="navbar-nav" id="navbar-nav">
                         <li class="menu-title"><span>إدارة النظام</span></li>
+                        @can('clients')
+                            <li class="nav-item">
+                                <a class="nav-link menu-link font {{ request()->routeIs('clients.*') ? 'active' : '' }}"
+                                    href="{{ route('clients.index') }}">
+                                    <i class="mdi mdi-account-group-outline"></i> العملاء
+                                </a>
+                            </li>
+                        @endcan
+                        <li class="nav-item">
+                            @can('projects')
+                                <a class="nav-link menu-link font {{ request()->routeIs('projects.*') ? 'active' : '' }}"
+                                    href="{{ route('projects.index') }}">
+                                    <i class="mdi mdi-briefcase-outline"></i> المشاريع
+                                </a>
+                            </li>
+                        @endcan
 
                         <li class="nav-item">
-                            <a class="nav-link menu-link font {{ request()->routeIs('clients.*') ? 'active' : '' }}"
-                                href="{{ route('clients.index') }}">
-                                <i class="mdi mdi-account-group-outline"></i> العملاء
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link menu-link font {{ request()->routeIs('projects.*') ? 'active' : '' }}"
-                                href="{{ route('projects.index') }}">
-                                <i class="mdi mdi-briefcase-outline"></i> المشاريع
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link menu-link font {{ request()->routeIs('offers.*') ? 'active' : '' }}"
-                                href="{{ route('offers.index') }}">
-                                <i class="mdi mdi-tag-multiple-outline"></i> العروض
-                            </a>
-                        </li>
-
-
-                        <li class="nav-item">
-                            <a class="nav-link menu-link font {{ request()->routeIs('contracts.*') ? 'active' : '' }}"
-                                href="{{ route('contracts.index') }}">
-                                <i class="mdi mdi-briefcase-outline"></i> التعاقدات
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link menu-link font {{ request()->routeIs('finance.*') ? 'active' : '' }}"
-                                href="{{ route('finance.index') }}">
-                                <i class="mdi mdi-cash-multiple"></i> الحسابات المالية
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link menu-link font {{ request()->routeIs('attendance.*') ? 'active' : '' }}"
-                                href="{{ route('attendance.check') }}">
-                                <i class="mdi mdi-clock-outline"></i> تسجيل حضور وانصراف
-                            </a>
-
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link menu-link font {{ request()->routeIs('leaves.*') ? 'active' : '' }}"
-                                href="{{ route('leaves.create') }}">
-                                <i class="mdi mdi-beach me-3 fs-5"></i> تقديم على اجازه
-                            </a>
-                        </li>
-
+                            @can('offers')
+                                <a class="nav-link menu-link font {{ request()->routeIs('offers.*') ? 'active' : '' }}"
+                                    href="{{ route('offers.index') }}">
+                                    <i class="mdi mdi-tag-multiple-outline"></i> العروض
+                                </a>
+                            </li>
+                        @endcan
 
 
                         <li class="nav-item">
-                            <a class="nav-link menu-link font {{ request()->routeIs('employees.*') ? 'active' : '' }}"
-                                href="{{ route('employees.index') }}">
-                                <i class="mdi mdi-account-tie-outline"></i> موظفي الشركة
-                            </a>
-                        </li>
+                            @can('contracts')
+                                <a class="nav-link menu-link font {{ request()->routeIs('contracts.*') ? 'active' : '' }}"
+                                    href="{{ route('contracts.index') }}">
+                                    <i class="mdi mdi-briefcase-outline"></i> التعاقدات
+                                </a>
+                            </li>
+                        @endcan
+
+                        <li class="nav-item">
+                            @can('finance')
+                                <a class="nav-link menu-link font {{ request()->routeIs('finance.*') ? 'active' : '' }}"
+                                    href="{{ route('finance.index') }}">
+                                    <i class="mdi mdi-cash-multiple"></i> الحسابات المالية
+                                </a>
+                            </li>
+                        @endcan
+
+                        <li class="nav-item">
+                            @can('attendance')
+                                <a class="nav-link menu-link font {{ request()->routeIs('attendance.*') ? 'active' : '' }}"
+                                    href="{{ route('attendance.check') }}">
+                                    <i class="mdi mdi-clock-outline"></i> تسجيل حضور وانصراف
+                                </a>
+
+                            </li>
+                        @endcan
+
+                        <li class="nav-item">
+                            @can('leaves')
+                                <a class="nav-link menu-link font {{ request()->routeIs('leaves.*') ? 'active' : '' }}"
+                                    href="{{ route('leaves.create') }}">
+                                    <i class="mdi mdi-beach me-3 fs-5"></i> تقديم على اجازه
+                                </a>
+                            </li>
+                        @endcan
+
+                        <li class="nav-item">
+                            @can('employees')
+                                <a class="nav-link menu-link font {{ request()->routeIs('employees.*') ? 'active' : '' }}"
+                                    href="{{ route('employees.index') }}">
+                                    <i class="mdi mdi-account-tie-outline"></i> موظفي الشركة
+                                </a>
+                            </li>
+                        @endcan
                         @can('users')
                             <!--user management-->
                             <li class="menu-title"><i class="ri-more-fill"></i> <span
@@ -142,25 +154,29 @@
                         <!--user management-->
 
                         <li class="nav-item">
-                            <a class="nav-link menu-link font {{ request()->routeIs('notifications.*') ? 'active' : '' }}"
-                                href="{{ route('notifications.index') }}">
-                                <i class="mdi mdi-bell-outline"></i> الإشعارات
-                            </a>
-                        </li>
+                            @can('notifications')
+                                <a class="nav-link menu-link font {{ request()->routeIs('notifications.*') ? 'active' : '' }}"
+                                    href="{{ route('notifications.index') }}">
+                                    <i class="mdi mdi-bell-outline"></i> الإشعارات
+                                </a>
+                            </li>
+                        @endcan
 
                         <li class="nav-item">
-                            <a class="nav-link menu-link font {{ request()->routeIs('settings.*') ? 'active' : '' }}"
-                                href="{{ route('settings.index') }}">
-                                <i class="mdi mdi-cog-outline"></i> الإعدادات
-                            </a>
-                        </li>
-
+                            @can('settings')
+                                <a class="nav-link menu-link font {{ request()->routeIs('settings.*') ? 'active' : '' }}"
+                                    href="{{ route('settings.index') }}">
+                                    <i class="mdi mdi-cog-outline"></i> الإعدادات
+                                </a>
+                            </li>
+                        @endcan
                         <li class="nav-item">
-                            <a class="nav-link menu-link font" href="#">
-                                <i class="mdi mdi-help-circle-outline"></i> المساعدة
-                            </a>
-                        </li>
-
+                            @can('help')
+                                <a class="nav-link menu-link font" href="#">
+                                    <i class="mdi mdi-help-circle-outline"></i> المساعدة
+                                </a>
+                            </li>
+                        @endcan
                     </ul>
                 </div>
                 <!-- Sidebar -->
