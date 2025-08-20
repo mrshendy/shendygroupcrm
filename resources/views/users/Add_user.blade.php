@@ -112,7 +112,7 @@
                             <select name="employee" id="select-beast" class="form-control  nice-select  custom-select">
                                 <option value="" selected disabled> {{ trans('user_management_trans.employee')}}</option>
                                 @foreach($employee as $x) 
-                                   <option value="{{$x->id}}">{{$x->name}}</option>
+                                   <option value="{{$x->id}}">{{$x->full_name}}</option>
                                 @endforeach
                             </select>
                         </div>

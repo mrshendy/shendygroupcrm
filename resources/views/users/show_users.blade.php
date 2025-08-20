@@ -82,7 +82,7 @@
                                         <td>{{ ++$i }}</td>
                                         <td>{{ $user->name }}</td>
                                         <td>{{ $user->email }}</td>
-                                        <td>{{ $user->employes->name??null }}</td>
+                                        <td>{{ $user->employes->full_name??null }}</td>
 
                                         <td>
                                             @if ($user->Status == 'Enabled')
