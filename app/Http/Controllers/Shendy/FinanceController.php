@@ -7,12 +7,12 @@ use Illuminate\Http\Request;
 
 class FinanceController extends Controller
 {
-     /* function __construct(){
-        $this->middleware('permission:finance|client-create|client-edit|client-delete', ['only' => ['index','store']]);
-        $this->middleware('permission:client-create', ['only' => ['create','store']]);
-        $this->middleware('permission:client-edit', ['only' => ['edit','update']]);
-        $this->middleware('permission:client-delete', ['only' => ['destroy']]);
-    }*/
+      function __construct(){
+        $this->middleware('permission:finance-list|finance-create|finance-edit|finance-delete', ['only' => ['index','store']]);
+        $this->middleware('permission:finance-create', ['only' => ['create','store']]);
+        $this->middleware('permission:finance-edit', ['only' => ['edit','update']]);
+        $this->middleware('permission:finance-delete', ['only' => ['destroy']]);
+    }
     /**
      * Display a listing of the resource.
      *
