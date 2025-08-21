@@ -160,16 +160,18 @@
     </div>
 </div>
 
-@push('scripts')
+<!-- Scripts to control modal -->
 <script>
     window.addEventListener('showDeleteModal', () => {
-        var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
-        deleteModal.show();
+        let modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        modal.show();
     });
+
     window.addEventListener('hideDeleteModal', () => {
-        var deleteModalEl = document.getElementById('deleteModal');
-        var modal = bootstrap.Modal.getInstance(deleteModalEl);
+        let modalEl = document.getElementById('deleteModal');
+        let modal = bootstrap.Modal.getInstance(modalEl);
         if (modal) modal.hide();
     });
 </script>
-@endpush
+
+

@@ -7,7 +7,7 @@ use App\Models\Transaction;
 
 class Show extends Component
 {
-    public Transaction $transaction;
+    public ?Transaction $transaction = null;
 
     // العلاقات المراد تحميلها
     protected array $relations = [
@@ -15,12 +15,16 @@ class Show extends Component
         'toAccount',
         'item',
         'client',
-        'userAdd'
+        'userAdd',
     ];
 
-    public function mount(int $transactionId)
+    /**
+     * تحميل المعاملة باستخدام Route Model Binding
+     */
+    public function mount(Transaction $transaction)
     {
-        $this->transaction = Transaction::with($this->relations)->findOrFail($transactionId);
+        // تحميل العلاقات
+        $this->transaction = $transaction->load($this->relations);
     }
 
     public function render()
