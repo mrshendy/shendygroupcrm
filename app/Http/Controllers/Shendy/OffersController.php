@@ -9,10 +9,10 @@ use Illuminate\Http\Request;
 class OffersController extends Controller
 {
       function __construct(){
-        $this->middleware('permission:client-list|client-create|client-edit|client-delete', ['only' => ['index','store']]);
-        $this->middleware('permission:client-create', ['only' => ['create','store']]);
-        $this->middleware('permission:client-edit', ['only' => ['edit','update']]);
-        $this->middleware('permission:client-delete', ['only' => ['destroy']]);
+        $this->middleware('permission:offer-list|offer-create|offer-edit|offer-delete', ['only' => ['index','store']]);
+        $this->middleware('permission:offer-create', ['only' => ['create','store']]);
+        $this->middleware('permission:offer-edit', ['only' => ['edit','update']]);
+        $this->middleware('permission:offer-delete', ['only' => ['destroy']]);
     }
  public function index()
 {

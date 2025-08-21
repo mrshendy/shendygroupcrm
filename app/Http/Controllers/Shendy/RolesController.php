@@ -8,10 +8,10 @@ use Illuminate\Http\Request;
 class RolesController extends Controller
 {
       function __construct(){
-        $this->middleware('permission:client-list|client-create|client-edit|client-delete', ['only' => ['index','store']]);
-        $this->middleware('permission:client-create', ['only' => ['create','store']]);
-        $this->middleware('permission:client-edit', ['only' => ['edit','update']]);
-        $this->middleware('permission:client-delete', ['only' => ['destroy']]);
+        $this->middleware('permission:role-list|role-create|role-edit|role-delete', ['only' => ['index','store']]);
+        $this->middleware('permission:role-create', ['only' => ['create','store']]);
+        $this->middleware('permission:role-edit', ['only' => ['edit','update']]);
+        $this->middleware('permission:role-delete', ['only' => ['destroy']]);
     }
     /**
      * Display a listing of the resource.

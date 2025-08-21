@@ -6,78 +6,32 @@
 
     <div class="card-body p-4">
         @if (session()->has('message'))
-            <div class="alert alert-success">{{ session('message') }}</div>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('message') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
         @endif
 
         <form wire:submit.prevent="save">
             <div class="row g-3">
+
+                <!-- نوع الحركة -->
                 <div class="col-12">
-                    <span class="badge {{ $type === 'مصروف' ? 'bg-danger' : 'bg-success' }}">
+                    <span class="badge 
+                        @if(in_array($type, ['مصروف','expense','expenses'])) bg-danger 
+                        @else bg-success @endif">
                         {{ $type }}
                     </span>
                 </div>
 
+                <!-- من -->
                 <div class="col-md-6">
                     <label class="form-label">من *</label>
                     <select wire:model.defer="from_account_id" class="form-select" required>
                         <option value="">— اختر —</option>
                         @foreach($accounts as $a)
-                            <option value="{{ $a->id }}">{{ $a->name }}</option>
+                            @if($a->id != $to_account_id) {{-- استبعاد الحساب اللي مختاره في "إلى" --}}
+                                <option value="{{ $a->id }}">{{ $a->name }}</option>
+                            @endif
                         @endforeach
                     </select>
-                    @error('from_account_id')<small class="text-danger">{{ $message }}</small>@enderror
-                </div>
-
-                <div class="col-md-6">
-                    <label class="form-label">إلى *</label>
-                    <select wire:model.defer="to_account_id" class="form-select" required>
-                        <option value="">— اختر —</option>
-                        @foreach($accounts as $a)
-                            <option value="{{ $a->id }}">{{ $a->name }}</option>
-                        @endforeach
-                    </select>
-                    @error('to_account_id')<small class="text-danger">{{ $message }}</small>@enderror
-                </div>
-
-                <div class="col-md-6">
-                    <label class="form-label">البند *</label>
-                    <select wire:model.defer="item_id" class="form-select" required>
-                        <option value="">— اختر —</option>
-                        @foreach($items as $it)
-                            <option value="{{ $it->id }}">{{ $it->name }}</option>
-                        @endforeach
-                    </select>
-                    @error('item_id')<small class="text-danger">{{ $message }}</small>@enderror
-                </div>
-
-                <div class="col-md-6">
-                    <label class="form-label">المبلغ *</label>
-                    <input type="number" step="0.01" wire:model.defer="amount" class="form-control" required>
-                    @error('amount')<small class="text-danger">{{ $message }}</small>@enderror
-                </div>
-
-                <div class="col-md-6">
-                    <label class="form-label">تاريخ الحركة *</label>
-                    <input type="date" wire:model.defer="transaction_date" class="form-control" required>
-                    @error('transaction_date')<small class="text-danger">{{ $message }}</small>@enderror
-                </div>
-
-                <div class="col-md-6">
-                    <label class="form-label">نوع الإيراد</label>
-                    <input type="text" wire:model.defer="collection_type" class="form-control" placeholder="إن وجد">
-                    @error('collection_type')<small class="text-danger">{{ $message }}</small>@enderror
-                </div>
-
-                <div class="col-12">
-                    <label class="form-label">ملاحظات</label>
-                    <textarea wire:model.defer="notes" class="form-control" rows="3"></textarea>
-                    @error('notes')<small class="text-danger">{{ $message }}</small>@enderror
-                </div>
-
-                <div class="col-12 text-end">
-                    <button class="btn btn-primary" type="submit">حفظ التعديلات</button>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>

@@ -6,14 +6,17 @@ use Livewire\Component;
 
 class Settings extends Component
 {
-      public $showFinanceSettings = false;
+    public bool $showFinanceSettings = false;
 
-    public function toggleFinanceSettings()
+    public function toggleFinanceSettings(): void
     {
         $this->showFinanceSettings = !$this->showFinanceSettings;
     }
+
     public function render()
     {
-        return view('livewire.finance.settings');
+        return view('livewire.finance.settings', [
+            'showFinanceSettings' => $this->showFinanceSettings,
+        ]);
     }
 }

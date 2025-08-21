@@ -28,7 +28,7 @@ class Create extends Component
             'account_id'       => 'required|exists:accounts,id',
             'item_id'          => 'required|exists:items,id',
             'amount'           => 'required|numeric|min:0.01',
-            'transaction_type' => 'required|string',
+            'transaction_type' => 'required|string|in:مصروفات,تحصيل',
             'transaction_date' => 'required|date',
             'notes'            => 'nullable|string|max:1000',
             'collection_type'  => 'nullable|in:تحصل من عميل,أخرى',
@@ -42,15 +42,14 @@ class Create extends Component
     }
 
     public function mount($type)
-{
-    $this->transaction_type = $type;
-    $this->transaction_date = now()->format('Y-m-d');
+    {
+        $this->transaction_type = $type;
+        $this->transaction_date = now()->format('Y-m-d');
 
-    if ($this->transaction_type === 'تحصيل' && $this->collection_type === 'تحصل من عميل') {
-        $this->clients = Client::orderBy('name')->get();
+        if ($this->transaction_type === 'تحصيل' && $this->collection_type === 'تحصل من عميل') {
+            $this->clients = Client::orderBy('name')->get();
+        }
     }
-}
-
 
     public function updatedCollectionType($value)
     {
@@ -58,7 +57,7 @@ class Create extends Component
             $this->clients = Client::orderBy('name')->get();
         } else {
             $this->client_id = null;
-            $this->clients = [];
+            $this->clients   = [];
         }
     }
 
@@ -66,8 +65,8 @@ class Create extends Component
     {
         if ($value === 'مصروفات') {
             $this->collection_type = null;
-            $this->client_id = null;
-            $this->clients = [];
+            $this->client_id       = null;
+            $this->clients         = [];
         }
     }
 
@@ -75,8 +74,9 @@ class Create extends Component
     {
         $this->validate();
 
-        Transaction::create([
-            'account_id'       => $this->account_id,
+        $transaction = Transaction::create([
+            'from_account_id'  => $this->transaction_type === 'مصروفات' ? $this->account_id : null,
+            'to_account_id'    => $this->transaction_type === 'تحصيل' ? $this->account_id : null,
             'item_id'          => $this->item_id,
             'amount'           => $this->amount,
             'transaction_type' => $this->transaction_type,
@@ -86,9 +86,21 @@ class Create extends Component
             'client_id'        => ($this->transaction_type === 'تحصيل' && $this->collection_type === 'تحصل من عميل')
                                     ? $this->client_id
                                     : null,
+            'user_add'         => auth()->id(),
         ]);
 
-        session()->flash('message', 'تم حفظ الحركة بنجاح.');
+        // تحديث الرصيد
+        $account = Account::find($this->account_id);
+        if ($account) {
+            if ($this->transaction_type === 'مصروفات') {
+                $account->current_balance -= $this->amount;
+            } elseif ($this->transaction_type === 'تحصيل') {
+                $account->current_balance += $this->amount;
+            }
+            $account->save();
+        }
+
+        session()->flash('message', 'تم حفظ الحركة وتحديث الرصيد بنجاح.');
         return redirect()->route('finance.transactions.index');
     }
 
@@ -98,12 +110,11 @@ class Create extends Component
     }
 
     public function render()
-    { $transactions = Transaction::with(['account','item'])->latest()->paginate(10);
+    {
         return view('livewire.finance.transactions.create', [
             'accounts' => Account::orderBy('name')->get(),
             'items'    => Item::orderBy('name')->get(),
             'clients'  => $this->clients,
-            'transactions' => $transactions,
         ]);
     }
 }

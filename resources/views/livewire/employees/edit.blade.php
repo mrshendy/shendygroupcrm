@@ -8,11 +8,20 @@
         </div>
     @endif
 
+    <!-- رسالة الخطأ العامة -->
+    @if (session()->has('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
+
     <div class="card shadow-sm border-0">
-        <div class="card-header bg-light text-white py-3">
+        <div class="card-header bg-primary text-white py-3">
             <div class="d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">
-                    <i class="fas fa-user-edit me-2"></i>تحديث بيانات الموظف
+                    <i class="fas fa-user-edit me-2"></i> تحديث بيانات الموظف
                 </h5>
                 <a href="{{ route('employees.index') }}" class="btn btn-light btn-sm">
                     <i class="fas fa-arrow-left me-1"></i> رجوع
@@ -116,7 +125,7 @@
                         <div class="input-group">
                             <span class="input-group-text bg-light"><i class="fas fa-money-bill-wave"></i></span>
                             <input type="number" wire:model="salary" class="form-control">
-                            <span class="input-group-text bg-light">ر.س</span>
+                            <span class="input-group-text bg-light">.ج.م</span>
                         </div>
                         @error('salary') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
                     </div>
