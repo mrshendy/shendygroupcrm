@@ -175,9 +175,12 @@
                                 </span>
                             </td>
                             <td class="text-center pe-4">
-                                <button wire:click="edit({{ $acc->id }})" class="btn btn-sm btn-outline-primary px-2 me-1" title="تعديل">
-                                    <span class="mdi mdi-pencil-outline"></span>
-                                </button>
+                                
+                                    <a href="{{ route('finance.accounts.edit', $acc->id) }}" class="btn btn-sm btn-outline-primary px-2 me-1" title="تعديل">
+                                        <span class="mdi mdi-pencil-outline"></span>
+                                    </a>
+
+                                
                                 <button wire:click="delete({{ $acc->id }})" 
                                         onclick="confirm('هل أنت متأكد من حذف هذا الحساب؟') || event.stopImmediatePropagation()"
                                         class="btn btn-sm btn-outline-danger px-2" title="حذف">

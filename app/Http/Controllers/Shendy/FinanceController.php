@@ -66,6 +66,11 @@ class FinanceController extends Controller
     {
         //
     }
+    public function editAccount($id)
+    {
+        $account = Account::findOrFail($id);
+        return view('livewire.finance.accounts.edit', compact('account'));
+    }
 
     /**
      * Update the specified resource in storage.

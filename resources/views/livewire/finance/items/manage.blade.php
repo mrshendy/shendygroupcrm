@@ -150,9 +150,9 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <button class="btn btn-sm btn-outline-primary" wire:click="edit({{ $item->id }})">
+                                    <button class="btn btn-sm btn-outline-primary">
+                                        <a href="{{ route('finance.items.edit', $item->id) }}">تعديل</a>
                                         <span class="mdi mdi-pencil-outline me-1"></span>
-                                        تعديل
                                     </button>
                                 </td>
                             </tr>
