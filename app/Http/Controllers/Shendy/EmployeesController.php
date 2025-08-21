@@ -9,9 +9,17 @@ class EmployeesController extends Controller
 {
       function __construct(){
         $this->middleware('permission:employee-list|employee-create|employee-edit|employee-delete', ['only' => ['index','store']]);
+        $this->middleware('permission:leaves-list|leaves-create|leaves-edit|leaves-delete', ['only' => ['index','store']]);
+        $this->middleware('permission:attendance-list|attendance-create|attendance-edit|attendance-delete', ['only' => ['index','store']]);
         $this->middleware('permission:employee-create', ['only' => ['create','store']]);
-        $this->middleware('permission:employee-edit', ['only' => ['edit','update']]);
-        $this->middleware('permission:employee-delete', ['only' => ['destroy']]);
+        $this->middleware('permission:leaves-create', ['only' => ['createLeave','store']]);
+        $this->middleware('permission:attendance-create', ['only' => ['attendanceCheck','attendanceManage']]);
+        $this->middleware('permission:employee-create', ['only' => ['create','store']]);
+        $this->middleware('permission:leaves-create', ['only' => ['createLeave','store']]);
+        $this->middleware('permission:attendance-edit', ['only' => ['edit','update']]);
+        $this->middleware('permission:employee-create', ['only' => ['create','store']]);
+        $this->middleware('permission:leaves-create', ['only' => ['createLeave','store']]);
+        $this->middleware('permission:attendance-delete', ['only' => ['destroy']]);
     }
     public function index()
     {

@@ -6,6 +6,12 @@ use App\Http\Controllers\Controller;
 
 class TransactionsController extends Controller
 {
+     function __construct(){
+        $this->middleware('permission:finance-list|finance-create|finance-edit|finance-delete', ['only' => ['index','store']]);
+        $this->middleware('permission:finance-create', ['only' => ['create','store']]);
+        $this->middleware('permission:finance-edit', ['only' => ['edit','update']]);
+        $this->middleware('permission:finance-delete', ['only' => ['destroy']]);
+    }
     /** صفحة القائمة (تستضيف <livewire:finance.transactions.index />) */
     public function index()
     {
