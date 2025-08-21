@@ -13,10 +13,18 @@ class Manage extends Component
     public $name, $type, $status = 'active', $search = '';
     public $updateMode = false, $itemId;
 
+    protected $paginationTheme = 'bootstrap';
+
     protected $rules = [
         'name'   => 'required|string|max:255',
         'type'   => 'required|string|max:255',
         'status' => 'required|in:active,inactive',
+    ];
+
+    protected $messages = [
+        'name.required'   => 'اسم البند مطلوب',
+        'type.required'   => 'النوع مطلوب',
+        'status.required' => 'الحالة مطلوبة',
     ];
 
     public function save()
@@ -35,7 +43,7 @@ class Manage extends Component
 
     public function edit($id)
     {
-        $item        = Item::findOrFail($id);
+        $item         = Item::findOrFail($id);
         $this->itemId = $item->id;
         $this->name   = $item->name;
         $this->type   = $item->type;
@@ -77,8 +85,12 @@ class Manage extends Component
     public function render()
     {
         $items = Item::query()
-            ->where('name', 'like', '%' . $this->search . '%')
-            ->orWhere('type', 'like', '%' . $this->search . '%')
+            ->when($this->search, function($q) {
+                $q->where(function($sub) {
+                    $sub->where('name', 'like', '%' . $this->search . '%')
+                        ->orWhere('type', 'like', '%' . $this->search . '%');
+                });
+            })
             ->orderBy('id', 'desc')
             ->paginate(10);
 

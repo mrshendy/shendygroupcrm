@@ -6,11 +6,12 @@ use Livewire\Component;
 use App\Models\Transaction;
 use App\Models\Account;
 use App\Models\Item;
+use Illuminate\Support\Facades\DB;
 
 class Edit extends Component
 {
     public $transactionId;
-    public $amount,$transaction_date,$from_account_id,$to_account_id,$item_id,$collection_type,$notes;
+    public $amount, $transaction_date, $from_account_id, $to_account_id, $item_id, $collection_type, $notes;
     public $type;
     public $accounts = [], $items = [];
 
@@ -54,55 +55,41 @@ class Edit extends Component
     {
         $this->validate();
 
-        $tx = Transaction::findOrFail($this->transactionId);
+        DB::transaction(function () {
+            $tx = Transaction::findOrFail($this->transactionId);
 
-        // 1) إلغاء تأثير العملية القديمة
-        if ($tx->from_account_id) {
-            $from = Account::find($tx->from_account_id);
-            if ($from) {
-                $from->current_balance += $tx->amount;
-                $from->save();
+            // 1) إلغاء تأثير العملية القديمة
+            if ($tx->from_account_id) {
+                Account::where('id', $tx->from_account_id)->increment('current_balance', $tx->amount);
             }
-        }
 
-        if ($tx->to_account_id) {
-            $to = Account::find($tx->to_account_id);
-            if ($to) {
-                $to->current_balance -= $tx->amount;
-                $to->save();
+            if ($tx->to_account_id) {
+                Account::where('id', $tx->to_account_id)->decrement('current_balance', $tx->amount);
             }
-        }
 
-        // 2) تحديث بيانات العملية
-        $tx->update([
-            'amount'           => $this->amount,
-            'transaction_date' => $this->transaction_date,
-            'from_account_id'  => $this->from_account_id,
-            'to_account_id'    => $this->to_account_id,
-            'item_id'          => $this->item_id,
-            'collection_type'  => $this->collection_type,
-            'notes'            => $this->notes,
-            'user_add'         => auth()->id(),
-        ]);
+            // 2) تحديث بيانات العملية
+            $tx->update([
+                'amount'           => $this->amount,
+                'transaction_date' => $this->transaction_date,
+                'from_account_id'  => $this->from_account_id,
+                'to_account_id'    => $this->to_account_id,
+                'item_id'          => $this->item_id,
+                'collection_type'  => $this->collection_type,
+                'notes'            => $this->notes,
+                'user_update'      => auth()->id(), // أفضل من تغيير user_add
+            ]);
 
-        // 3) تطبيق تأثير العملية الجديدة
-        if ($this->from_account_id) {
-            $from = Account::find($this->from_account_id);
-            if ($from) {
-                $from->current_balance -= $this->amount;
-                $from->save();
+            // 3) تطبيق تأثير العملية الجديدة
+            if ($this->from_account_id) {
+                Account::where('id', $this->from_account_id)->decrement('current_balance', $this->amount);
             }
-        }
 
-        if ($this->to_account_id) {
-            $to = Account::find($this->to_account_id);
-            if ($to) {
-                $to->current_balance += $this->amount;
-                $to->save();
+            if ($this->to_account_id) {
+                Account::where('id', $this->to_account_id)->increment('current_balance', $this->amount);
             }
-        }
+        });
 
-        session()->flash('message','تم حفظ التعديلات وتحديث الأرصدة بنجاح');
+        session()->flash('message','✅ تم حفظ التعديلات وتحديث الأرصدة بنجاح');
         return redirect()->route('finance.transactions.index');
     }
 

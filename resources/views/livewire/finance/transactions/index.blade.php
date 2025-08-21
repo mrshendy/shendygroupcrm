@@ -36,7 +36,7 @@
             </div>
         @endif
 
-        <!-- Search and Filters -->
+        <!-- Search -->
         <div class="row g-3 mb-5">
             <div class="col-md-6">
                 <div class="input-group shadow-sm">
@@ -47,7 +47,6 @@
                         wire:model.debounce.400ms="search">
                 </div>
             </div>
-           
         </div>
 
         <!-- Transactions Table -->
@@ -68,7 +67,7 @@
                 <tbody>
                     @forelse($transactions as $i => $t)
                         @php $isExpense = $t->type === 'مصروفات'; @endphp
-                        <tr class="position-relative">
+                        <tr>
                             <td class="text-center ps-4 text-muted">{{ $transactions->firstItem() + $i }}</td>
                             <td class="text-end">
                                 <div class="d-flex align-items-center justify-content-end">
@@ -79,68 +78,37 @@
                                     </span>
                                 </div>
                             </td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <i class="mdi mdi-bank-outline text-muted me-2"></i>
-                                    {{ optional($t->fromAccount)->name ?? '-' }}
-                                </div>
-                            </td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <i class="mdi mdi-bank-outline text-muted me-2"></i>
-                                    {{ optional($t->toAccount)->name ?? '-' }}
-                                </div>
-                            </td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <i class="mdi mdi-tag-outline text-muted me-2"></i>
-                                    {{ optional($t->item)->name ?? '-' }}
-                                </div>
-                            </td>
+                            <td>{{ optional($t->fromAccount)->name ?? '-' }}</td>
+                            <td>{{ optional($t->toAccount)->name ?? '-' }}</td>
+                            <td>{{ optional($t->item)->name ?? '-' }}</td>
                             <td>
                                 @if (!$isExpense)
-                                    <div class="d-flex align-items-center">
-                                        <span class="badge bg-info bg-opacity-10 text-info px-3 py-2">
-                                            <i class="mdi mdi-{{ $t->collection_type === 'تحصل من عميل' ? 'account' : 'cash' }}-outline me-1"></i>
-                                            {{ $t->collection_type ?? 'أخرى' }}
-                                        </span>
-                                    </div>
+                                    <span class="badge bg-info bg-opacity-10 text-info px-3 py-2">
+                                        {{ $t->collection_type ?? 'أخرى' }}
+                                    </span>
                                     @if ($t->collection_type === 'تحصل من عميل')
-                                        <div class="small text-muted mt-1">
-                                            <i class="mdi mdi-account-outline me-1"></i>
-                                            {{ optional($t->client)->name ?? '-' }}
-                                        </div>
+                                        <div class="small text-muted mt-1">{{ optional($t->client)->name ?? '-' }}</div>
                                     @endif
                                 @else
                                     <span class="text-muted">-</span>
                                 @endif
                             </td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <i class="mdi mdi-calendar-blank-outline text-muted me-2"></i>
-                                    {{ \Carbon\Carbon::parse($t->transaction_date)->format('Y-m-d') }}
-                                </div>
-                            </td>
+                            <td>{{ \Carbon\Carbon::parse($t->transaction_date)->format('Y-m-d') }}</td>
                             <td class="text-center pe-4">
                                 <div class="d-flex gap-2 justify-content-center">
                                     @can('finance-view')
-                                    <a href="{{ route('finance.transactions.show', $t->id) }}"
-                                        class="btn btn-sm btn-outline-info px-3 rounded-pill"
-                                        data-bs-toggle="tooltip" title="عرض التفاصيل">
+                                    <a href="{{ route('finance.transactions.show', $t->id) }}" class="btn btn-sm btn-outline-info px-3 rounded-pill">
                                         <i class="mdi mdi-eye-outline me-1"></i> عرض
                                     </a>
                                     @endcan
                                     @can('finance-edit')
-                                    <a href="{{ route('finance.transactions.edit', $t->id) }}"
-                                        class="btn btn-sm btn-primary px-3 rounded-pill"
-                                        data-bs-toggle="tooltip" title="تعديل الحركة">
+                                    <a href="{{ route('finance.transactions.edit', $t->id) }}" class="btn btn-sm btn-primary px-3 rounded-pill">
                                         <i class="mdi mdi-pencil-outline me-1"></i> تعديل
                                     </a>
                                     @endcan
                                     @can('finance-delete')
                                     <button wire:click="confirmDelete({{ $t->id }})"
-                                        class="btn btn-sm btn-outline-danger px-3 rounded-pill"
-                                        data-bs-toggle="tooltip" title="حذف الحركة">
+                                        class="btn btn-sm btn-outline-danger px-3 rounded-pill">
                                         <i class="mdi mdi-delete-outline me-1"></i> حذف
                                     </button>
                                     @endcan
@@ -149,13 +117,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="text-center py-5">
-                                <div class="d-flex flex-column align-items-center justify-content-center">
-                                    <i class="mdi mdi-database-remove-outline text-muted" style="font-size: 3rem"></i>
-                                    <h5 class="text-muted mt-3">لا توجد معاملات</h5>
-                                    <p class="text-muted mb-0">قم بإضافة معاملة جديدة لبدء العمل</p>
-                                </div>
-                            </td>
+                            <td colspan="8" class="text-center py-5">لا توجد معاملات</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -166,13 +128,10 @@
         @if ($transactions->hasPages())
             <div class="d-flex justify-content-between align-items-center mt-4">
                 <div class="text-muted small">
-                    <i class="mdi mdi-database-outline me-1"></i>
                     عرض {{ $transactions->firstItem() }} إلى {{ $transactions->lastItem() }} من
                     {{ $transactions->total() }} معاملة
                 </div>
-                <div class="d-flex">
-                    {{ $transactions->onEachSide(1)->links() }}
-                </div>
+                <div>{{ $transactions->onEachSide(1)->links() }}</div>
             </div>
         @endif
     </div>
@@ -189,11 +148,11 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>هل أنت متأكد من رغبتك في حذف هذه الحركة المالية؟ لا يمكن التراجع عن هذا الإجراء.</p>
+                <p>هل أنت متأكد من رغبتك في حذف هذه الحركة المالية؟</p>
             </div>
             <div class="modal-footer border-0">
                 <button type="button" class="btn btn-light" data-bs-dismiss="modal">إلغاء</button>
-                <button type="button" class="btn btn-danger" wire:click="delete" data-bs-dismiss="modal">
+                <button type="button" class="btn btn-danger" wire:click="deleteConfirmed">
                     <i class="mdi mdi-delete-outline me-1"></i> نعم، احذف
                 </button>
             </div>
@@ -203,62 +162,14 @@
 
 @push('scripts')
 <script>
-    // Initialize tooltips
-    document.addEventListener('DOMContentLoaded', function() {
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-        var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl)
-        });
-
-        // Delete confirmation modal
-        window.addEventListener('showDeleteModal', event => {
-            var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
-            deleteModal.show();
-        });
+    window.addEventListener('showDeleteModal', () => {
+        var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        deleteModal.show();
+    });
+    window.addEventListener('hideDeleteModal', () => {
+        var deleteModalEl = document.getElementById('deleteModal');
+        var modal = bootstrap.Modal.getInstance(deleteModalEl);
+        if (modal) modal.hide();
     });
 </script>
 @endpush
-
-<style>
-    .table th {
-        border-top: none;
-        border-bottom: 2px solid #f3f4f6;
-        font-weight: 600;
-        text-transform: uppercase;
-        font-size: 0.75rem;
-        letter-spacing: 0.5px;
-        color: #6b7280;
-    }
-    
-    .table td {
-        vertical-align: middle;
-        padding: 1rem;
-    }
-    
-    .badge {
-        padding: 0.35rem 0.75rem;
-        font-weight: 500;
-        font-size: 0.75rem;
-        border-radius: 50px;
-    }
-    
-    .btn {
-        transition: all 0.2s ease;
-    }
-    
-    .btn:hover {
-        transform: translateY(-2px);
-    }
-    
-    tr:hover {
-        background-color: #f9fafb !important;
-    }
-    
-    .modal-header {
-        padding: 1.5rem;
-    }
-    
-    .modal-footer {
-        padding: 1rem 1.5rem;
-    }
-</style>

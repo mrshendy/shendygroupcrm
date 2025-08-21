@@ -11,36 +11,31 @@
 
         <form wire:submit.prevent="save">
             <div class="row g-3">
-                <!-- حقل من -->
+
+                <!-- من -->
                 <div class="col-md-6">
                     <label class="form-label">من *</label>
-                    <input type="text" class="form-control mb-2" placeholder="ابحث عن الحساب..."
-                        wire:model.debounce.500ms="searchFromAccount">
+                    <input type="text" class="form-control mb-2" placeholder="ابحث عن الحساب..." wire:model.debounce.500ms="searchFromAccount">
                     <select wire:model.defer="from_account_id" class="form-select" required>
                         <option value="">— اختر —</option>
                         @foreach ($fromAccounts as $a)
                             <option value="{{ $a->id }}">{{ $a->name }}</option>
                         @endforeach
                     </select>
-                    @error('from_account_id')
-                        <small class="text-danger">{{ $message }}</small>
-                    @enderror
+                    @error('from_account_id') <small class="text-danger">{{ $message }}</small> @enderror
                 </div>
 
-                <!-- حقل إلى -->
+                <!-- إلى -->
                 <div class="col-md-6">
                     <label class="form-label">إلى *</label>
-                    <input type="text" class="form-control mb-2" placeholder="ابحث عن الحساب..."
-                        wire:model.debounce.500ms="searchToAccount">
+                    <input type="text" class="form-control mb-2" placeholder="ابحث عن الحساب..." wire:model.debounce.500ms="searchToAccount">
                     <select wire:model.defer="to_account_id" class="form-select" required>
                         <option value="">— اختر —</option>
                         @foreach ($toAccounts as $a)
                             <option value="{{ $a->id }}">{{ $a->name }}</option>
                         @endforeach
                     </select>
-                    @error('to_account_id')
-                        <small class="text-danger">{{ $message }}</small>
-                    @enderror
+                    @error('to_account_id') <small class="text-danger">{{ $message }}</small> @enderror
                 </div>
 
                 <!-- البند -->
@@ -52,27 +47,21 @@
                             <option value="{{ $it->id }}">{{ $it->name }}</option>
                         @endforeach
                     </select>
-                    @error('item_id')
-                        <small class="text-danger">{{ $message }}</small>
-                    @enderror
+                    @error('item_id') <small class="text-danger">{{ $message }}</small> @enderror
                 </div>
 
                 <!-- المبلغ -->
                 <div class="col-md-6">
                     <label class="form-label">المبلغ *</label>
                     <input type="number" step="0.01" wire:model.defer="amount" class="form-control" required>
-                    @error('amount')
-                        <small class="text-danger">{{ $message }}</small>
-                    @enderror
+                    @error('amount') <small class="text-danger">{{ $message }}</small> @enderror
                 </div>
 
                 <!-- التاريخ -->
                 <div class="col-md-6">
                     <label class="form-label">تاريخ الحركة *</label>
                     <input type="date" wire:model.defer="transaction_date" class="form-control" required>
-                    @error('transaction_date')
-                        <small class="text-danger">{{ $message }}</small>
-                    @enderror
+                    @error('transaction_date') <small class="text-danger">{{ $message }}</small> @enderror
                 </div>
 
                 <!-- نوع التحصيل -->
@@ -83,9 +72,7 @@
                         <option value="تحصل من عميل">تحصل من عميل</option>
                         <option value="أخرى">أخرى</option>
                     </select>
-                    @error('collection_type')
-                        <small class="text-danger">{{ $message }}</small>
-                    @enderror
+                    @error('collection_type') <small class="text-danger">{{ $message }}</small> @enderror
                 </div>
 
                 <!-- العميل -->
@@ -98,9 +85,7 @@
                                 <option value="{{ $c->id }}">{{ $c->name }}</option>
                             @endforeach
                         </select>
-                        @error('client_id')
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
+                        @error('client_id') <small class="text-danger">{{ $message }}</small> @enderror
                     </div>
                 @endif
 

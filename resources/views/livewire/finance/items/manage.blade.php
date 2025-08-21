@@ -1,4 +1,6 @@
 <div class="container-fluid px-4 py-3">
+
+    {{-- العنوان والتنبيه --}}
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h5 class="m-0">
             <span class="mdi mdi-finance me-2 text-primary"></span>
@@ -22,22 +24,26 @@
         <div class="card-body">
             <form wire:submit.prevent="{{ $updateMode ? 'update' : 'save' }}">
                 <div class="row g-3">
+                    {{-- اسم البند --}}
                     <div class="col-md-6">
                         <label class="form-label fw-semibold">اسم البند</label>
                         <div class="input-group">
                             <span class="input-group-text bg-light">
                                 <span class="mdi mdi-tag-outline"></span>
                             </span>
-                            <input type="text" class="form-control shadow-sm" wire:model="name" placeholder="أدخل اسم البند">
+                            <input type="text" class="form-control shadow-sm"
+                                   wire:model="name"
+                                   placeholder="أدخل اسم البند">
                         </div>
-                        @error('name') 
+                        @error('name')
                             <small class="text-danger d-block mt-1">
                                 <span class="mdi mdi-alert-circle-outline me-1"></span>
                                 {{ $message }}
-                            </small> 
+                            </small>
                         @enderror
                     </div>
 
+                    {{-- النوع --}}
                     <div class="col-md-3">
                         <label class="form-label fw-semibold">النوع</label>
                         <div class="input-group">
@@ -50,14 +56,15 @@
                                 <option value="إيراد">إيراد</option>
                             </select>
                         </div>
-                        @error('type') 
+                        @error('type')
                             <small class="text-danger d-block mt-1">
                                 <span class="mdi mdi-alert-circle-outline me-1"></span>
                                 {{ $message }}
-                            </small> 
+                            </small>
                         @enderror
                     </div>
 
+                    {{-- الحالة --}}
                     <div class="col-md-3">
                         <label class="form-label fw-semibold">الحالة</label>
                         <div class="input-group">
@@ -69,33 +76,32 @@
                                 <option value="inactive">غير نشط</option>
                             </select>
                         </div>
-                        @error('status') 
+                        @error('status')
                             <small class="text-danger d-block mt-1">
                                 <span class="mdi mdi-alert-circle-outline me-1"></span>
                                 {{ $message }}
-                            </small> 
+                            </small>
                         @enderror
                     </div>
                 </div>
 
+                {{-- أزرار الحفظ/التحديث --}}
                 <div class="mt-4 d-flex justify-content-between align-items-center border-top pt-4">
-    <div>
-        @if($updateMode)
-            <button type="button" class="btn btn-outline-danger px-4" wire:click="cancelUpdate">
-                <span class="mdi mdi-close-circle-outline me-1"></span>
-                إلغاء
-            </button>
-        @endif
-    </div>
-
-    <div>
-        <button type="submit" class="btn btn-{{ $updateMode ? 'success' : 'primary' }} px-4">
-            <span class="mdi mdi-content-save{{ $updateMode ? '-edit' : '' }}-outline me-1"></span>
-            {{ $updateMode ? 'تحديث' : 'حفظ' }}
-        </button>
-    </div>
-</div>
-
+                    <div>
+                        @if($updateMode)
+                            <button type="button" class="btn btn-outline-danger px-4" wire:click="cancelUpdate">
+                                <span class="mdi mdi-close-circle-outline me-1"></span>
+                                إلغاء
+                            </button>
+                        @endif
+                    </div>
+                    <div>
+                        <button type="submit" class="btn btn-{{ $updateMode ? 'success' : 'primary' }} px-4">
+                            <span class="mdi mdi-content-save{{ $updateMode ? '-edit' : '' }}-outline me-1"></span>
+                            {{ $updateMode ? 'تحديث' : 'حفظ' }}
+                        </button>
+                    </div>
+                </div>
             </form>
         </div>
     </div>
@@ -103,6 +109,8 @@
     {{-- جدول عرض البنود --}}
     <div class="card shadow-sm border-0">
         <div class="card-body">
+
+            {{-- البحث + عدد السجلات --}}
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <div class="input-group w-25">
                     <span class="input-group-text bg-light">
@@ -116,6 +124,7 @@
                 </div>
             </div>
 
+            {{-- الجدول --}}
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead class="table-light">
@@ -136,8 +145,7 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <span class="badge bg-{{ $item->status == 'active' ? 'success' : 'secondary' }} bg-opacity-10 text-{{ $item->status == 'active' ? 'success' : '' }}">
-                                        <span class="mdi mdi-small me-1"></span>
+                                    <span class="badge bg-{{ $item->status == 'active' ? 'success' : 'secondary' }} bg-opacity-10 text-{{ $item->status == 'active' ? 'success' : 'secondary' }}">
                                         {{ $item->status == 'active' ? 'نشط' : 'غير نشط' }}
                                     </span>
                                 </td>
@@ -160,14 +168,16 @@
                 </table>
             </div>
 
+            {{-- الصفحات --}}
             @if($items->hasPages())
                 <div class="d-flex justify-content-between align-items-center mt-3">
                     <div class="text-muted small">
                         عرض {{ $items->firstItem() }} إلى {{ $items->lastItem() }} من {{ $items->total() }}
                     </div>
-                    {{ $items->links() }}
+                    {{ $items->links('vendor.pagination.bootstrap-5') }}
                 </div>
             @endif
+
         </div>
     </div>
 </div>

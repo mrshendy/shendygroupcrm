@@ -125,7 +125,7 @@
                         <div class="input-group">
                             <span class="input-group-text bg-light"><i class="fas fa-money-bill-wave"></i></span>
                             <input type="number" wire:model="salary" class="form-control">
-                            <span class="input-group-text bg-light">ر.س</span>
+                            <span class="input-group-text bg-light">.ج.م</span>
                         </div>
                         @error('salary') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
                     </div>

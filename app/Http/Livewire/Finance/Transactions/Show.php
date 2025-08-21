@@ -9,25 +9,18 @@ class Show extends Component
 {
     public Transaction $transaction;
 
-    // حمّل العلاقات المناسبة
-    protected $relations = ['fromAccount', 'toAccount', 'item', 'client', 'userAdd'];
+    // العلاقات المراد تحميلها
+    protected array $relations = [
+        'fromAccount',
+        'toAccount',
+        'item',
+        'client',
+        'userAdd'
+    ];
 
-    public function mount($transactionId)
+    public function mount(int $transactionId)
     {
-        $query = Transaction::query();
-
-        if (!empty($this->relations)) {
-            $query->with($this->relations);
-        }
-
-        $this->transaction = $query->find($transactionId);
-
-        if (!$this->transaction) {
-            abort(404); 
-            // أو:
-            // return redirect()->route('finance.transactions.index')
-            //     ->with('error','المعاملة غير موجودة');
-        }
+        $this->transaction = Transaction::with($this->relations)->findOrFail($transactionId);
     }
 
     public function render()

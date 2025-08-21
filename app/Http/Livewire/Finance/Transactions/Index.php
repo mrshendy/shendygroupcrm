@@ -12,6 +12,7 @@ class Index extends Component
     use WithPagination;
 
     public $search = '';
+    public $deleteId = null;
 
     protected $paginationTheme = 'bootstrap';
 
@@ -20,32 +21,42 @@ class Index extends Component
         $this->resetPage();
     }
 
-    public function delete($id)
+    public function confirmDelete($id)
     {
-        if ($tx = Transaction::find($id)) {
+        $this->deleteId = $id;
+        $this->dispatchBrowserEvent('showDeleteModal');
+    }
 
-            // عكس تأثير العملية على الأرصدة
-            if ($tx->from_account_id) {
-                $from = Account::find($tx->from_account_id);
-                if ($from) {
-                    $from->current_balance += $tx->amount; // رجع الفلوس اللي اتسحبت
-                    $from->save();
+    public function deleteConfirmed()
+    {
+        if ($this->deleteId) {
+            $tx = Transaction::find($this->deleteId);
+
+            if ($tx) {
+                // رجوع تأثير العملية على الأرصدة
+                if ($tx->from_account_id) {
+                    $from = Account::find($tx->from_account_id);
+                    if ($from) {
+                        $from->current_balance += $tx->amount;
+                        $from->save();
+                    }
                 }
-            }
 
-            if ($tx->to_account_id) {
-                $to = Account::find($tx->to_account_id);
-                if ($to) {
-                    $to->current_balance -= $tx->amount; // نقص الفلوس اللي كانت اتضافت
-                    $to->save();
+                if ($tx->to_account_id) {
+                    $to = Account::find($tx->to_account_id);
+                    if ($to) {
+                        $to->current_balance -= $tx->amount;
+                        $to->save();
+                    }
                 }
+
+                $tx->delete();
+                session()->flash('message', 'تم حذف الحركة وتعديل الأرصدة بنجاح');
             }
-
-            // بعد ما رجعنا الرصيد نحذف الحركة
-            $tx->delete();
-
-            session()->flash('message','تم حذف الحركة وتعديل الأرصدة بنجاح');
         }
+
+        $this->deleteId = null;
+        $this->dispatchBrowserEvent('hideDeleteModal');
     }
 
     public function render()

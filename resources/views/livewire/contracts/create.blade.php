@@ -155,7 +155,7 @@
                                 <i class="mdi mdi-currency-usd"></i>
                             </span>
                             <input type="number" step="0.01" class="form-control" wire:model="amount" placeholder="0.00">
-                            <span class="input-group-text bg-white">ر.س</span>
+                            <span class="input-group-text bg-white">ج.م</span>
                         </div>
                         @error('amount') <small class="text-danger d-block mt-1">{{ $message }}</small> @enderror
                     </div>
@@ -314,7 +314,7 @@
                                 <label class="form-label small">المبلغ</label>
                                 <div class="input-group">
                                     <input type="number" step="0.01" class="form-control" wire:model.defer="payments.{{ $pidx }}.amount" placeholder="0.00">
-                                    <span class="input-group-text">ر.س</span>
+                                    <span class="input-group-text">ج.م</span>
                                 </div>
                             </div>
 
