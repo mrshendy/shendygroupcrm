@@ -29,9 +29,9 @@ class CreateCollection extends Component
     public function mount()
     {
         $this->accounts = Account::orderBy('name')->get();
-        $this->clients  = \App\Models\Client::orderBy('name')->get();
+        $this->clients  = Client::orderBy('name')->get();
 
-        // بنود التحصيل/الدخل فقط – عمود type
+        // بنود التحصيل/الدخل فقط
         $this->items = Item::whereIn('type', ['إيراد','دخل','income','receipt'])
             ->orderBy('name')->get();
 
@@ -46,7 +46,8 @@ class CreateCollection extends Component
         }
         $this->validate($rules);
 
-        Transaction::create([
+        // حفظ العملية
+        $transaction = Transaction::create([
             'type' => 'تحصيل',
             'from_account_id'  => $this->from_account_id,
             'to_account_id'    => $this->to_account_id,
@@ -56,10 +57,24 @@ class CreateCollection extends Component
             'collection_type'  => $this->collection_type,
             'client_id'        => $this->client_id,
             'notes'            => $this->notes,
-            'user_add'        => auth()->id(),
+            'user_add'         => auth()->id(),
         ]);
 
-        session()->flash('message','تم حفظ التحصيل بنجاح');
+        // تحديث الأرصدة
+        $from = Account::find($this->from_account_id);
+        $to   = Account::find($this->to_account_id);
+
+        if ($from) {
+            $from->current_balance -= $this->amount;
+            $from->save();
+        }
+
+        if ($to) {
+            $to->current_balance += $this->amount;
+            $to->save();
+        }
+
+        session()->flash('message','تم حفظ التحصيل وتحديث الأرصدة بنجاح');
         return redirect()->route('finance.transactions.index');
     }
 

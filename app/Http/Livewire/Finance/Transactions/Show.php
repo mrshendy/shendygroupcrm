@@ -4,14 +4,13 @@ namespace App\Http\Livewire\Finance\Transactions;
 
 use Livewire\Component;
 use App\Models\Transaction;
-use App\Models\User;
 
 class Show extends Component
 {
     public Transaction $transaction;
 
-    // لو حابب تحمّل علاقات إضافية (عدّل حسب مشروعك)
-    protected $relations = ['account', 'item'];
+    // حمّل العلاقات المناسبة
+    protected $relations = ['fromAccount', 'toAccount', 'item', 'client', 'userAdd'];
 
     public function mount($transactionId)
     {
@@ -24,13 +23,17 @@ class Show extends Component
         $this->transaction = $query->find($transactionId);
 
         if (!$this->transaction) {
-            abort(404); // أو redirect()->route('finance.transactions.index');
+            abort(404); 
+            // أو:
+            // return redirect()->route('finance.transactions.index')
+            //     ->with('error','المعاملة غير موجودة');
         }
     }
 
     public function render()
     {
-        return view('livewire.finance.transactions.show')
-            ->layout('layouts.app'); // لو عندك لياوت عام
+        return view('livewire.finance.transactions.show', [
+            'transaction' => $this->transaction,
+        ])->layout('layouts.app');
     }
 }

@@ -28,15 +28,15 @@ class Edit extends Component
     {
         $t = Transaction::findOrFail($transactionId);
 
-        $this->transactionId   = $t->id;
-        $this->amount          = $t->amount;
-        $this->transaction_date= $t->transaction_date ? \Carbon\Carbon::parse($t->transaction_date)->format('Y-m-d') : null;
-        $this->from_account_id = $t->from_account_id;
-        $this->to_account_id   = $t->to_account_id;
-        $this->item_id         = $t->item_id;
-        $this->collection_type = $t->collection_type;
-        $this->notes           = $t->notes;
-        $this->type= $t->type;
+        $this->transactionId    = $t->id;
+        $this->amount           = $t->amount;
+        $this->transaction_date = $t->transaction_date ? \Carbon\Carbon::parse($t->transaction_date)->format('Y-m-d') : null;
+        $this->from_account_id  = $t->from_account_id;
+        $this->to_account_id    = $t->to_account_id;
+        $this->item_id          = $t->item_id;
+        $this->collection_type  = $t->collection_type;
+        $this->notes            = $t->notes;
+        $this->type             = $t->type;
 
         $this->accounts = Account::orderBy('name')->get();
         $this->items    = $this->itemsForType($this->type);
@@ -47,14 +47,34 @@ class Edit extends Component
         if (in_array($type, ['مصروف','expense','expenses'])) {
             return Item::whereIn('type',['مصروف','expense','expenses'])->orderBy('name')->get();
         }
-        return Item::whereIn('type',['مصروف','دخل','income','receipt'])->orderBy('name')->get();
+        return Item::whereIn('type',['إيراد','دخل','income','receipt'])->orderBy('name')->get();
     }
 
     public function save()
     {
         $this->validate();
 
-        Transaction::findOrFail($this->transactionId)->update([
+        $tx = Transaction::findOrFail($this->transactionId);
+
+        // 1) إلغاء تأثير العملية القديمة
+        if ($tx->from_account_id) {
+            $from = Account::find($tx->from_account_id);
+            if ($from) {
+                $from->current_balance += $tx->amount;
+                $from->save();
+            }
+        }
+
+        if ($tx->to_account_id) {
+            $to = Account::find($tx->to_account_id);
+            if ($to) {
+                $to->current_balance -= $tx->amount;
+                $to->save();
+            }
+        }
+
+        // 2) تحديث بيانات العملية
+        $tx->update([
             'amount'           => $this->amount,
             'transaction_date' => $this->transaction_date,
             'from_account_id'  => $this->from_account_id,
@@ -65,7 +85,24 @@ class Edit extends Component
             'user_add'         => auth()->id(),
         ]);
 
-        session()->flash('message','تم حفظ التعديلات بنجاح');
+        // 3) تطبيق تأثير العملية الجديدة
+        if ($this->from_account_id) {
+            $from = Account::find($this->from_account_id);
+            if ($from) {
+                $from->current_balance -= $this->amount;
+                $from->save();
+            }
+        }
+
+        if ($this->to_account_id) {
+            $to = Account::find($this->to_account_id);
+            if ($to) {
+                $to->current_balance += $this->amount;
+                $to->save();
+            }
+        }
+
+        session()->flash('message','تم حفظ التعديلات وتحديث الأرصدة بنجاح');
         return redirect()->route('finance.transactions.index');
     }
 

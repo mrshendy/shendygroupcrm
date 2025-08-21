@@ -12,8 +12,8 @@ class Create extends Component
     public $status = 'active';
 
     protected $rules = [
-        'name' => 'required|string|max:255',
-        'type' => 'required|string|max:255',
+        'name'   => 'required|string|max:255',
+        'type'   => 'required|string|max:255',
         'status' => 'required|in:active,inactive',
     ];
 
@@ -22,17 +22,17 @@ class Create extends Component
         $this->validate();
 
         Item::create([
-            'name' => $this->name,
-            'type' => $this->type,
+            'name'   => $this->name,
+            'type'   => $this->type,
             'status' => $this->status,
         ]);
 
-        // Reset form fields
+        // Reset form
         $this->reset(['name', 'type', 'status']);
-        $this->status = 'active'; // default again
+        $this->status = 'active';
 
         session()->flash('success', 'تم حفظ البند بنجاح');
-        $this->emit('itemAdded'); // لإعادة التحديث في القائمة
+        $this->emit('itemAdded');
     }
 
     public function render()
