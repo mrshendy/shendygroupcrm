@@ -8,6 +8,7 @@ use App\Models\Client;
 use App\Models\Item;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\DB;
+use App\Services\AccountService;
 
 class CreateCollection extends Component
 {
@@ -29,6 +30,13 @@ class CreateCollection extends Component
         'notes'            => 'nullable|string|max:500',
     ];
 
+    protected $accountService;
+
+    public function boot(AccountService $accountService)
+    {
+        $this->accountService = $accountService;
+    }
+
     public function mount()
     {
         $this->items   = Item::whereIn('type', ['إيراد','دخل','income','receipt'])->orderBy('name')->get();
@@ -47,6 +55,7 @@ class CreateCollection extends Component
         $this->validate($rules);
 
         DB::transaction(function () {
+            // إنشاء السطر الأساسي للتحصيل
             Transaction::create([
                 'type' => 'تحصيل',
                 'from_account_id'  => $this->from_account_id,
@@ -60,8 +69,18 @@ class CreateCollection extends Component
                 'user_add'         => auth()->id(),
             ]);
 
-            Account::where('id',$this->from_account_id)->decrement('current_balance',$this->amount);
-            Account::where('id',$this->to_account_id)->increment('current_balance',$this->amount);
+            // استخدام AccountService
+            $this->accountService->addExpense(
+                $this->from_account_id,
+                $this->amount,
+                "خصم بسبب التحصيل (إلى حساب {$this->to_account_id})"
+            );
+
+            $this->accountService->addIncome(
+                $this->to_account_id,
+                $this->amount,
+                "إيداع من حساب {$this->from_account_id}"
+            );
         });
 
         session()->flash('message','✅ تم حفظ التحصيل وتحديث الأرصدة بنجاح');

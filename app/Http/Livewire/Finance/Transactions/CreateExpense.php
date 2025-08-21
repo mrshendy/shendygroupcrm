@@ -7,6 +7,7 @@ use App\Models\Item;
 use App\Models\Transaction;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
+use App\Services\AccountService;
 
 class CreateExpense extends Component
 {
@@ -26,6 +27,13 @@ class CreateExpense extends Component
         'notes'           => 'nullable|string|max:500',
     ];
 
+    protected $accountService;
+
+    public function boot(AccountService $accountService)
+    {
+        $this->accountService = $accountService;
+    }
+
     public function mount()
     {
         $this->items = Item::whereIn('type', ['مصروف','expense','expenses'])->orderBy('name')->get();
@@ -39,6 +47,7 @@ class CreateExpense extends Component
         $this->validate();
 
         DB::transaction(function () {
+            // سجل العملية الأساسية
             Transaction::create([
                 'type' => 'مصروفات',
                 'from_account_id' => $this->from_account_id,
@@ -50,8 +59,19 @@ class CreateExpense extends Component
                 'user_add'        => auth()->id(),
             ]);
 
-            Account::where('id',$this->from_account_id)->decrement('current_balance',$this->amount);
-            Account::where('id',$this->to_account_id)->increment('current_balance',$this->amount);
+            // خصم من الحساب المصدر
+            $this->accountService->addExpense(
+                $this->from_account_id,
+                $this->amount,
+                "خصم مصروف إلى حساب {$this->to_account_id}"
+            );
+
+            // إيداع في الحساب المستفيد
+            $this->accountService->addIncome(
+                $this->to_account_id,
+                $this->amount,
+                "إضافة مصروف من حساب {$this->from_account_id}"
+            );
         });
 
         session()->flash('message','✅ تم حفظ المصروف وتحديث الأرصدة بنجاح');

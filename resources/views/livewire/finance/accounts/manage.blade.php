@@ -159,8 +159,8 @@
 </td>
 
                             <td>{{ $acc->account_number ?? '--' }}</td>
-                            <td class="fw-bold text-end {{ $acc->opening_balance >= 0 ? 'text-success' : 'text-danger' }}">
-                                {{ number_format($acc->opening_balance, 2) }} ج.م
+                            <td class="fw-bold text-end {{ $acc->current_balance >= 0 ? 'text-success' : 'text-danger' }}">
+                                {{ number_format($acc->current_balance, 2) }} ج.م
                             </td>
                             <td class="text-center">
                                 @if($acc->is_main)

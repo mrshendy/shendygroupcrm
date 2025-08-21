@@ -5,56 +5,49 @@ namespace App\Services;
 use App\Models\Account;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\DB;
+use Exception;
 
 class AccountService
 {
     /**
-     * تحديث رصيد الحساب بناءً على المعاملة
+     * إضافة إيراد للحساب (زيادة الرصيد)
      */
-    public function applyTransaction(Transaction $transaction): void
+    public function addIncome($accountId, $amount, $description = null)
     {
-        DB::transaction(function () use ($transaction) {
-            // في حالة المصروفات => نقص من الحساب
-            if ($transaction->type === 'مصروف') {
-                $this->decrease($transaction->from_account_id, $transaction->amount);
-            }
+        return DB::transaction(function () use ($accountId, $amount, $description) {
+            $account = Account::findOrFail($accountId);
 
-            // في حالة الإيرادات => زيادة للحساب
-            if ($transaction->type === 'إيراد') {
-                $this->increase($transaction->to_account_id, $transaction->amount);
-            }
+            // زيادة الرصيد
+            $account->current_balance += $amount;
+            
+            $account->save();
 
-            // في حالة التحويل بين حسابين
-            if ($transaction->type === 'تحويل') {
-                $this->decrease($transaction->from_account_id, $transaction->amount);
-                $this->increase($transaction->to_account_id, $transaction->amount);
-            }
+       
+
+            return $account;
         });
     }
 
     /**
-     * زيادة رصيد الحساب
+     * إضافة مصروف للحساب (خصم من الرصيد)
      */
-    public function increase($accountId, $amount): void
+    public function addExpense($accountId, $amount, $description = null)
     {
-        $account = Account::findOrFail($accountId);
-        $account->balance += $amount;
-        $account->save();
-    }
+        return DB::transaction(function () use ($accountId, $amount, $description) {
+            $account = Account::findOrFail($accountId);
 
-    /**
-     * إنقاص رصيد الحساب
-     */
-    public function decrease($accountId, $amount): void
-    {
-        $account = Account::findOrFail($accountId);
+            // التحقق أن الرصيد يكفي
+            if ($account->current_balance < $amount) {
+                throw new Exception("الرصيد غير كافي في الحساب لإجراء هذه العملية.");
+            }
 
-        // ممكن تضيف هنا حماية لو الرصيد غير كافي
-        if ($account->balance < $amount) {
-            throw new \Exception("الرصيد في الحساب {$account->name} غير كافٍ!");
-        }
+            // خصم الرصيد
+            $account->current_balance -= $amount;
+            $account->save();
 
-        $account->balance -= $amount;
-        $account->save();
+          
+
+            return $account;
+        });
     }
 }
