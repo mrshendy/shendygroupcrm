@@ -1,205 +1,102 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>إدارة الحضور والانصراف</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap');
-        @import url('https://cdn.jsdelivr.net/npm/@mdi/font@6.9.96/css/materialdesignicons.min.css');
-        
-        :root {
-            --primary-color: #4361ee;
-            --secondary-color: #3f37c9;
-            --accent-color: #4895ef;
-            --text-color: #2b2d42;
-            --light-gray: #f8f9fa;
-            --white: #ffffff;
-            --success-color: #4cc9f0;
-            --warning-color: #f8961e;
-            --border-radius: 8px;
-            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Tajawal', sans-serif;
-            background-color: #f5f7fa;
-            color: var(--text-color);
-            line-height: 1.6;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            position: relative;
-        }
-        
-        .header h3 {
-            color: var(--primary-color);
-            font-size: 28px;
-            font-weight: 700;
-            position: relative;
-            display: inline-block;
-            padding-bottom: 10px;
-        }
-        
-        .header h3::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 3px;
-            background: var(--accent-color);
-            border-radius: 3px;
-        }
-        
-        .attendance-table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
-            background: var(--white);
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            box-shadow: var(--box-shadow);
-        }
-        
-        .attendance-table thead {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: var(--white);
-        }
-        
-        .attendance-table th {
-            padding: 16px 20px;
-            text-align: right;
-            font-weight: 500;
-            position: relative;
-        }
-        
-        .attendance-table th i {
-            margin-left: 8px;
-            font-size: 18px;
-            vertical-align: middle;
-        }
-        
-        .attendance-table tbody tr {
-            transition: all 0.3s ease;
-            border-bottom: 1px solid #e9ecef;
-        }
-        
-        .attendance-table tbody tr:last-child {
-            border-bottom: none;
-        }
-        
-        .attendance-table tbody tr:hover {
-            background-color: rgba(72, 149, 239, 0.1);
-            transform: translateY(-2px);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-        
-        .attendance-table td {
-            padding: 14px 20px;
-            text-align: right;
-            border-bottom: 1px solid #e9ecef;
-        }
-        
-        .attendance-table td:first-child {
-            font-weight: 500;
-            color: var(--primary-color);
-        }
-        
-        .edit-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 8px 16px;
-            background-color: var(--warning-color);
-            color: var(--white);
-            border: none;
-            border-radius: var(--border-radius);
-            font-family: 'Tajawal', sans-serif;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-        }
-        
-        .edit-btn i {
-            margin-left: 6px;
-        }
-        
-        .edit-btn:hover {
-            background-color: #e07d0e;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .attendance-table {
-                display: block;
-                overflow-x: auto;
-            }
-            
-            .header h3 {
-                font-size: 24px;
-            }
-            
-            .attendance-table th, 
-            .attendance-table td {
-                padding: 12px 15px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h3>إدارة الحضور والانصراف</h3>
+<div class="container-fluid py-4">
+    <!-- العنوان -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold text-primary mb-0">
+            <i class="mdi mdi-calendar-check-outline me-2"></i>
+            إدارة الحضور والانصراف
+        </h4>
+        <!-- اختيار تاريخ -->
+        <div class="d-flex align-items-center">
+            <input type="date" wire:model="filterDate" class="form-control form-control-sm shadow-sm">
         </div>
-        
-        <table class="attendance-table">
-            <thead>
-                <tr>
-                    <th><i class="mdi mdi-account-outline"></i>اسم الموظف</th>
-                    <th><i class="mdi mdi-clock-start"></i>وقت الحضور</th>
-                    <th><i class="mdi mdi-clock-end"></i>وقت الانصراف</th>
-                    <th><i class="mdi mdi-timer-sand"></i>عدد الساعات</th>
-                    <th><i class="mdi mdi-calendar"></i>التاريخ</th>
-                    <th><i class="mdi mdi-cog"></i>تعديل</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($attendances as $attendance)
-                    <tr>
-                        <td>{{ $attendance->employee->full_name }}</td>
-                        <td>{{ $attendance->check_in }}</td>
-                        <td>{{ $attendance->check_out ?? '-' }}</td>
-                        <td>{{ $attendance->hours ?? 0 }}</td>
-                        <td>{{ $attendance->attendance_date }}</td>
-                        <td>
-                            <a href="{{ route('attendance.attendanceedit', $attendance->id) }}" class="edit-btn">
-                                <i class="mdi mdi-pencil"></i> تعديل
-                            </a>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
     </div>
-</body>
-</html>
+
+    <!-- كارت -->
+    <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-header bg-gradient-primary text-white rounded-top-4 py-3">
+            <div class="d-flex align-items-center">
+                <i class="mdi mdi-account-clock me-2 fs-5"></i>
+                <h6 class="mb-0">سجلات اليوم</h6>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th><i class="mdi mdi-account-outline me-1 text-primary"></i> الموظف</th>
+                            <th><i class="mdi mdi-clock-start me-1 text-success"></i> وقت الحضور</th>
+                            <th><i class="mdi mdi-clock-end me-1 text-danger"></i> وقت الانصراف</th>
+                            <th><i class="mdi mdi-timer-sand me-1 text-warning"></i> عدد الساعات</th>
+                            <th><i class="mdi mdi-calendar me-1 text-info"></i> التاريخ</th>
+                            <th class="text-center"><i class="mdi mdi-cog me-1 text-secondary"></i> إجراء</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($attendances as $attendance)
+                            <tr class="hover-row">
+                                <td class="fw-semibold">{{ $attendance->employee->full_name }}</td>
+                                <td>
+                                    <span class="badge bg-success bg-opacity-10 text-success px-3 py-2">
+                                        {{ $attendance->check_in ?? '-' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-danger bg-opacity-10 text-danger px-3 py-2">
+                                        {{ $attendance->check_out ?? '-' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-warning bg-opacity-10 text-warning px-3 py-2">
+                                        {{ $attendance->hours ?? '0' }}
+                                    </span>
+                                </td>
+                                <td>{{ $attendance->attendance_date }}</td>
+                                <td class="text-center">
+                                    <a href="{{ route('attendance.attendanceedit', $attendance->id) }}"
+                                        class="btn btn-sm btn-outline-primary rounded-pill px-3 shadow-sm">
+                                        <i class="mdi mdi-pencil-outline"></i> تعديل
+                                    </a>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="text-center py-4 text-muted">
+                                    <i class="mdi mdi-database-remove-outline fs-3 d-block mb-2"></i>
+                                    لا يوجد حضور مسجل لليوم
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        @if ($attendances->hasPages())
+            <div class="card-footer bg-light border-0">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="text-muted small">
+                        عرض <strong>{{ $attendances->firstItem() }}</strong> إلى
+                        <strong>{{ $attendances->lastItem() }}</strong> من
+                        <strong>{{ $attendances->total() }}</strong> سجل
+                    </div>
+                    <div>
+                        {{ $attendances->links('vendor.pagination.bootstrap-5') }}
+                    </div>
+                </div>
+            </div>
+        @endif
+    </div>
+</div>
+
+<style>
+    .hover-row:hover {
+        background-color: #f9fafb;
+        transition: 0.3s;
+    }
+
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #4f46e5, #3b82f6);
+    }
+</style>
