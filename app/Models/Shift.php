@@ -14,9 +14,10 @@ class Shift extends Model
         'days' => 'array', // يخزن الأيام كـ JSON
     ];
 
-    public function employees()
+   
+      public function employees()
     {
-        return $this->hasMany(\App\Models\Employee::class, 'shift_id');
+        return $this->hasMany(Employee::class, 'shift_id');
     }
 
     public function leaves()

@@ -32,7 +32,7 @@
                     @can('employee-attendance')
                         <li><a class="dropdown-item d-flex align-items-center py-2"
                                 href="{{ route('attendance.manage') }}"><i
-                                    class="mdi mdi-clock-check-outline me-2 text-primary"></i>ادارة الحضور</a></li>
+                                    class="mdi mdi-clock-check-outline me-2 text-warning"></i>ادارة الحضور</a></li>
                     @endcan
                     @can('employee-salary')
                         <li><a class="dropdown-item d-flex align-items-center py-2"
@@ -158,7 +158,7 @@
                                 </td>
                                 <td>
                                     <div class="d-flex justify-content-center gap-2">
-                                        @can('employee-view')
+                                        @can('employee-show')
                                             <a href="{{ route('employees.show', $employee->id) }}"
                                                 class="btn btn-sm btn-outline-primary rounded-circle p-2 shadow-sm"
                                                 data-bs-toggle="tooltip" title="عرض التفاصيل">

@@ -168,6 +168,7 @@
                             @endphp
                             <tr>
                                 <td class="fw-semibold">{{ $shift->name }}</td>
+
                                 <td class="text-nowrap">
                                     @forelse($labels as $label)
                                         <span class="badge bg-light text-success border me-1 mb-1">{{ $label }}</span>
