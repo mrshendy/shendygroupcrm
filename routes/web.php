@@ -11,6 +11,7 @@ use App\Http\Controllers\UserController;
 // (اختياري) لو هتستخدمه في مكان تاني
 // use App\Http\Livewire\Clients\Show as ClientShow;
 
+
 Auth::routes(['verify' => true]);
 
 Route::group(['middleware' => ['guest']], function () {
@@ -109,3 +110,4 @@ Route::group(
         Route::get('/{page}', 'AdminController@index');
     }
 );
+
