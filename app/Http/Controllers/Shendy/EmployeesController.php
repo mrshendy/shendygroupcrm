@@ -13,7 +13,7 @@ class EmployeesController extends Controller
         $this->middleware('permission:attendance-list|attendance-create|attendance-edit|attendance-delete', ['only' => ['index','store']]);
         $this->middleware('permission:employee-create', ['only' => ['create','store']]);
         $this->middleware('permission:leaves-create', ['only' => ['createLeave','store']]);
-        $this->middleware('permission:attendance-create', ['only' => ['attendanceCheck','attendanceManage']]);
+        $this->middleware('permission:attendance-create', ['only' => ['attendanceManage']]);
         $this->middleware('permission:employee-create', ['only' => ['create','store']]);
         $this->middleware('permission:leaves-create', ['only' => ['createLeave','store']]);
         $this->middleware('permission:attendance-edit', ['only' => ['edit','update']]);
