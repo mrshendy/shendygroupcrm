@@ -8,8 +8,7 @@ use App\Models\Client;
 use App\Models\Project;
 use App\Models\Offer;
 use App\Models\Contract;
-use App\Models\ContractItem;
-use App\Models\ContractPayment;
+use Carbon\Carbon;
 
 class Edit extends Component
 {
@@ -44,11 +43,11 @@ class Edit extends Component
         'amount'     => 'required|numeric|min:0',
         'include_tax'=> 'boolean',
         'status'     => 'required|string',
-        'contract_file' => 'nullable|file|max:2048',
-        'items.*.title' => 'required|string',
+        'contract_file' => 'nullable|file|max:5120|mimes:pdf,doc,docx,png,jpg,jpeg',
+        'items.*.title' => 'nullable|string|max:255',
         'items.*.body'  => 'nullable|string',
         'payments.*.payment_type' => 'required|string',
-        'payments.*.title' => 'nullable|string',
+        'payments.*.title' => 'nullable|string|max:255',
         'payments.*.stage' => 'nullable|string',
         'payments.*.condition' => 'nullable|string',
         'payments.*.due_date' => 'nullable|date',
@@ -62,7 +61,6 @@ class Edit extends Component
         'client_id.required' => 'اختر العميل',
         'type.required' => 'اختر نوع العقد',
         'amount.required' => 'أدخل قيمة الإجمالي',
-        'items.*.title.required' => 'عنوان البند مطلوب',
         'payments.*.payment_type.required' => 'نوع الدفعة مطلوب',
     ];
 
@@ -76,27 +74,38 @@ class Edit extends Component
         $this->project_id = $contract->project_id;
         $this->offer_id   = $contract->offer_id;
         $this->type       = $contract->type;
-        $this->start_date = $contract->start_date;
-        $this->end_date   = $contract->end_date;
+        $this->start_date = optional($contract->start_date)->format('Y-m-d');
+        $this->end_date   = optional($contract->end_date)->format('Y-m-d');
         $this->amount     = $contract->amount;
-        $this->include_tax= $contract->include_tax;
+        $this->include_tax= (bool) $contract->include_tax;
         $this->status     = $contract->status;
 
-        // تحميل المشاريع الخاصة بالعميل الحالي
         $this->projects = Project::where('client_id', $this->client_id)->select('id','name')->get()->toArray();
 
-        // تحميل العروض الخاصة بالمشروع الحالي
         if ($this->project_id) {
-            $this->offers = Offer::where('project_id', $this->project_id)->select('id','start_date')->get()->toArray();
+            $this->offers = Offer::where('project_id', $this->project_id)
+                ->select('id','start_date')
+                ->get()
+                ->map(fn($of)=>['id'=>$of->id,'start_date'=>optional($of->start_date)->format('Y-m-d')])
+                ->toArray();
         }
 
-        // تحميل البنود
         $this->items = $contract->items()->select('title','body')->get()->toArray();
-
-        // تحميل الدفعات
         $this->payments = $contract->payments()->select(
             'payment_type','title','stage','condition','due_date','amount','include_tax','is_paid','notes'
-        )->get()->toArray();
+        )->get()->map(function ($p) {
+            return [
+                'payment_type' => $p->payment_type,
+                'title'        => $p->title,
+                'stage'        => $p->stage,
+                'condition'    => $p->condition,
+                'due_date'     => optional($p->due_date)->format('Y-m-d'),
+                'amount'       => $p->amount,
+                'include_tax'  => (bool)$p->include_tax,
+                'is_paid'      => (bool)$p->is_paid,
+                'notes'        => $p->notes,
+            ];
+        })->toArray();
     }
 
     public function updatedClientId()
@@ -109,7 +118,11 @@ class Edit extends Component
 
     public function updatedProjectId()
     {
-        $this->offers = Offer::where('project_id', $this->project_id)->select('id','start_date')->get()->toArray();
+        $this->offers = Offer::where('project_id', $this->project_id)
+            ->select('id','start_date')
+            ->get()
+            ->map(fn($of)=>['id'=>$of->id,'start_date'=>optional($of->start_date)->format('Y-m-d')])
+            ->toArray();
         $this->offer_id = null;
     }
 
@@ -130,7 +143,7 @@ class Edit extends Component
             'payment_type' => $type,
             'title' => '',
             'stage' => '',
-            'condition' => '',
+            'condition' => 'date',
             'due_date' => '',
             'amount' => 0,
             'include_tax' => false,
@@ -149,13 +162,14 @@ class Edit extends Component
     {
         $data = $this->validate();
 
+        // تجهيز بيانات العقد فقط
+        $contractData = collect($data)->except(['items','payments'])->toArray();
+
         if ($this->contract_file) {
-            $data['contract_file'] = $this->contract_file->store('contracts', 'public');
-        } else {
-            $data['contract_file'] = $this->contract->contract_file;
+            $contractData['contract_file'] = $this->contract_file->store('contracts', 'public');
         }
 
-        $this->contract->update($data);
+        $this->contract->update($contractData);
 
         // تحديث البنود
         $this->contract->items()->delete();

@@ -1,7 +1,7 @@
 <div class="container" dir="rtl">
     <!-- العنوان مع أيقونة -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="mb-0 text-primary">
+        <h3 class="mb-0 text-secondary">
             <i class="mdi mdi-file-document-edit-outline me-2"></i>
             تعديل عقد #{{ $contract->id }}
         </h3>

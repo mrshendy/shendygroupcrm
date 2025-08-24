@@ -1,6 +1,6 @@
 <div class="container" dir="rtl">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="mb-0 text-primary">
+        <h3 class="mb-0 text-secondary">
             <i class="mdi mdi-file-document-multiple-outline me-2"></i>قائمة العقود
         </h3>
         <div class="d-flex gap-2">
@@ -110,27 +110,44 @@
                     <table class="table table-sm table-hover">
                         <tbody>
                         <tr>
-                            <th style="width:200px" class="bg-light"><i class="mdi mdi-account-outline me-1"></i> العميل</th>
+                            <th style="width:200px" class="bg-light">العميل</th>
                             <td>{{ $c->client?->name }}</td>
-                            <th class="bg-light"><i class="mdi mdi-form-select me-1"></i> نوع العقد</th>
-                            <td>{{ \App\Models\Contract::TYPES[$c->type] ?? $c->type }}</td>
+                            <th class="bg-light">نوع العقد</th>
+                            <td>
+                                @php
+                                    $typeLabels = [
+                                        'software' => 'برمجيات',
+                                        'service'  => 'خدمات',
+                                        'consult'  => 'استشارات',
+                                        'other'    => 'أخرى'
+                                    ];
+                                @endphp
+                                {{ $typeLabels[$c->type] ?? $c->type }}
+                            </td>
                         </tr>
                         <tr>
-                            <th class="bg-light"><i class="mdi mdi-home-city-outline me-1"></i> المشروع</th>
+                            <th class="bg-light">المشروع</th>
                             <td>{{ $c->project?->name ?? '—' }}</td>
-                            <th class="bg-light"><i class="mdi mdi-file-send-outline me-1"></i> العرض</th>
+                            <th class="bg-light">العرض</th>
                             <td>{{ $c->offer ? ('#'.$c->offer->id) : '—' }}</td>
                         </tr>
                         <tr>
-                            <th class="bg-light"><i class="mdi mdi-calendar-range-outline me-1"></i> الفترة</th>
+                            <th class="bg-light">الفترة</th>
                             <td>
                                 <span class="badge bg-light text-dark">{{ optional($c->start_date)->format('Y-m-d') }}</span>
                                 <i class="mdi mdi-arrow-left-thin mx-1"></i>
                                 <span class="badge bg-light text-dark">{{ optional($c->end_date)->format('Y-m-d') }}</span>
                             </td>
-                            <th class="bg-light"><i class="mdi mdi-alert-circle-outline me-1"></i> الحالة</th>
+                            <th class="bg-light">الحالة</th>
                             <td>
                                 @php
+                                    $statusLabels = [
+                                        'draft'     => 'مسودة',
+                                        'active'    => 'ساري',
+                                        'suspended' => 'موقوف',
+                                        'completed' => 'مكتمل',
+                                        'cancelled' => 'ملغي'
+                                    ];
                                     $statusColors = [
                                         'draft' => 'secondary',
                                         'active' => 'success',
@@ -140,17 +157,17 @@
                                     ];
                                 @endphp
                                 <span class="badge bg-{{ $statusColors[$c->status] ?? 'secondary' }}">
-                                    {{ $c->status ?? '—' }}
+                                    {{ $statusLabels[$c->status] ?? $c->status }}
                                 </span>
                             </td>
                         </tr>
                         <tr>
-                            <th class="bg-light"><i class="mdi mdi-cash-multiple me-1"></i> الإجمالي</th>
+                            <th class="bg-light">الإجمالي</th>
                             <td>
-                                <span class="fw-bold">{{ number_format($c->amount,2) }}</span>
+                                <span class="fw-bold">{{ number_format($c->amount,2) }} ج.م</span>
                                 <small class="text-muted">{{ $c->include_tax ? '(شامل الضريبة)' : '' }}</small>
                             </td>
-                            <th class="bg-light"><i class="mdi mdi-note-text-outline me-1"></i> الملاحظات</th>
+                            <th class="bg-light">الملاحظات</th>
                             <td>{{ $c->notes ?? '—' }}</td>
                         </tr>
                         </tbody>
@@ -167,9 +184,9 @@
                             <thead class="bg-light">
                             <tr>
                                 <th>#</th>
-                                <th><i class="mdi mdi-sort me-1"></i> الترتيب</th>
-                                <th><i class="mdi mdi-format-title me-1"></i> العنوان</th>
-                                <th><i class="mdi mdi-text-long me-1"></i> النص</th>
+                                <th>الترتيب</th>
+                                <th>العنوان</th>
+                                <th>النص</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -182,9 +199,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="4" class="text-center text-muted py-3">
-                                        <i class="mdi mdi-information-outline me-1"></i> لا توجد بنود
-                                    </td>
+                                    <td colspan="4" class="text-center text-muted py-3">لا توجد بنود</td>
                                 </tr>
                             @endforelse
                             </tbody>
@@ -202,48 +217,50 @@
                             <thead class="bg-light">
                             <tr>
                                 <th>#</th>
-                                <th><i class="mdi mdi-credit-card-outline me-1"></i> النوع</th>
-                                <th><i class="mdi mdi-format-title me-1"></i> العنوان</th>
-                                <th><i class="mdi mdi-stairs me-1"></i> المرحلة</th>
-                                <th><i class="mdi mdi-calendar-month-outline me-1"></i> شهر الفترة</th>
-                                <th><i class="mdi mdi-alert-circle-outline me-1"></i> شرط التحصيل</th>
-                                <th><i class="mdi mdi-calendar-clock-outline me-1"></i> تاريخ الاستحقاق</th>
-                                <th><i class="mdi mdi-cash me-1"></i> المبلغ</th>
-                                <th><i class="mdi mdi-receipt me-1"></i> ضريبة</th>
-                                <th><i class="mdi mdi-check-all me-1"></i> مدفوعة؟</th>
-                                <th><i class="mdi mdi-note-text-outline me-1"></i> ملاحظات</th>
+                                <th>النوع</th>
+                                <th>العنوان</th>
+                                <th>المرحلة</th>
+                                <th>شرط التحصيل</th>
+                                <th>تاريخ الاستحقاق</th>
+                                <th>المبلغ</th>
+                                <th>ضريبة</th>
+                                <th>مدفوعة؟</th>
+                                <th>ملاحظات</th>
                             </tr>
                             </thead>
                             <tbody>
                             @forelse($c->payments as $i => $p)
                                 <tr>
                                     <td>{{ $i+1 }}</td>
-                                    <td>{{ $p->payment_type }}</td>
+                                    <td>
+                                        @php
+                                            $payTypes = ['milestone' => 'مرحلية', 'monthly' => 'شهرية'];
+                                        @endphp
+                                        {{ $payTypes[$p->payment_type] ?? $p->payment_type }}
+                                    </td>
                                     <td>{{ $p->title }}</td>
                                     <td>{{ $p->stage ? \App\Models\ContractPayment::STAGES[$p->stage] : '—' }}</td>
-                                    <td>{{ optional($p->period_month)->format('Y-m') }}</td>
-                                    <td>{{ $p->condition }}</td>
                                     <td>
-                                        <span class="badge bg-{{ now()->gt($p->due_date) ? 'danger' : 'light' }} text-dark">
-                                            {{ optional($p->due_date)->format('Y-m-d') }}
-                                        </span>
+                                        @php
+                                            $condLabels = ['date' => 'بالتاريخ', 'stage' => 'بالمرحلة'];
+                                        @endphp
+                                        {{ $condLabels[$p->condition] ?? $p->condition }}
                                     </td>
-                                    <td class="fw-bold">{{ number_format($p->amount,2) }}</td>
+                                    <td>{{ optional($p->due_date)->format('Y-m-d') }}</td>
+                                    <td class="fw-bold">{{ number_format($p->amount,2) }} ج.م</td>
                                     <td>{!! $p->include_tax ? '<i class="mdi mdi-check text-success"></i>' : '<i class="mdi mdi-close text-danger"></i>' !!}</td>
                                     <td>
                                         @if($p->is_paid)
-                                            <span class="badge bg-success"><i class="mdi mdi-check"></i> مدفوعة</span>
+                                            <span class="badge bg-success">مدفوعة</span>
                                         @else
-                                            <span class="badge bg-warning text-dark"><i class="mdi mdi-clock-outline"></i> غير مدفوعة</span>
+                                            <span class="badge bg-warning text-dark">غير مدفوعة</span>
                                         @endif
                                     </td>
                                     <td class="text-muted">{{ Str::limit($p->notes, 20) }}</td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="11" class="text-center text-muted py-3">
-                                        <i class="mdi mdi-information-outline me-1"></i> لا توجد دفعات
-                                    </td>
+                                    <td colspan="10" class="text-center text-muted py-3">لا توجد دفعات</td>
                                 </tr>
                             @endforelse
                             </tbody>
@@ -253,10 +270,7 @@
             </div>
         </div>
     @empty
-        <div class="alert alert-info d-flex align-items-center">
-            <i class="mdi mdi-information-outline me-2 fs-4"></i>
-            لا توجد عقود مطابقة.
-        </div>
+        <div class="alert alert-info">لا توجد عقود مطابقة.</div>
     @endforelse
 
     <div class="d-flex justify-content-center mt-4">
