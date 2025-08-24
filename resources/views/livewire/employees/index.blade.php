@@ -25,7 +25,7 @@
                     <button
                         class="btn btn-outline-secondary btn-lg rounded-pill shadow-sm px-4 dropdown-toggle d-flex align-items-center"
                         type="button" id="actionsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="mdi mdi-cog-outline me-2"></i>الإجرءات الأساسية للموظفين 
+                        <i class="mdi mdi-cog-outline me-2"></i>الإجرءات الأساسية للموظفين
                     </button>
                 @endcan
                 <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0" aria-labelledby="actionsDropdown">
@@ -173,11 +173,13 @@
                                             </a>
                                         @endcan
                                         @can('employee-delete')
-                                            <button class="btn btn-sm btn-outline-danger rounded-circle p-2 shadow-sm"
+                                            <button wire:click="confirmDelete({{ $employee->id }})"
+                                                class="btn btn-sm btn-outline-danger rounded-circle p-2 shadow-sm"
                                                 data-bs-toggle="tooltip" title="حذف الموظف">
                                                 <i class="mdi mdi-trash-can-outline"></i>
                                             </button>
                                         @endcan
+
                                     </div>
                                 </td>
                             </tr>
@@ -329,4 +331,26 @@
             })
         })
     })
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // تأكيد الحذف
+        window.addEventListener('show-delete-confirmation', () => {
+            if (confirm("هل أنت متأكد أنك تريد حذف هذا الموظف؟")) {
+                Livewire.emit('delete');
+            }
+        });
+
+        // رسالة النجاح
+        window.addEventListener('show-success-message', event => {
+            let message = event.detail.message;
+            let alertBox = document.createElement('div');
+            alertBox.className =
+                "alert alert-success alert-dismissible fade show position-fixed top-0 end-0 m-3";
+            alertBox.style.zIndex = "9999";
+            alertBox.innerHTML = `<i class="mdi mdi-check-circle-outline me-2"></i>${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
+            document.body.appendChild(alertBox);
+            setTimeout(() => alertBox.remove(), 3000);
+        });
+    });
 </script>

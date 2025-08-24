@@ -9,19 +9,21 @@
         </div>
     </div>
 @endsection
+
 @section('scripts')
     <script>
         document.addEventListener('livewire:load', function () {
-            Livewire.on('clientAdded', () => {
-                alert('تم إضافة الموظف جديد بنجاح!');
+            Livewire.on('employeeAdded', () => {
+                alert('✅ تم إضافة الموظف بنجاح!');
             });
 
-            Livewire.on('clientUpdated', () => {
-                alert('تم تحديث بيانات الموظف بنجاح!');
+            Livewire.on('employeeUpdated', () => {
+                alert('✏️ تم تحديث بيانات الموظف بنجاح!');
             });
 
-            Livewire.on('clientDeleted', () => {
-                alert('تم حذف الموظف بنجاح!');
+            Livewire.on('employeeDeleted', () => {
+                alert('🗑️ تم حذف الموظف بنجاح!');
             });
         });
     </script>
+@endsection
