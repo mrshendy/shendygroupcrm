@@ -56,7 +56,7 @@
                                 <span class="text-muted">
                                     <i class="mdi mdi-clock-outline me-2"></i> عدد الساعات:
                                 </span>
-                                <span class="fw-bold text-primary">
+                                <span class="fw-bold text-success">
                                     @php
                                         $mins = (int) $attendanceToday->hours;
                                     @endphp

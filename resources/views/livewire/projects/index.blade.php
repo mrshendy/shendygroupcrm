@@ -71,19 +71,27 @@
                                     @endif
                                 </td>
                                 <td>
-                                    @php
-                                        $priorityColors = [
-                                            'low' => 'bg-secondary text-dark',
-                                            'medium' => 'bg-info text-white',
-                                            'high' => 'bg-danger text-white',
-                                            'critical' => 'bg-dark text-white',
-                                        ];
-                                    @endphp
-                                    <span
-                                        class="badge {{ $priorityColors[$project->priority] ?? 'bg-light text-dark' }}">
-                                        {{ $project->priority }}
-                                    </span>
-                                </td>
+    @php
+        $priorityColors = [
+            'low'      => 'bg-secondary text-dark',
+            'medium'   => 'bg-info text-white',
+            'high'     => 'bg-danger text-white',
+            'critical' => 'bg-dark text-white',
+        ];
+
+        $priorityLabels = [
+            'low'      => 'منخفضة',
+            'medium'   => 'متوسطة',
+            'high'     => 'عالية',
+            'critical' => 'حرجة',
+        ];
+    @endphp
+
+    <span class="badge {{ $priorityColors[$project->priority] ?? 'bg-light text-dark' }}">
+        {{ $priorityLabels[$project->priority] ?? 'غير محدد' }}
+    </span>
+</td>
+
                                 <td>
                                     @php
                                         $statusBadges = [
