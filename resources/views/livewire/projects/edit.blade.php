@@ -5,10 +5,10 @@
             <i class="mdi mdi-rocket-launch-outline"></i>
         </div>
         <h1 class="form-title gradient-text">
-            {{ $name ? 'تعديل المشروع' : 'إنشاء مشروع جديد' }}
+            تعديل المشروع
         </h1>
         <p class="header-subtitle">
-            {{ $name ? 'قم بتحديث تفاصيل مشروعك' : 'ابدأ مشروعك الجديد بكل سهولة' }}
+            قم بتحديث تفاصيل مشروعك
         </p>
     </div>
 
@@ -85,7 +85,7 @@
                         <select wire:model.defer="country_id" class="form-select select-custom">
                             <option value="">اختر الدولة</option>
                             @foreach ($countries as $country)
-                                <option value="{{ $country->id }}">{{ $country->name_ar }}</option>
+                                <option value="{{ $country->id }}">{{ $country->name }}</option>
                             @endforeach
                         </select>
                         @error('country_id')
@@ -222,17 +222,12 @@
                         <select wire:model.defer="status" class="form-select select-custom">
                             <option value="new">جديد</option>
                             <option value="in_progress">جاري العمل</option>
-                            <option value="waiting_approval">بانتظار الموافقة</option>
-                            <option value="evaluation">قيد التقييم</option>
-                            <option value="partial_complete">مكتمل جزئيًا</option>
                             <option value="completed">مكتمل</option>
                             <option value="closed">مغلق</option>
-                            <option value="delayed">مؤجل</option>
-                            <option value="canceled">ملغي</option>
                         </select>
                     </div>
                     
-                    <!-- Priority (Optional) -->
+                    <!-- Priority -->
                     <div class="col-md-6">
                         <label class="form-label">
                             <i class="mdi mdi-priority-high me-2"></i>
@@ -240,7 +235,7 @@
                         </label>
                         <select wire:model.defer="priority" class="form-select select-custom">
                             <option value="low">منخفضة</option>
-                            <option value="medium" selected>متوسطة</option>
+                            <option value="medium">متوسطة</option>
                             <option value="high">عالية</option>
                             <option value="critical">حرجة</option>
                         </select>
@@ -259,7 +254,7 @@
                                 <i class="mdi mdi-autorenew me-2"></i> إعادة تعيين
                             </button>
                             <button type="submit" class="btn btn-primary btn-action">
-                                <i class="mdi mdi-content-save-outline me-2"></i> حفظ المشروع
+                                <i class="mdi mdi-content-save-outline me-2"></i> تحديث المشروع
                             </button>
                         </div>
                     </div>

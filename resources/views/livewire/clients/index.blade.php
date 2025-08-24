@@ -13,12 +13,11 @@
                 </ol>
             </nav>
         </div>
-      @can('client-create')
-          
-       <a href="{{ route('clients.create') }}" class="btn btn-primary rounded-pill shadow-sm px-4">
-            <i class="mdi mdi-plus-circle-outline me-1"></i> عميل جديد
-        </a>
-         @endcan
+        @can('client-create')
+            <a href="{{ route('clients.create') }}" class="btn btn-primary rounded-pill shadow-sm px-4">
+                <i class="mdi mdi-plus-circle-outline me-1"></i> عميل جديد
+            </a>
+        @endcan
     </div>
 
     <!-- Stats Cards -->
@@ -101,7 +100,6 @@
                         </span>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -202,14 +200,15 @@
                                     @endcan
 
                                     @can('client-delete')
-                                        <button type="button" wire:click="confirmDelete('{{ $client->id }}')"
+                                        <button type="button" wire:click="confirmDelete({{ $client->id }})"
                                             class="btn btn-sm btn-light rounded-circle" data-bs-toggle="tooltip"
                                             title="حذف">
                                             <i class="mdi mdi-delete-outline"></i>
                                         </button>
                                     @endcan
-                                </div>
 
+
+                                </div>
                             </td>
                         </tr>
                         @empty
@@ -244,111 +243,125 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Delete Confirmation Modal -->
-    <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true" wire:ignore.self>
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header border-0">
-                    <h5 class="modal-title text-danger">
-                        <i class="mdi mdi-alert-circle-outline me-2"></i> تأكيد الحذف
-                    </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p>هل أنت متأكد من رغبتك في حذف هذا العميل؟ سيتم حذف جميع البيانات المرتبطة به ولا يمكن استرجاعها.</p>
-                </div>
-                <div class="modal-footer border-0">
-                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">إلغاء</button>
-                    <button type="button" class="btn btn-danger" wire:click="deleteClient" data-bs-dismiss="modal">
-                        <i class="mdi mdi-delete-outline me-1"></i> نعم، احذف
-                    </button>
+        <!-- Delete Confirmation Modal -->
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true" wire:ignore.self>
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header border-0">
+                        <h5 class="modal-title text-danger">
+                            <i class="mdi mdi-alert-circle-outline me-2"></i> تأكيد الحذف
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>هل أنت متأكد من رغبتك في حذف هذا العميل؟ سيتم حذف جميع البيانات المرتبطة به ولا يمكن استرجاعها.
+                        </p>
+                    </div>
+                    <div class="modal-footer border-0">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">إلغاء</button>
+                        <button type="button" class="btn btn-danger" wire:click="deleteClient">
+                            <i class="mdi mdi-delete-outline me-1"></i> نعم، احذف
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('livewire:load', function () {
+        window.addEventListener('showDeleteConfirm', () => {
+            Swal.fire({
+                title: 'هل أنت متأكد؟',
+                text: "لن تتمكن من التراجع عن هذا الإجراء!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'نعم، احذف!',
+                cancelButtonText: 'إلغاء'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // هنا بنبعت Event
+                    Livewire.emit('deleteClientConfirmed');
+                }
+            })
+        });
+
+        Livewire.on('clientDeleted', () => {
+            Swal.fire(
+                'تم الحذف!',
+                'تم حذف العميل بنجاح.',
+                'success'
+            )
+        });
+    });
+</script>
+
+        <style>
+            .avatar {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 40px;
+                height: 40px;
+                font-weight: 600;
+            }
+
+            .breadcrumb {
+                background-color: transparent;
+                padding: 0;
+                font-size: 0.875rem;
+            }
+
+            .breadcrumb-item a {
+                color: #6c757d;
+                text-decoration: none;
+                transition: color 0.2s;
+            }
+
+            .breadcrumb-item a:hover {
+                color: #4361ee;
+            }
+
+            .breadcrumb-item.active {
+                color: #4361ee;
+                font-weight: 500;
+            }
+
+            .table th {
+                border-top: none;
+                border-bottom: 2px solid #dee2e6;
+                font-size: 0.875rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+
+            .table td {
+                vertical-align: middle;
+            }
+
+            .rounded-circle {
+                width: 32px;
+                height: 32px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.2s;
+            }
+
+            .rounded-circle:hover {
+                transform: scale(1.1);
+            }
+
+            .badge {
+                padding: 0.35rem 0.65rem;
+                font-weight: 500;
+                display: inline-flex;
+                align-items: center;
+                font-size: 0.75rem;
+                border-radius: 50px;
+            }
+        </style>
     </div>
-
-    @push('scripts')
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                // Initialize tooltips
-                var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-                var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
-                    return new bootstrap.Tooltip(tooltipTriggerEl)
-                });
-
-                // Delete confirmation modal
-                window.addEventListener('showDeleteModal', event => {
-                    var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
-                    deleteModal.show();
-                });
-            });
-        </script>
-    @endpush
-
-    <style>
-        .avatar {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 40px;
-            height: 40px;
-            font-weight: 600;
-        }
-
-        .breadcrumb {
-            background-color: transparent;
-            padding: 0;
-            font-size: 0.875rem;
-        }
-
-        .breadcrumb-item a {
-            color: #6c757d;
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-
-        .breadcrumb-item a:hover {
-            color: #4361ee;
-        }
-
-        .breadcrumb-item.active {
-            color: #4361ee;
-            font-weight: 500;
-        }
-
-        .table th {
-            border-top: none;
-            border-bottom: 2px solid #dee2e6;
-            font-size: 0.875rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .table td {
-            vertical-align: middle;
-        }
-
-        .rounded-circle {
-            width: 32px;
-            height: 32px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-        }
-
-        .rounded-circle:hover {
-            transform: scale(1.1);
-        }
-
-        .badge {
-            padding: 0.35rem 0.65rem;
-            font-weight: 500;
-            display: inline-flex;
-            align-items: center;
-            font-size: 0.75rem;
-            border-radius: 50px;
-        }
-    </style>

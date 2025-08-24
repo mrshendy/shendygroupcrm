@@ -18,11 +18,9 @@
             <!-- Add Project Button -->
             @can('project-create')
                 <a href="{{ route('projects.create') }}" class="btn btn-primary-gradient">
-
                     <i class="mdi mdi-plus-circle me-2"></i>إضافة مشروع جديد
                 </a>
             @endcan
-
         </div>
     </div>
 
@@ -56,7 +54,7 @@
                                     </span>
                                 </td>
                                 <td><span class="text-muted">{{ $project->client->name ?? '-' }}</span></td>
-                                <td><span class="text-muted">{{ $project->country->name_ar ?? '-' }}</span></td>
+                                <td><span class="text-muted">{{ $project->country->name ?? '-' }}</span></td>
                                 <td>
                                     @if ($project->start_date && $project->end_date)
                                         <span class="text-muted small">
@@ -89,23 +87,10 @@
                                 <td>
                                     @php
                                         $statusBadges = [
-                                            'new' => ['text-primary', 'mdi-new-box', 'جديد'],
+                                            'new' => ['text-danger', 'mdi-new-box', 'جديد'],
                                             'in_progress' => ['text-warning', 'mdi-reload', 'جاري العمل'],
-                                            'waiting_approval' => [
-                                                'text-info',
-                                                'mdi-clock-outline',
-                                                'بانتظار الموافقة',
-                                            ],
-                                            'evaluation' => ['text-secondary', 'mdi-eye-check-outline', 'قيد التقييم'],
-                                            'partial_complete' => [
-                                                'text-success',
-                                                'mdi-progress-check',
-                                                'مكتمل جزئيًا',
-                                            ],
                                             'completed' => ['text-success', 'mdi-check-circle-outline', 'مكتمل'],
                                             'closed' => ['text-danger', 'mdi-close-circle-outline', 'مغلق'],
-                                            'delayed' => ['text-danger', 'mdi-alert', 'مؤجل'],
-                                            'canceled' => ['text-muted', 'mdi-cancel', 'ملغي'],
                                         ];
                                         [$color, $icon, $label] = $statusBadges[$project->status] ?? [
                                             'text-muted',
@@ -120,22 +105,22 @@
                                 <td class="text-end pe-4">
                                     <div class="btn-group" role="group">
                                         @can('project-show')
-                                        <a href="{{ route('projects.show', $project->id) }}"
-                                            class="btn btn-sm btn-outline-secondary" title="عرض التفاصيل">
-                                            <i class="mdi mdi-eye"></i>
-                                        </a>
+                                            <a href="{{ route('projects.show', $project->id) }}"
+                                                class="btn btn-sm btn-outline-secondary" title="عرض التفاصيل">
+                                                <i class="mdi mdi-eye"></i>
+                                            </a>
                                         @endcan
                                         @can('project-edit')
-                                        <a href="{{ route('projects.edit', $project->id) }}"
-                                            class="btn btn-sm btn-outline-primary" title="تعديل">
-                                            <i class="mdi mdi-tooltip-edit-outline"></i>
-                                        </a>
+                                            <a href="{{ route('projects.edit', $project->id) }}"
+                                                class="btn btn-sm btn-outline-primary" title="تعديل">
+                                                <i class="mdi mdi-tooltip-edit-outline"></i>
+                                            </a>
                                         @endcan
                                         @can('project-delete')
-                                        <button wire:click="confirmDelete({{ $project->id }})"
-                                            class="btn btn-sm btn-outline-danger" title="حذف">
-                                            <i class="mdi mdi-trash-can"></i>
-                                        </button>
+                                            <a href="{{ route('projects.show', $project->id) }}"
+                                                class="btn btn-sm btn-outline-secondary" title="عرض التفاصيل">
+                                                <i class="mdi mdi-eye"></i>
+                                            </a>
                                         @endcan
                                     </div>
                                 </td>
@@ -147,11 +132,11 @@
                                         <i class="fas fa-project-diagram fa-3x text-muted mb-3"></i>
                                         <h5 class="text-muted">لا توجد مشاريع متاحة</h5>
                                         <p class="text-muted mb-4">يمكنك البدء بإضافة مشروع جديد</p>
-                                      @can('project-create')
-                                           <a href="{{ route('projects.create') }}" class="btn btn-primary">
+                                        @can('project-create')
+                                            <a href="{{ route('projects.create') }}" class="btn btn-primary">
                                                 <i class="fas fa-plus me-2"></i>إضافة مشروع
                                             </a>
-                                      @endcan
+                                        @endcan
                                     </div>
                                 </td>
                             </tr>

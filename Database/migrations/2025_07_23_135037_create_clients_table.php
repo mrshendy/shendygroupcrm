@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->nullable();
             $table->string('phone')->nullable();
-            $table->enum('status', ['new', 'in_progress', 'closed'])->default('new');
+            $table->enum('status', ['new', 'in_progress', 'active', 'closed'])->default('new');
             $table->timestamps();
         });
 

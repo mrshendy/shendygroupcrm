@@ -44,9 +44,10 @@
             <div class="input-group">
                 <span class="input-group-text"><i class="mdi mdi-information-outline"></i></span>
                 <select class="form-select" wire:model.defer="status">
-                    <option value="new">جديد</option>
-                    <option value="active">نشط</option>
-                    <option value="closed">موقوف</option>
+                   <option value="new">جديد</option>
+                                            <option value="in_progress">قيد التنفيذ</option>
+                                            <option value="active">نشط</option>
+                                            <option value="closed">مغلق</option>
                 </select>
             </div>
             @error('status') <small class="text-danger">{{ $message }}</small> @enderror
@@ -67,10 +68,14 @@
             <label class="form-label">الدولة</label>
             <div class="input-group">
                 <span class="input-group-text"><i class="mdi mdi-earth"></i></span>
-                <input type="text" class="form-control" wire:model.defer="country" placeholder="اسم الدولة">
-                {{-- لو عندك جدول دول: اعمل select واربطه بـ country_id --}}
+                <select class="form-select" wire:model.defer="country_id">
+                    <option value="">اختر الدولة</option>
+                    @foreach($countries as $id => $name)
+                        <option value="{{ $id }}">{{ $name }}</option>
+                    @endforeach
+                </select>
             </div>
-            @error('country') <small class="text-danger">{{ $message }}</small> @enderror
+            @error('country_id') <small class="text-danger">{{ $message }}</small> @enderror
         </div>
 
         {{-- اسم المسؤول --}}
@@ -133,7 +138,7 @@
 @push('scripts')
 <script>
     window.addEventListener('clientUpdated', () => {
-        // Toast / SweetAlert إن حبيت
+        // Toast أو SweetAlert
         console.log('Client updated');
     });
 </script>

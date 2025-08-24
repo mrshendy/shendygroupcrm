@@ -11,6 +11,7 @@ use App\Http\Controllers\UserController;
 // (اختياري) لو هتستخدمه في مكان تاني
 // use App\Http\Livewire\Clients\Show as ClientShow;
 
+
 Auth::routes(['verify' => true]);
 
 Route::group(['middleware' => ['guest']], function () {
@@ -33,7 +34,9 @@ Route::group(
         Route::get('finance/settings', [application_settingsController::class, 'financeSettings'])->name('finance.settings');
         Route::get('finance/', [application_settingsController::class, 'mainIndex'])->name('finance.accounts.index');
         Route::get('finance/accounts', [application_settingsController::class, 'accountsIndex'])->name('finance.accounts.manage');
+        Route::get('finance/accounts/{id}', [application_settingsController::class, 'accountEdit'])->name('finance.accounts.edit');
         Route::get('finance/items', [application_settingsController::class, 'itemsIndex'])->name('finance.items.index');
+        Route::get('finance/items/{id}', [application_settingsController::class, 'itemEdit'])->name('finance.items.edit');
 
         // معاملات مالية
         Route::get('finance/transactions', [TransactionsController::class, 'index'])->name('finance.transactions.index');
@@ -73,7 +76,9 @@ Route::group(
                 ->whereNumber('contract')->name('contracts.preview');
             Route::get('/offers/followup/{offerId}', 'OffersController@Followup')->name('offers.followup');
             Route::get('offers/{offer}/status', 'OffersController@OfferStatus')->name('offers.status');
-            Route::resource('files', 'FilesController');
+            Route::resource('files', 'FilesController');     
+            
+
             Route::resource('finance', 'FinanceController');
 
             // الرواتب والإجازات
@@ -105,3 +110,4 @@ Route::group(
         Route::get('/{page}', 'AdminController@index');
     }
 );
+

@@ -10,19 +10,42 @@
         </div>
     </div>
 @endsection
+
 @section('scripts')
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
-        document.addEventListener('livewire:load', function () {
+        document.addEventListener('livewire:load', function() {
             Livewire.on('clientAdded', () => {
-                alert('تم إضافة عميل جديد بنجاح!');
+                Swal.fire({
+                    icon: 'success',
+                    title: 'نجاح',
+                    text: 'تم إضافة عميل جديد بنجاح!',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
             });
 
             Livewire.on('clientUpdated', () => {
-                alert('تم تحديث بيانات العميل بنجاح!');
+                Swal.fire({
+                    icon: 'success',
+                    title: 'تم التحديث',
+                    text: 'تم تحديث بيانات العميل بنجاح!',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
             });
 
             Livewire.on('clientDeleted', () => {
-                alert('تم حذف العميل بنجاح!');
+                Swal.fire({
+                    icon: 'success',
+                    title: 'تم الحذف',
+                    text: 'تم حذف العميل بنجاح!',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
             });
         });
     </script>
+@endsection

@@ -175,7 +175,7 @@
                                     </tr>
                                     <tr>
                                         <td class="border-0 text-muted">الدولة</td>
-                                        <td class="border-0">{{ $client->country ?? '-' }}</td>
+                                        <td class="border-0">{{ optional($client->countryRelation)->name ?? '-' }}</td>
                                     </tr>
                                     <tr>
                                         <td class="border-0 text-muted">العنوان</td>
@@ -538,10 +538,7 @@
                                         <span class="mdi mdi-map-marker-outline text-danger fs-4"></span>
                                     </div>
                                     <div class="list-group-item d-flex justify-content-between align-items-center">
-                                        <div>
-                                            <div class="small text-muted">الدولة</div>
-                                            <div class="fw-semibold">{{ $client->country ?? '-' }}</div>
-                                        </div>
+                                      
                                         <span class="mdi mdi-earth text-primary fs-4"></span>
                                     </div>
                                 </div>
