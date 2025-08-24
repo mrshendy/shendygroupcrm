@@ -2,7 +2,8 @@
 
 
 namespace App\Http\Controllers\Application_settings;
-
+use App\Models\Account; 
+use App\Models\Item; 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Storeapplication_settings;
 use Illuminate\Support\Facades\Auth;
@@ -33,6 +34,12 @@ public function accountsIndex()
     return view('finance.accounts.manage');
 }
 
+public function accountEdit($id)
+{
+    $account = Account::findOrFail($id);
+    return view('finance.accounts.edit', compact('id'));
+}
+
 public function MainIndex()
 {
     return view('finance.index');
@@ -43,6 +50,12 @@ public function itemsIndex()
     // This method returns the view for managing financial items
     return view('finance.items.index');
 
+}
+
+public function itemEdit($id)
+{
+    $item = Item::findOrFail($id);
+    return view('finance.items.edit', compact('id'));
 }
 
   /**

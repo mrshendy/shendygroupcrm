@@ -135,6 +135,7 @@
                         <div class="input-group">
                             <span class="input-group-text bg-light"><i class="fas fa-calendar-alt"></i></span>
                             <input type="date" wire:model="hiring_date" class="form-control">
+                            
                         </div>
                         @error('hiring_date') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
                     </div>

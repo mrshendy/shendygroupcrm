@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Livewire\Clients;
 
 use Livewire\Component;
@@ -14,7 +15,7 @@ class Show extends Component
 
     protected $paginationTheme = 'bootstrap';
 
-    public $client; // مهم: خليه public عادي لو السيرفر أقل من PHP 8.1
+    public $client;
     public string $tab = 'overview';
 
     public $projectSearch = '';
@@ -22,10 +23,10 @@ class Show extends Component
     public $trxSearch     = '';
 
     public $stats = [
-        'projects' => 0,
-        'offers'   => 0,
-        'offers_open' => 0,
-        'offers_closed' => 0,
+        'projects'        => 0,
+        'offers'          => 0,
+        'offers_open'     => 0,
+        'offers_closed'   => 0,
         'collections_sum' => 0.00,
     ];
 
@@ -33,13 +34,20 @@ class Show extends Component
     {
         $this->client = $client;
 
+        // 🔹 إحصائيات المشاريع
         $this->stats['projects'] = $client->projects()->count();
 
+        // 🔹 إحصائيات العروض
         $offersQuery = Offer::where('client_id', $client->id);
-        $this->stats['offers']        = (clone $offersQuery)->count();
-        $this->stats['offers_open']   = (clone $offersQuery)->whereIn('status', ['active','pending','waiting'])->count();
-        $this->stats['offers_closed'] = (clone $offersQuery)->whereIn('status', ['closed','expired','rejected'])->count();
+        $this->stats['offers']        = $offersQuery->count();
+        $this->stats['offers_open']   = Offer::where('client_id', $client->id)
+            ->whereIn('status', ['active', 'pending', 'waiting'])
+            ->count();
+        $this->stats['offers_closed'] = Offer::where('client_id', $client->id)
+            ->whereIn('status', ['closed', 'expired', 'rejected'])
+            ->count();
 
+        // 🔹 مجموع التحصيلات
         $this->stats['collections_sum'] = (float) Transaction::where('client_id', $client->id)
             ->where('type', 'تحصيل')
             ->sum('amount');
@@ -79,7 +87,7 @@ class Show extends Component
             ->orderByDesc('id')
             ->paginate(10, ['*'], 'offers_page');
 
-        $transactions = Transaction::with(['account','item'])
+        $transactions = Transaction::with(['account', 'item'])
             ->where('client_id', $this->client->id)
             ->when($this->trxSearch, function ($q) {
                 $term = "%{$this->trxSearch}%";

@@ -56,12 +56,20 @@ class Edit extends Component
         $this->employment_status = $employee->employment_status;
         $this->employment_type   = $employee->employment_type;
         $this->salary            = $employee->salary;
-        $this->hiring_date       = $employee->hiring_date;
-        $this->birth_date        = $employee->birth_date;
-        $this->gender            = $employee->gender;
-        $this->address           = $employee->address;
-        $this->notes             = $employee->notes;
-        $this->status            = $employee->status;
+
+        // ✅ تصحيح التواريخ ليظهروا في input[type=date]
+        $this->hiring_date = $employee->hiring_date 
+            ? $employee->hiring_date->format('Y-m-d') 
+            : null;
+
+        $this->birth_date = $employee->birth_date 
+            ? $employee->birth_date->format('Y-m-d') 
+            : null;
+
+        $this->gender  = $employee->gender;
+        $this->address = $employee->address;
+        $this->notes   = $employee->notes;
+        $this->status  = $employee->status;
     }
 
     public function update()

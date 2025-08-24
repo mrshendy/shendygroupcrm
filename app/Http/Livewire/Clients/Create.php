@@ -4,7 +4,7 @@ namespace App\Http\Livewire\Clients;
 
 use Livewire\Component;
 use App\Models\Client;
-use App\Models\Countries; // ← زي ما أنت مستوردها
+use App\Models\countries; // ✅ لأن اسم الكلاس عندك كده
 use Illuminate\Support\Facades\Validator;
 
 class Create extends Component
@@ -14,41 +14,43 @@ class Create extends Component
 
     public function mount()
     {
-        // لو جدول countries فيه عمود name:
-        $this->countries = Countries::orderBy('name')->pluck('name')->toArray();
+        // هات الدول (id => name) 
+        // لو الاسم عندك Translatable (JSON)، نقدر ناخد بالعربي name->ar
+        $this->countries = countries::orderBy('name->ar')->pluck('name', 'id')->toArray();
+        
 
-        // أول سطر (ملف عميل كامل)
+        // أول سجل (عميل كامل)
         $this->clients[] = $this->emptyClient('full');
     }
 
-    public function emptyClient($type = 'full')
+    private function emptyClient($type = 'full')
     {
         $contactFields = [
-            'contact_name'   => '',
-            'contact_job'    => '',
-            'contact_phone'  => '',
-            'contact_email'  => '',
-            'is_main_contact'=> false, // ← بدلاً من is_primary
+            'contact_name'    => '',
+            'contact_job'     => '',
+            'contact_phone'   => '',
+            'contact_email'   => '',
+            'is_main_contact' => false,
         ];
 
         if ($type === 'contact-only') {
-            return array_merge(['type' => 'contact'], $contactFields);
+            return array_merge(['type' => 'contact-only'], $contactFields);
         }
 
         return array_merge([
-            'type'    => 'full',
-            'name'    => '',
-            'email'   => '',
-            'phone'   => '',
-            'status'  => 'new', // تأكد إنها match لقيمك في DB (مثلاً active/inactive..)
-            'address' => '',
-            'country' => '',    // اسم الدولة كنص (لو عندك country_id بدّل القاعدة)
+            'type'       => 'full',
+            'name'       => '',
+            'email'      => '',
+            'phone'      => '',
+            'status'     => 'new',
+            'address'    => '',
+            'country_id' => null,   // نخزن ID الدولة
+            'job'        => '',
         ], $contactFields);
     }
 
     public function addClient()
     {
-        // صفّ اتصال إضافي (لو عايز تضيف أكثر من جهة اتصال في نفس الفورم)
         $this->clients[] = $this->emptyClient('contact-only');
     }
 
@@ -61,42 +63,37 @@ class Create extends Component
     public function save()
     {
         foreach ($this->clients as $client) {
-            // إحفظ فقط الـ rows من نوع full (الـ contact-only مش محفوظة هنا)
             if (($client['type'] ?? '') !== 'full') {
                 continue;
             }
 
             $rules = [
-                // بيانات الاتصال
-                'contact_name'    => 'required|string|min:3|max:255',
-                'contact_job'     => 'required|string|min:2|max:100',
-                'contact_phone'   => 'nullable|string|max:20',
-                'contact_email'   => 'nullable|email',
-                'is_main_contact' => 'boolean',
+                'name'       => 'required|string|min:3|max:255',
+                'email'      => 'nullable|email|unique:clients,email',
+                'phone'      => 'nullable|string|max:20',
+                'status'     => 'required|in:new,in_progress,active,closed',
+                'address'    => 'nullable|string|max:255',
+                'country_id' => 'nullable|exists:countries,id', // ✅ التحقق من وجود الدولة
+                'job'        => 'nullable|string|max:255',
 
-                // بيانات العميل
-                'name'    => 'required|string|min:3|max:255',
-                'email'   => 'nullable|email|unique:clients,email',
-                'phone'   => 'nullable|string|max:20',
-                'status'  => 'required|in:new,active,closed', 
-                'address' => 'required|string|min:5|max:255',
-                'country' => 'required|string|min:2|max:100',      
+                'contact_name'    => 'nullable|string|max:255',
+                'contact_job'     => 'nullable|string|max:255',
+                'contact_phone'   => 'nullable|string|max:50',
+                'contact_email'   => 'nullable|email|max:255',
+                'is_main_contact' => 'boolean',
             ];
 
             $validated = Validator::make($client, $rules)->validate();
 
-            // تأكد إن الـfillable في Client يغطي الحقول دي
             Client::create($validated);
         }
 
-        session()->flash('success', 'تمت إضافة العميل بنجاح.');
-        // إعادة تهيئة النموذج لصفّ واحد "full" جديد
+        session()->flash('success', 'تمت إضافة العميل بنجاح ✅');
         $this->clients = [$this->emptyClient('full')];
     }
 
     public function render()
     {
-        // لازم يكون عندك الملف: resources/views/livewire/clients/create.blade.php
         return view('livewire.clients.create')->layout('layouts.master');
     }
 }

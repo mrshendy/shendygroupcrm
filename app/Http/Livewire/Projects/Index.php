@@ -1,13 +1,16 @@
 <?php
+
 namespace App\Http\Livewire\Projects;
 
 use Livewire\Component;
-use App\Models\Project;
 use Livewire\WithPagination;
+use App\Models\Project;
 
 class Index extends Component
 {
     use WithPagination;
+
+    protected $paginationTheme = 'bootstrap'; // لو بتستخدم Bootstrap للـ pagination
 
     public $search = '';
     public $confirmingDelete = false;
@@ -18,17 +21,25 @@ class Index extends Component
         $this->resetPage();
     }
 
+    /** فتح نافذة تأكيد الحذف */
     public function confirmDelete($id)
     {
-        $this->projectToDelete = Project::findOrFail($id);
+        $this->projectToDelete = $id;
         $this->confirmingDelete = true;
     }
 
+    /** حذف المشروع */
     public function deleteProject()
     {
         if ($this->projectToDelete) {
-            $this->projectToDelete->delete();
-            session()->flash('success', 'تم حذف المشروع بنجاح');
+            $project = Project::find($this->projectToDelete);
+
+            if ($project) {
+                $project->delete();
+                session()->flash('success', 'تم حذف المشروع بنجاح');
+            }
+
+            $this->resetPage();
         }
 
         $this->confirmingDelete = false;
@@ -37,8 +48,14 @@ class Index extends Component
 
     public function render()
     {
-        $projects = Project::where('name', 'like', '%' . $this->search . '%')
-            ->orWhere('description', 'like', '%' . $this->search . '%')
+        $projects = Project::with(['client', 'country'])
+            ->when($this->search, function ($query) {
+                $search = '%' . $this->search . '%';
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', $search)
+                      ->orWhere('description', 'like', $search);
+                });
+            })
             ->latest()
             ->paginate(10);
 

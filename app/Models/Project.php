@@ -10,18 +10,18 @@ class Project extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name',
-        'description',
-        'details',
-        'status',
         'country_id',
         'client_id',
+        'name',
+        'description',
         'project_type',
         'programming_type',
         'phase',
+        'details',
         'start_date',
         'end_date',
         'priority',
+        'status',
     ];
 
     protected $casts = [
@@ -29,23 +29,22 @@ class Project extends Model
         'end_date' => 'date',
     ];
 
-    // علاقة مع الدولة
-    public function country()
-    {
-        return $this->belongsTo(countries::class);
-    }
-
-    // علاقة مع العميل
     public function client()
     {
-        return $this->belongsTo(Client::class);
+        return $this->belongsTo(\App\Models\Client::class, 'client_id');
+    }
+
+    public function country()
+    {
+        return $this->belongsTo(\App\Models\countries::class, 'country_id');
     }
 
     public function offers()
     {
         return $this->hasMany(Offer::class);
     }
-      public function contracts()
+
+    public function contracts()
     {
         return $this->hasMany(Contract::class);
     }

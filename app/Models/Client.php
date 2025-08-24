@@ -7,22 +7,22 @@ use Illuminate\Database\Eloquent\Model;
 class Client extends Model
 {
     protected $fillable = [
-        'name',
-        'email',
-        'phone',
-        'status',
-        'address',
-        'country_id',
-        'contact_name',
-        'job',
-        'contact_phone',
-        'contact_email',
-        'is_main_contact',
+       'name', 'email', 'phone', 'status',
+    'address', 'country', 'country_id',
+    'job', // وظيفة العميل
+    'contact_name', 'contact_job', // ✅ وظيفة المسؤول
+    'contact_phone', 'contact_email',
+    'is_primary', 'is_main_contact',
     ];
 
     public function country()
     {
-        return $this->belongsTo(Country::class);
+        return $this->belongsTo(\App\Models\countries::class, 'country_id');
+    }
+
+    public function countryRelation()
+    {
+        return $this->belongsTo(\App\Models\countries::class, 'country_id');
     }
 
     public function projects()

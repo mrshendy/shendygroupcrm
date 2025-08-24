@@ -97,12 +97,12 @@
                             <td class="text-center pe-4">
                                 <div class="d-flex gap-2 justify-content-center">
                                     @can('finance-view')
-                                    <a href="{{ route('finance.transactions.show', $t->id) }}" class="btn btn-sm btn-outline-info px-3 rounded-pill">
+                                    <a href="{{ route('finance.accounts.show', $t->id) }}" class="btn btn-sm btn-outline-info px-3 rounded-pill">
                                         <i class="mdi mdi-eye-outline me-1"></i> عرض
                                     </a>
                                     @endcan
                                     @can('finance-edit')
-                                    <a href="{{ route('finance.transactions.edit', $t->id) }}" class="btn btn-sm btn-primary px-3 rounded-pill">
+                                    <a href="{{ route('finance.accounts.edit', $t->id) }}" class="btn btn-sm btn-primary px-3 rounded-pill">
                                         <i class="mdi mdi-pencil-outline me-1"></i> تعديل
                                     </a>
                                     @endcan
