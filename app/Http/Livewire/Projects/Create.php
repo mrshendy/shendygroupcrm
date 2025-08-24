@@ -2,18 +2,36 @@
 
 namespace App\Http\Livewire\Projects;
 
-use Livewire\Component;
-use App\Models\Project;
 use App\Models\Client;
+use App\Models\Project;
 use App\Models\countries;
 use Carbon\Carbon;
+use Livewire\Component;
 
 class Create extends Component
 {
-    public $name, $description, $details, $status = 'new';
-    public $country_id, $client_id;
-    public $project_type, $programming_type, $phase;
-    public $start_date, $end_date;
+    public $name;
+
+    public $description;
+
+    public $details;
+
+    public $status = 'new';
+
+    public $country_id;
+
+    public $client_id;
+
+    public $project_type;
+
+    public $programming_type;
+
+    public $phase;
+
+    public $start_date;
+
+    public $end_date;
+
     public $priority = 'medium';
 
     public $showDeadlineAlert = false;
@@ -22,7 +40,7 @@ class Create extends Component
         'name' => 'required|string|max:255',
         'description' => 'nullable|string',
         'details' => 'nullable|string',
-        'status' => 'required|string',
+        'status' => 'required|in:new,in_progress,completed,closed',
         'country_id' => 'nullable|exists:countries,id',
         'client_id' => 'nullable|exists:clients,id',
         'project_type' => 'required|string|in:marketing,programming,crm,design,management,training',
@@ -50,14 +68,15 @@ class Create extends Component
             'country_id' => $this->country_id,
             'client_id' => $this->client_id,
             'project_type' => $this->project_type,
-            'programming_type' => $this->project_type == 'programming' ? $this->programming_type : null,
-            'phase' => $this->project_type == 'programming' ? $this->phase : null,
+            'programming_type' => $this->project_type === 'programming' ? $this->programming_type : null,
+            'phase' => $this->project_type === 'programming' ? $this->phase : null,
             'start_date' => $this->start_date,
             'end_date' => $this->end_date,
             'priority' => $this->priority,
         ]);
 
         session()->flash('success', 'تمت إضافة المشروع بنجاح.');
+
         return redirect()->route('projects.index');
     }
 
