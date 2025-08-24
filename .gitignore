@@ -12,3 +12,5 @@ npm-debug.log
 yarn-error.log
 /storage/logs/laravel.log
 /server_log.txt
+/start_crm_test.bat
+/start_crm_test.vbs
