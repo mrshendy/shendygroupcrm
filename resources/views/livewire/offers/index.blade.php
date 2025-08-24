@@ -160,7 +160,21 @@
                                     {{ $statusText }}
                                 </span>
                             </td>
-                            <td>-</td>
+                            {{-- آخر متابع --}}
+                                <td>
+                                    @if ($offer->latestFollowup)
+                                        <div>
+                                            <strong>{{ $offer->latestFollowup->user->name ?? '-' }}</strong>
+                                            <br>
+                                            <small class="text-muted">
+                                                {{ $offer->latestFollowup->follow_up_date ?? '' }}
+                                            </small>
+                                        </div>
+                                    @else
+                                        <span class="text-muted">لا يوجد</span>
+                                    @endif
+                                </td>
+
                             <td>{{ Auth::user()->name }}</td>
                             <td>
                                 <div class="d-flex justify-content-end gap-2">

@@ -54,13 +54,12 @@
                 </div>
 
                 <!-- approved -->
-                @if ($status == 'approved')
+                @if ($status === 'approved')
                     <div class="mb-4">
                         <label class="form-label fw-semibold">
-                            <i class="mdi mdi-calendar-send me-1 text-muted"></i>
-                            تاريخ إرسال العقد
+                            <i class="mdi mdi-calendar-send me-1 text-muted"></i> تاريخ إرسال العقد
                         </label>
-                        <input type="date" wire:model="contract_date" class="form-control">
+                        <input type="date" wire:model="contract_date" class="form-control" required>
                         @error('contract_date')
                             <div class="text-danger small mt-1 d-flex align-items-center">
                                 <i class="mdi mdi-alert-circle-outline me-1"></i>{{ $message }}
@@ -70,43 +69,44 @@
 
                     <div class="mb-4">
                         <label class="form-label fw-semibold">
-                            <i class="mdi mdi-note-text-outline me-1 text-muted"></i>
-                            ملاحظات
+                            <i class="mdi mdi-note-text-outline me-1 text-muted"></i> ملاحظات
                         </label>
                         <textarea wire:model="notes" class="form-control" rows="3"></textarea>
                     </div>
                 @endif
 
                 <!-- rejected -->
-                @if ($status == 'rejected')
+                @if ($status === 'rejected')
                     <div class="mb-4">
                         <label class="form-label fw-semibold">
-                            <i class="mdi mdi-alert-box-outline me-1 text-muted"></i>
-                            سبب الرفض
+                            <i class="mdi mdi-alert-box-outline me-1 text-muted"></i> سبب الرفض
                         </label>
                         <textarea wire:model="reject_reason" class="form-control" rows="3" required></textarea>
+                        @error('reject_reason')
+                            <div class="text-danger small mt-1 d-flex align-items-center">
+                                <i class="mdi mdi-alert-circle-outline me-1"></i>{{ $message }}
+                            </div>
+                        @enderror
                     </div>
                 @endif
 
                 <!-- pending -->
-                @if ($status == 'pending')
+                @if ($status === 'pending')
                     <div class="mb-4">
                         <label class="form-label fw-semibold">
-                            <i class="mdi mdi-clock-outline me-1 text-muted"></i>
-                            تاريخ الانتظار
+                            <i class="mdi mdi-clock-outline me-1 text-muted"></i> تاريخ الانتظار
                         </label>
                         <input type="date" wire:model="waiting_date" class="form-control">
                     </div>
                 @endif
 
                 <!-- signed -->
-                @if ($status == 'signed')
+                @if ($status === 'signed')
                     <div class="mb-4">
                         <label class="form-label fw-semibold">
-                            <i class="mdi mdi-file-document-outline me-1 text-muted"></i>
-                            ملف العقد
+                            <i class="mdi mdi-file-document-outline me-1 text-muted"></i> ملف العقد
                         </label>
-                        <input type="file" wire:model="contract_file" class="form-control">
+                        <input type="file" wire:model="contract_file" class="form-control" required>
                         @error('contract_file')
                             <div class="text-danger small mt-1 d-flex align-items-center">
                                 <i class="mdi mdi-alert-circle-outline me-1"></i>{{ $message }}
@@ -116,19 +116,17 @@
 
                     <div class="mb-4">
                         <label class="form-label fw-semibold">
-                            <i class="mdi mdi-note-edit-outline me-1 text-muted"></i>
-                            ملاحظات إدارية
+                            <i class="mdi mdi-note-edit-outline me-1 text-muted"></i> ملاحظات إدارية
                         </label>
                         <textarea wire:model="notes" class="form-control" rows="3"></textarea>
                     </div>
                 @endif
 
                 <!-- closed -->
-                @if ($status == 'closed')
+                @if ($status === 'closed')
                     <div class="mb-4">
                         <label class="form-label fw-semibold">
-                            <i class="mdi mdi-close-circle-outline me-1 text-muted"></i>
-                            سبب الإغلاق
+                            <i class="mdi mdi-close-circle-outline me-1 text-muted"></i> سبب الإغلاق
                         </label>
                         <textarea wire:model="close_reason" class="form-control" rows="3" required></textarea>
                     </div>
@@ -154,34 +152,12 @@
 </div>
 
 <style>
-    .card {
-        border: none;
-        overflow: hidden;
-    }
-
-    .card-header {
-        border-bottom: 1px solid rgba(0, 0, 0, .05);
-    }
-
-    .form-select, .form-control {
-        padding: 0.75rem 1rem;
-    }
-
-    .form-select:focus, .form-control:focus {
-        box-shadow: none;
-        border-color: #86b7fe;
-    }
-
-    .rounded-4 {
-        border-radius: 0.75rem !important;
-    }
-
-    .form-check-input:checked {
-        background-color: #0d6efd;
-        border-color: #0d6efd;
-    }
-
-    .rounded-pill {
-        padding: 0.5rem 1.5rem;
-    }
+    .card { border: none; overflow: hidden; }
+    .card-header { border-bottom: 1px solid rgba(0, 0, 0, .05); }
+    .form-select, .form-control { padding: 0.65rem 0.9rem; font-size: 0.9rem; }
+    .form-select:focus, .form-control:focus { box-shadow: none; border-color: #86b7fe; }
+    .rounded-4 { border-radius: 0.75rem !important; }
+    .form-check-input:checked { background-color: #0d6efd; border-color: #0d6efd; }
+    .rounded-pill { padding: 0.45rem 1.3rem; font-size: 0.9rem; }
+    label.form-label { font-size: 0.95rem; }
 </style>
