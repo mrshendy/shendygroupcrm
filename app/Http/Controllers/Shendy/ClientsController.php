@@ -36,8 +36,11 @@ class ClientsController extends Controller
         return view('clients.edit', ['clientId' => $id]);
     }
 
-    // Store/Update/Destroy مش لازمة هنا لو هتشتغل Livewire بالكامل
-    public function store() {}
-    public function update() {}
-    public function destroy() {}
+   public function destroy(Client $client)
+    {
+        $client->delete();
+
+        return redirect()->route('clients.index')
+            ->with('success', 'تم حذف العميل بنجاح');
+    }
 }
