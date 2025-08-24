@@ -25,7 +25,7 @@
                     <button
                         class="btn btn-outline-secondary btn-lg rounded-pill shadow-sm px-4 dropdown-toggle d-flex align-items-center"
                         type="button" id="actionsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="mdi mdi-cog-outline me-2"></i>الإجراءات
+                        <i class="mdi mdi-cog-outline me-2"></i>الإجرءات الأساسية للموظفين 
                     </button>
                 @endcan
                 <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0" aria-labelledby="actionsDropdown">

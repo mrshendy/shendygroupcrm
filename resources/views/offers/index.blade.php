@@ -12,36 +12,15 @@
 @endsection
 
 @section('scripts')
-    <script>
-        document.addEventListener('livewire:load', function () {
-            Livewire.on('offerAdded', () => {
-                alert('✅ تم إضافة العرض بنجاح!');
-            });
-
-            Livewire.on('offerUpdated', () => {
-                alert('✏️ تم تحديث بيانات العرض بنجاح!');
-            });
-
-          
-        });
-    </script>
-
-    <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        window.addEventListener('show-delete-confirmation', () => {
-            if (confirm("هل أنت متأكد أنك تريد حذف هذا العرض؟")) {
-                Livewire.emit('delete');
-            }
-        });
-
-        window.addEventListener('offer-deleted', () => {
-            alert('تم حذف العرض بنجاح!');
-        });
-    });
-</script>
 <script>
-    window.addEventListener('statusUpdated', () => {
-        alert('تم تحديث حالة العرض بنجاح!');
+   
+    // إشعارات أخرى
+    document.addEventListener('livewire:load', function () {
+        Livewire.on('offerAdded', () => alert('✅ تم إضافة العرض بنجاح!'));
+        Livewire.on('offerUpdated', () => alert('✏️ تم تحديث بيانات العرض بنجاح!'));
+        window.addEventListener('statusUpdated', () => alert('تم تحديث حالة العرض بنجاح!'));
+        
     });
+    
 </script>
-
+@endsection

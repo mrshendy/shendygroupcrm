@@ -45,7 +45,7 @@
                         @forelse($projects as $project)
                             <tr class="align-middle">
                                 <td class="ps-4 fw-semibold">
-                                    <i class="mdi mdi-folder-outline text-primary me-2"></i>
+                                    <i class="mdi mdi-folder-outline text-success me-2"></i>
                                     {{ $project->name }}
                                 </td>
                                 <td>
@@ -162,24 +162,5 @@
             @endif
         </div>
     </div>
-        <!-- نافذة التأكيد -->
-    @if ($confirmingDelete)
-        <div class="modal fade show d-block" style="background: rgba(0,0,0,.5)">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title text-danger">تأكيد الحذف</h5>
-                        <button type="button" class="btn-close" wire:click="$set('confirmingDelete', false)"></button>
-                    </div>
-                    <div class="modal-body">
-                        هل أنت متأكد أنك تريد حذف هذا المشروع؟
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-secondary" wire:click="$set('confirmingDelete', false)">إلغاء</button>
-                        <button class="btn btn-danger" wire:click="delete">تأكيد الحذف</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    @endif
+    
 </div>
