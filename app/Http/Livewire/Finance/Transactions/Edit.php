@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\Transaction;
 use App\Models\Account;
 use App\Models\Item;
+use App\Models\Client;
 use Illuminate\Support\Facades\DB;
 
 class Edit extends Component
@@ -13,7 +14,7 @@ class Edit extends Component
     public $transactionId;
     public $amount, $transaction_date, $from_account_id, $to_account_id, $item_id, $collection_type, $notes;
     public $type;
-    public $accounts = [], $items = [];
+    public $accounts = [], $items = [], $clients = [];
 
     protected $rules = [
         'from_account_id'  => 'required|exists:accounts,id|different:to_account_id',
@@ -23,6 +24,15 @@ class Edit extends Component
         'transaction_date' => 'required|date',
         'collection_type'  => 'nullable|string|max:100',
         'notes'            => 'nullable|string|max:500',
+    ];
+
+    protected $messages = [
+        'from_account_id.required' => 'يجب اختيار الحساب المحول منه',
+        'to_account_id.required'   => 'يجب اختيار الحساب المحول إليه',
+        'item_id.required'         => 'يجب اختيار البند',
+        'amount.required'          => 'المبلغ مطلوب',
+        'amount.numeric'           => 'المبلغ يجب أن يكون رقمًا',
+        'transaction_date.required'=> 'تاريخ الحركة مطلوب',
     ];
 
     public function mount($transactionId)
@@ -41,6 +51,11 @@ class Edit extends Component
 
         $this->accounts = Account::orderBy('name')->get();
         $this->items    = $this->itemsForType($this->type);
+
+        // ✅ لو نوع الإيراد لازم نجيب العملاء
+        if ($this->type === 'إيراد' || $this->type === 'تحصيل') {
+            $this->clients = Client::orderBy('name')->get();
+        }
     }
 
     private function itemsForType($type)
@@ -76,7 +91,7 @@ class Edit extends Component
                 'item_id'          => $this->item_id,
                 'collection_type'  => $this->collection_type,
                 'notes'            => $this->notes,
-                'user_update'      => auth()->id(), // أفضل من تغيير user_add
+                'user_update'      => auth()->id(),
             ]);
 
             // 3) تطبيق تأثير العملية الجديدة

@@ -43,4 +43,8 @@ class TransactionsController extends Controller
     {
         return view('finance.transactions.edit', compact('transactionId'));
     }
+    public function destroy($transactionId)
+    {
+        // Logic to delete the transaction
+    }
 }

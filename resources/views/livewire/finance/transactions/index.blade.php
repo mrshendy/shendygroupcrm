@@ -25,25 +25,28 @@
             </div>
         </div>
 
-        <!-- Flash Message -->
+        <!-- Flash Messages -->
         @if (session('message'))
-            <div class="alert alert-success alert-dismissible fade show mb-5 border-0 shadow-sm">
-                <div class="d-flex align-items-center">
-                    <i class="mdi mdi-check-circle-outline me-2" style="font-size: 1.25rem"></i>
-                    <div>{{ session('message') }}</div>
-                    <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
+            <div class="alert alert-success alert-dismissible fade show mb-4 border-0 shadow-sm">
+                <i class="mdi mdi-check-circle-outline me-2"></i>{{ session('message') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+        @if (session('error'))
+            <div class="alert alert-danger alert-dismissible fade show mb-4 border-0 shadow-sm">
+                <i class="mdi mdi-alert-circle-outline me-2"></i>{{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         @endif
 
         <!-- Search -->
-        <div class="row g-3 mb-5">
+        <div class="row g-3 mb-4">
             <div class="col-md-6">
                 <div class="input-group shadow-sm">
                     <span class="input-group-text bg-white border-end-0">
                         <i class="mdi mdi-magnify text-muted"></i>
                     </span>
-                    <input type="text" class="form-control border-start-0" placeholder="بحث بالملاحظات أو نوع تحصيل..."
+                    <input type="text" class="form-control border-start-0" placeholder="بحث بالملاحظات أو نوع التحصيل..."
                         wire:model.debounce.400ms="search">
                 </div>
             </div>
@@ -68,7 +71,7 @@
                     @forelse($transactions as $i => $t)
                         @php $isExpense = $t->type === 'مصروفات'; @endphp
                         <tr>
-                            <td class="text-center ps-4 text-muted">{{ $transactions->firstItem() + $i }}</td>
+                            <td class="text-center text-muted">{{ $transactions->firstItem() + $i }}</td>
                             <td class="text-end">
                                 <div class="d-flex align-items-center justify-content-end">
                                     <i class="mdi mdi-{{ $isExpense ? 'arrow-up' : 'arrow-down' }}-circle-outline me-2 
@@ -94,21 +97,21 @@
                                 @endif
                             </td>
                             <td>{{ \Carbon\Carbon::parse($t->transaction_date)->format('Y-m-d') }}</td>
-                            <td class="text-center pe-4">
+                            <td class="text-center">
                                 <div class="d-flex gap-2 justify-content-center">
-                                    @can('finance-view')
-                                    <a href="{{ route('finance.accounts.show', $t->id) }}" class="btn btn-sm btn-outline-info px-3 rounded-pill">
+                                    {{-- @can('finance-view')
+                                    <a href="{{ route('finance.accounts.show', $t->id) }}" class="btn btn-sm btn-outline-info rounded-pill">
                                         <i class="mdi mdi-eye-outline me-1"></i> عرض
                                     </a>
-                                    @endcan
+                                    @endcan --}}
                                     @can('finance-edit')
-                                    <a href="{{ route('finance.accounts.edit', $t->id) }}" class="btn btn-sm btn-primary px-3 rounded-pill">
+                                    <a href="{{ route('finance.transactions.edit', $t->id) }}" class="btn btn-sm btn-primary rounded-pill">
                                         <i class="mdi mdi-pencil-outline me-1"></i> تعديل
                                     </a>
                                     @endcan
                                     @can('finance-delete')
                                     <button wire:click="confirmDelete({{ $t->id }})"
-                                        class="btn btn-sm btn-outline-danger px-3 rounded-pill">
+                                        class="btn btn-sm btn-outline-danger rounded-pill">
                                         <i class="mdi mdi-delete-outline me-1"></i> حذف
                                     </button>
                                     @endcan
@@ -139,16 +142,16 @@
 
 <!-- Delete Confirmation Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true" wire:ignore.self>
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header border-0">
-                <h5 class="modal-title text-danger">
+            <div class="modal-header bg-danger text-white border-0">
+                <h5 class="modal-title">
                     <i class="mdi mdi-alert-circle-outline me-2"></i> تأكيد الحذف
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <p>هل أنت متأكد من رغبتك في حذف هذه الحركة المالية؟</p>
+                <p>هل أنت متأكد من رغبتك في حذف هذه الحركة المالية؟ لا يمكن التراجع بعد الحذف.</p>
             </div>
             <div class="modal-footer border-0">
                 <button type="button" class="btn btn-light" data-bs-dismiss="modal">إلغاء</button>
@@ -160,7 +163,7 @@
     </div>
 </div>
 
-<!-- Scripts to control modal -->
+@push('scripts')
 <script>
     window.addEventListener('showDeleteModal', () => {
         let modal = new bootstrap.Modal(document.getElementById('deleteModal'));
@@ -173,5 +176,4 @@
         if (modal) modal.hide();
     });
 </script>
-
-
+@endpush
