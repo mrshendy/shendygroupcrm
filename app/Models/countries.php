@@ -15,6 +15,9 @@ class countries extends Model
         'notes',
         'user_add',
     ];
+    protected $casts = [
+    'name' => 'array',
+];
 
     public $translatable = ['name'];
     protected $table = 'countries';
