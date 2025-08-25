@@ -1,7 +1,7 @@
 <div class="container" dir="rtl">
-    <!-- Header Section - Improved with icons and better spacing -->
+    <!-- Header Section -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="mb-0 text-primary">
+        <h3 class="mb-0 text-secondary">
             <i class="mdi mdi-file-document-outline me-2"></i>
             عرض العقد #{{ $contract->id }}
             <small class="text-muted fs-6">بتاريخ {{ $contract->created_at->format('Y-m-d') }}</small>
@@ -19,20 +19,51 @@
         </div>
     </div>
 
-    <!-- Contract Details Card - Enhanced with better layout and icons -->
+    <!-- Contract Details Card -->
     <div class="card mb-4 border-0 shadow-sm">
         <div class="card-header bg-light-primary d-flex justify-content-between align-items-center py-3">
             <h5 class="mb-0 d-flex align-items-center">
-                <i class="mdi mdi-card-account-details-outline text-primary me-2"></i>
+                <i class="mdi mdi-card-account-details-outline text-secondary me-2"></i>
                 بيانات العقد الأساسية
             </h5>
-            <div>
-                <span class="badge bg-{{ $contract->status == 'active' ? 'success' : ($contract->status == 'draft' ? 'secondary' : 'warning') }} rounded-pill">
-                    <i class="mdi mdi-{{ $contract->status == 'active' ? 'check-circle' : ($contract->status == 'draft' ? 'file-document-edit' : 'alert-circle') }} me-1"></i>
-                    {{ $contract->status == 'active' ? 'ساري' : ($contract->status == 'draft' ? 'مسودة' : $contract->status) }}
-                </span>
-            </div>
+
+            <!-- حالة العقد -->
+            @php
+                $statusMap = [
+                    'active'    => 'ساري',
+                    'draft'     => 'مسودة',
+                    'completed' => 'مكتمل',
+                    'cancelled' => 'ملغي',
+                    'suspended' => 'معلق',
+                    'expired'   => 'منتهي',
+                ];
+                $statusText = $statusMap[$contract->status] ?? $contract->status;
+                $statusColor = match($contract->status) {
+                    'active'    => 'success',
+                    'draft'     => 'secondary',
+                    'completed' => 'primary',
+                    'cancelled' => 'danger',
+                    'suspended' => 'warning',
+                    'expired'   => 'dark',
+                    default     => 'light',
+                };
+                $statusIcon = match($contract->status) {
+                    'active'    => 'check-circle',
+                    'draft'     => 'file-document-edit',
+                    'completed' => 'check-all',
+                    'cancelled' => 'close-circle',
+                    'suspended' => 'pause-circle',
+                    'expired'   => 'alert-circle',
+                    default     => 'information',
+                };
+            @endphp
+
+            <span class="badge bg-{{ $statusColor }} rounded-pill">
+                <i class="mdi mdi-{{ $statusIcon }} me-1"></i>
+                {{ $statusText }}
+            </span>
         </div>
+
         <div class="card-body">
             <div class="row g-3">
                 <!-- Client Info -->
@@ -79,7 +110,9 @@
                             <div class="col-6">
                                 <small class="text-muted"><i class="mdi mdi-calendar-range me-1"></i> الفترة</small>
                                 <div class="fw-bold">
-                                    {{ optional($contract->start_date)->format('Y-m-d') }} <i class="mdi mdi-arrow-left-thin mx-1"></i> {{ optional($contract->end_date)->format('Y-m-d') }}
+                                    {{ optional($contract->start_date)->format('Y-m-d') }}
+                                    <i class="mdi mdi-arrow-left-thin mx-1"></i>
+                                    {{ optional($contract->end_date)->format('Y-m-d') }}
                                 </div>
                             </div>
                         </div>
@@ -138,6 +171,9 @@
             </div>
         </div>
     </div>
+
+
+
 
     <!-- Contract Items Card - Enhanced with better styling -->
     <div class="card mb-4 border-0 shadow-sm">
@@ -201,7 +237,6 @@
                             <th><i class="mdi mdi-calendar-clock-outline me-1"></i> تاريخ الاستحقاق</th>
                             <th><i class="mdi mdi-cash me-1"></i> المبلغ</th>
                             <th><i class="mdi mdi-progress-check me-1"></i> الحالة</th>
-                            <th><i class="mdi mdi-cog-outline me-1"></i> إجراءات</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -243,11 +278,7 @@
                                         </span>
                                     @endif
                                 </td>
-                                <td>
-                                    <button class="btn btn-sm btn-outline-primary rounded-pill" data-bs-toggle="modal" data-bs-target="#paymentDetails{{ $p->id }}">
-                                        <i class="mdi mdi-eye-outline"></i>
-                                    </button>
-                                </td>
+                               
                             </tr>
                         @empty
                             <tr>

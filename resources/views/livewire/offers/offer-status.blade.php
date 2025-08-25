@@ -33,7 +33,7 @@
                 <!-- الحالة -->
                 <div class="mb-4">
                     <label class="form-label fw-semibold">
-                        <i class="mdi mdi-state-machine me-1 text-muted"></i> الحالة الجديدة
+                        <i class="mdi mdi-state-machine me-1 text-muted"></i> الحالة الجديدة <span class="text-danger">*</span>
                     </label>
                     <select wire:model="status" class="form-select" required>
                         <option value="">اختر الحالة</option>
@@ -57,7 +57,7 @@
                 @if ($status === 'approved')
                     <div class="mb-4">
                         <label class="form-label fw-semibold">
-                            <i class="mdi mdi-calendar-send me-1 text-muted"></i> تاريخ إرسال العقد
+                            <i class="mdi mdi-calendar-send me-1 text-muted"></i> تاريخ إرسال العقد <span class="text-danger">*</span>
                         </label>
                         <input type="date" wire:model="contract_date" class="form-control" required>
                         @error('contract_date')
@@ -69,9 +69,14 @@
 
                     <div class="mb-4">
                         <label class="form-label fw-semibold">
-                            <i class="mdi mdi-note-text-outline me-1 text-muted"></i> ملاحظات
+                            <i class="mdi mdi-note-text-outline me-1 text-muted"></i> ملاحظات <span class="text-danger">*</span>
                         </label>
-                        <textarea wire:model="notes" class="form-control" rows="3"></textarea>
+                        <textarea wire:model="notes" class="form-control" rows="3" required></textarea>
+                        @error('notes')
+                            <div class="text-danger small mt-1 d-flex align-items-center">
+                                <i class="mdi mdi-alert-circle-outline me-1"></i>{{ $message }}
+                            </div>
+                        @enderror
                     </div>
                 @endif
 
@@ -79,7 +84,7 @@
                 @if ($status === 'rejected')
                     <div class="mb-4">
                         <label class="form-label fw-semibold">
-                            <i class="mdi mdi-alert-box-outline me-1 text-muted"></i> سبب الرفض
+                            <i class="mdi mdi-alert-box-outline me-1 text-muted"></i> سبب الرفض <span class="text-danger">*</span>
                         </label>
                         <textarea wire:model="reject_reason" class="form-control" rows="3" required></textarea>
                         @error('reject_reason')
@@ -94,9 +99,14 @@
                 @if ($status === 'pending')
                     <div class="mb-4">
                         <label class="form-label fw-semibold">
-                            <i class="mdi mdi-clock-outline me-1 text-muted"></i> تاريخ الانتظار
+                            <i class="mdi mdi-clock-outline me-1 text-muted"></i> تاريخ الانتظار <span class="text-danger">*</span>
                         </label>
-                        <input type="date" wire:model="waiting_date" class="form-control">
+                        <input type="date" wire:model="waiting_date" class="form-control" required>
+                        @error('waiting_date')
+                            <div class="text-danger small mt-1 d-flex align-items-center">
+                                <i class="mdi mdi-alert-circle-outline me-1"></i>{{ $message }}
+                            </div>
+                        @enderror
                     </div>
                 @endif
 
@@ -104,7 +114,7 @@
                 @if ($status === 'signed')
                     <div class="mb-4">
                         <label class="form-label fw-semibold">
-                            <i class="mdi mdi-file-document-outline me-1 text-muted"></i> ملف العقد
+                            <i class="mdi mdi-file-document-outline me-1 text-muted"></i> ملف العقد <span class="text-danger">*</span>
                         </label>
                         <input type="file" wire:model="contract_file" class="form-control" required>
                         @error('contract_file')
@@ -116,9 +126,14 @@
 
                     <div class="mb-4">
                         <label class="form-label fw-semibold">
-                            <i class="mdi mdi-note-edit-outline me-1 text-muted"></i> ملاحظات إدارية
+                            <i class="mdi mdi-note-edit-outline me-1 text-muted"></i> ملاحظات إدارية <span class="text-danger">*</span>
                         </label>
-                        <textarea wire:model="notes" class="form-control" rows="3"></textarea>
+                        <textarea wire:model="notes" class="form-control" rows="3" required></textarea>
+                        @error('notes')
+                            <div class="text-danger small mt-1 d-flex align-items-center">
+                                <i class="mdi mdi-alert-circle-outline me-1"></i>{{ $message }}
+                            </div>
+                        @enderror
                     </div>
                 @endif
 
@@ -126,9 +141,14 @@
                 @if ($status === 'closed')
                     <div class="mb-4">
                         <label class="form-label fw-semibold">
-                            <i class="mdi mdi-close-circle-outline me-1 text-muted"></i> سبب الإغلاق
+                            <i class="mdi mdi-close-circle-outline me-1 text-muted"></i> سبب الإغلاق <span class="text-danger">*</span>
                         </label>
                         <textarea wire:model="close_reason" class="form-control" rows="3" required></textarea>
+                        @error('close_reason')
+                            <div class="text-danger small mt-1 d-flex align-items-center">
+                                <i class="mdi mdi-alert-circle-outline me-1"></i>{{ $message }}
+                            </div>
+                        @enderror
                     </div>
 
                     <div class="mb-4 form-check form-switch ps-0">
@@ -137,6 +157,11 @@
                         <label class="form-check-label fw-semibold" for="confirmClose">
                             <i class="mdi mdi-shield-check-outline me-1"></i>تأكيد إغلاق العرض
                         </label>
+                        @error('confirm_close')
+                            <div class="text-danger small mt-1 d-flex align-items-center">
+                                <i class="mdi mdi-alert-circle-outline me-1"></i>{{ $message }}
+                            </div>
+                        @enderror
                     </div>
                 @endif
 

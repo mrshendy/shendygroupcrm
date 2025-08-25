@@ -50,10 +50,9 @@
                             <option value="">اختر النوع...</option>
                             <option value="bank">بنكي</option>
                             <option value="cash">نقدي</option>
-                            <option value="wallet">محفظه</option>
+                            <option value="wallet">محفظة</option>
                             <option value="investment">استثمار</option>
                             <option value="instapay">انستا باي</option>
-
                         </select>
                         @error('type') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
@@ -103,26 +102,25 @@
                     </div>
                 </div>
 
-               <div class="col-12">
-    <div class="d-flex justify-content-between align-items-center border-top pt-4">
-        <div>
-            @if($account_id)
-                <button type="button" wire:click="resetInputs" class="btn btn-light border text-danger px-4">
-                    <span class="mdi mdi-close-circle-outline me-1"></span>
-                    إلغاء التعديل
-                </button>
-            @endif
-        </div>
+                <div class="col-12">
+                    <div class="d-flex justify-content-between align-items-center border-top pt-4">
+                        <div>
+                            @if($account_id)
+                                <button type="button" wire:click="resetInputs" class="btn btn-light border text-danger px-4">
+                                    <span class="mdi mdi-close-circle-outline me-1"></span>
+                                    إلغاء التعديل
+                                </button>
+                            @endif
+                        </div>
 
-        <div>
-            <button type="submit" class="btn btn-{{ $account_id ? 'success' : 'primary' }} px-4">
-                <span class="mdi mdi-content-save{{ $account_id ? '-edit' : '' }}-outline me-1"></span>
-                {{ $account_id ? 'تحديث الحساب' : 'حفظ الحساب' }}
-            </button>
-        </div>
-    </div>
-</div>
-
+                        <div>
+                            <button type="submit" class="btn btn-{{ $account_id ? 'success' : 'primary' }} px-4">
+                                <span class="mdi mdi-content-save{{ $account_id ? '-edit' : '' }}-outline me-1"></span>
+                                {{ $account_id ? 'تحديث الحساب' : 'حفظ الحساب' }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </form>
     </div>
@@ -145,19 +143,28 @@
                 </thead>
                 <tbody>
                     @forelse($accounts as $acc)
+                        @php
+                            $types = [
+                                'bank'      => 'بنكي',
+                                'cash'      => 'نقدي',
+                                'wallet'    => 'محفظة',
+                                'investment'=> 'استثمار',
+                                'instapay'  => 'انستا باي',
+                            ];
+                            $typeLabel = $types[$acc->type] ?? $acc->type;
+                        @endphp
                         <tr wire:key="account-{{ $acc->id }}">
                             <td class="ps-4">{{ $acc->name }}</td>
                             <td>
-    <span class="badge bg-opacity-10
-        {{ $acc->type === 'bank'
-            ? 'bg-primary text-primary'
-            : (in_array($acc->type, ['cash','wallet','investment','instapay'])
-                ? 'bg-info text-info'
-                : 'bg-warning text-warning') }}">
-        {{ $acc->type }}
-    </span>
-</td>
-
+                                <span class="badge bg-opacity-10
+                                    {{ $acc->type === 'bank'
+                                        ? 'bg-primary text-primary'
+                                        : (in_array($acc->type, ['cash','wallet','investment','instapay'])
+                                            ? 'bg-info text-info'
+                                            : 'bg-warning text-warning') }}">
+                                    {{ $typeLabel }}
+                                </span>
+                            </td>
                             <td>{{ $acc->account_number ?? '--' }}</td>
                             <td class="fw-bold text-end {{ $acc->current_balance >= 0 ? 'text-success' : 'text-danger' }}">
                                 {{ number_format($acc->current_balance, 2) }} ج.م
@@ -175,12 +182,9 @@
                                 </span>
                             </td>
                             <td class="text-center pe-4">
-                                
-                                    <a href="{{ route('finance.accounts.edit', $acc->id) }}" class="btn btn-sm btn-outline-primary px-2 me-1" title="تعديل">
-                                        <span class="mdi mdi-pencil-outline"></span>
-                                    </a>
-
-                                
+                                <a href="{{ route('finance.accounts.edit', $acc->id) }}" class="btn btn-sm btn-outline-primary px-2 me-1" title="تعديل">
+                                    <span class="mdi mdi-pencil-outline"></span>
+                                </a>
                                 <button wire:click="delete({{ $acc->id }})" 
                                         onclick="confirm('هل أنت متأكد من حذف هذا الحساب؟') || event.stopImmediatePropagation()"
                                         class="btn btn-sm btn-outline-danger px-2" title="حذف">
@@ -199,6 +203,23 @@
                 </tbody>
             </table>
         </div>
+
+        @if($accounts->hasPages())
+            <div class="card-footer bg-light">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-center">
+                    <div class="text-muted small mb-2 mb-md-0">
+                        <span class="mdi mdi-counter me-1"></span>
+                        عرض <span class="fw-semibold">{{ $accounts->firstItem() }}</span> إلى 
+                        <span class="fw-semibold">{{ $accounts->lastItem() }}</span> من 
+                        <span class="fw-semibold">{{ $accounts->total() }}</span> نتيجة
+                    </div>
+                    <div>{{ $accounts->onEachSide(1)->links() }}</div>
+                </div>
+            </div>
+        @endif
+    </div>
+</div>
+
 
         @if($accounts->hasPages())
             <div class="card-footer bg-light">
