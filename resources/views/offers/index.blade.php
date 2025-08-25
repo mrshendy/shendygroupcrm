@@ -11,7 +11,6 @@
     </div>
 @endsection
 
-@section('scripts')
 <script>
    
     // إشعارات أخرى
@@ -23,4 +22,3 @@
     });
     
 </script>
-@endsection

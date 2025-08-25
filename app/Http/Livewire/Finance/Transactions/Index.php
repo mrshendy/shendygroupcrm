@@ -16,7 +16,10 @@ class Index extends Component
 
     protected $paginationTheme = 'bootstrap';
 
-    protected $listeners = ['deleteConfirmed' => 'delete'];
+    // لو عندك تأكيد خارجي ممكن تربطه هنا
+    protected $listeners = [
+        'deleteConfirmed' => 'delete',
+    ];
 
     public function updatingSearch()
     {
@@ -41,7 +44,7 @@ class Index extends Component
                     // إرجاع تأثير العملية قبل الحذف
                     $accountService->revertTransaction($tx);
 
-                    // Soft Delete بدل الحذف النهائي
+                    // Soft Delete
                     $tx->delete();
 
                     session()->flash('message', '✅ تم حذف الحركة (Soft Delete) وتعديل الأرصدة بنجاح');
@@ -59,9 +62,11 @@ class Index extends Component
     {
         $transactions = Transaction::with(['fromAccount','toAccount','item','client'])
             ->when($this->search, function($q){
-                $q->where('notes','like',"%{$this->search}%")
-                  ->orWhere('collection_type','like',"%{$this->search}%")
-                  ->orWhere('amount','like',"%{$this->search}%");
+                $q->where(function($qq){
+                    $qq->where('notes','like',"%{$this->search}%")
+                       ->orWhere('collection_type','like',"%{$this->search}%")
+                       ->orWhere('amount','like',"%{$this->search}%");
+                });
             })
             ->latest()
             ->paginate(10);

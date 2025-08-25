@@ -3,8 +3,5 @@
 @section('title', 'قائمة التعاقدات')
 
 @section('content')
-
-            @livewire('contracts.index')
-        </div>
-    </div>
+    @livewire('contracts.index')
 @endsection

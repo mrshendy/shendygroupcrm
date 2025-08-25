@@ -1,3 +1,4 @@
+{{-- resources/views/livewire/offers-index.blade.php --}}
 <div class="container-fluid px-4">
     <!-- Header Section -->
     <div class="d-flex justify-content-between align-items-center py-4">
@@ -16,7 +17,7 @@
         @endcan
     </div>
 
-    
+    {{-- Flash Messages --}}
     @if(session('success'))
         <div class="alert alert-success d-flex align-items-center">
             <i class="mdi mdi-check-circle-outline me-2 fs-4"></i>
@@ -124,7 +125,7 @@
                     </thead>
                     <tbody>
                         @foreach ($offers as $offer)
-                            <tr>
+                            <tr wire:key="offer-row-{{ $offer->id }}">
                                 <td>{{ $loop->iteration }}</td>
                                 <td>
                                     <div class="d-flex align-items-center">
@@ -169,11 +170,11 @@
                                         };
                                     @endphp
                                     <span class="badge bg-{{ $statusClass }}-subtle text-{{ $statusClass }}">
-                                        <i
-                                            class="mdi mdi-{{ $statusClass == 'success' ? 'check' : ($statusClass == 'warning' ? 'clock' : 'close') }}-circle-outline me-1"></i>
+                                        <i class="mdi mdi-{{ $statusClass == 'success' ? 'check' : ($statusClass == 'warning' ? 'clock' : 'close') }}-circle-outline me-1"></i>
                                         {{ $statusText }}
                                     </span>
                                 </td>
+
                                 {{-- آخر متابع --}}
                                 <td>
                                     @if ($offer->latestFollowup)
@@ -189,42 +190,48 @@
                                     @endif
                                 </td>
 
+                                {{-- المنشئ --}}
                                 <td>{{ Auth::user()->name }}</td>
+
+                                {{-- الإجراءات --}}
                                 <td>
                                     <div class="d-flex justify-content-end gap-2">
                                         @can('offer-show')
                                             <a href="{{ route('offers.show', $offer->id) }}"
-                                                class="btn btn-sm btn-light rounded-circle" data-bs-toggle="tooltip"
-                                                title="عرض">
+                                               class="btn btn-sm btn-light rounded-circle" data-bs-toggle="tooltip"
+                                               title="عرض">
                                                 <i class="mdi mdi-eye-outline"></i>
                                             </a>
                                         @endcan
+
                                         @can('offer-edit')
                                             <a href="{{ route('offers.edit', $offer->id) }}"
-                                                class="btn btn-sm btn-light rounded-circle" data-bs-toggle="tooltip"
-                                                title="تعديل">
+                                               class="btn btn-sm btn-light rounded-circle" data-bs-toggle="tooltip"
+                                               title="تعديل">
                                                 <i class="mdi mdi-pencil-outline"></i>
                                             </a>
                                         @endcan
+
                                         @can('offer-delete')
-                                            <button type="button" wire:click="confirmDelete({{ $offer->id }})"
-                                                class="btn btn-sm btn-light rounded-circle" data-bs-toggle="tooltip"
-                                                title="حذف">
+                                            <button type="button"
+                                                    wire:click="confirmDelete({{ $offer->id }})"
+                                                    class="btn btn-sm btn-light rounded-circle"
+                                                    data-bs-toggle="tooltip"
+                                                    title="حذف">
                                                 <i class="mdi mdi-delete-outline text-danger"></i>
                                             </button>
                                         @endcan
 
-
                                         <div class="dropdown">
                                             <button class="btn btn-sm btn-light rounded-circle" type="button"
-                                                data-bs-toggle="dropdown">
+                                                    data-bs-toggle="dropdown">
                                                 <i class="mdi mdi-dots-vertical"></i>
                                             </button>
                                             <ul class="dropdown-menu dropdown-menu-end">
                                                 <li>
                                                     @can('offer-followup')
                                                         <a class="dropdown-item"
-                                                            href="{{ route('offers.followup', $offer->id) }}">
+                                                           href="{{ route('offers.followup', $offer->id) }}">
                                                             <i class="mdi mdi-chat-processing-outline me-2"></i>متابعة
                                                         </a>
                                                     @endcan
@@ -232,7 +239,7 @@
                                                 <li>
                                                     @can('offer-status')
                                                         <a class="dropdown-item"
-                                                            href="{{ route('offers.status', $offer) }}">
+                                                           href="{{ route('offers.status', $offer) }}">
                                                             <i class="mdi mdi-swap-horizontal me-2"></i>تغيير الحالة
                                                         </a>
                                                     @endcan
@@ -243,36 +250,47 @@
                                 </td>
                             </tr>
                         @endforeach
+                        @if (empty($offers) || (is_iterable($offers) && count($offers) === 0))
+                            <tr>
+                                <td colspan="9" class="text-center text-muted py-4">
+                                    لا توجد بيانات للعرض.
+                                </td>
+                            </tr>
+                        @endif
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Modal تأكيد الحذف -->
-<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmLabel"
-    aria-hidden="true" wire:ignore.self>
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title"><i class="mdi mdi-alert-outline me-2"></i> تأكيد الحذف</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                هل أنت متأكد أنك تريد حذف هذا العرض؟ لا يمكن التراجع عن العملية.
-            </div>
-            <div class="modal-footer border-0">
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal">إلغاء</button>
-                <button type="button" class="btn btn-danger" wire:click="delete" wire:loading.attr="disabled">
-                    <span wire:loading.remove>نعم، احذف</span>
-                    <span wire:loading>جارٍ الحذف...</span>
-                </button>
+    <!-- Modal تأكيد الحذف -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmLabel"
+         aria-hidden="true" wire:ignore.self>
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">
+                        <i class="mdi mdi-alert-outline me-2"></i> تأكيد الحذف
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    هل أنت متأكد أنك تريد حذف هذا العرض؟ لا يمكن التراجع عن العملية.
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-danger" wire:click="delete" wire:loading.attr="disabled">
+                        <span class="spinner-border spinner-border-sm me-2" wire:loading></span>
+                        <span wire:loading.remove>نعم، احذف</span>
+                        <span wire:loading>جارٍ الحذف...</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
+{{-- Style (يحافظ على نفس أسلوبك) --}}
 <style>
     .avatar {
         display: inline-flex;
@@ -282,84 +300,40 @@
         height: 36px;
         font-weight: 600;
     }
-
-    .breadcrumb {
-        background-color: transparent;
-        padding: 0;
-    }
-
-    .breadcrumb-item a {
-        color: #6c757d;
-        text-decoration: none;
-    }
-
-    .breadcrumb-item.active {
-        color: #4361ee;
-    }
-
-    .card-header {
-        border-bottom: 1px solid rgba(0, 0, 0, .05);
-    }
-
-    .table th {
-        border-top: none;
-        border-bottom: 2px solid #dee2e6;
-    }
-
-    .btn-light {
-        background-color: #f8f9fa;
-        border-color: #f8f9fa;
-    }
-
-    .btn-light:hover {
-        background-color: #e9ecef;
-        border-color: #e9ecef;
-    }
-
-    .rounded-circle {
-        width: 32px;
-        height: 32px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .badge {
-        padding: 0.35rem 0.65rem;
-        font-weight: 500;
-        display: inline-flex;
-        align-items: center;
-    }
-
-    .bg-primary-subtle {
-        background-color: rgba(13, 110, 253, 0.1);
-    }
-
-    .bg-info-subtle {
-        background-color: rgba(13, 202, 240, 0.1);
-    }
-
-    .bg-success-subtle {
-        background-color: rgba(25, 135, 84, 0.1);
-    }
-
-    .bg-warning-subtle {
-        background-color: rgba(255, 193, 7, 0.1);
-    }
-
-    .bg-danger-subtle {
-        background-color: rgba(220, 53, 69, 0.1);
-    }
+    .breadcrumb { background-color: transparent; padding: 0; }
+    .breadcrumb-item a { color: #6c757d; text-decoration: none; }
+    .breadcrumb-item.active { color: #4361ee; }
+    .card-header { border-bottom: 1px solid rgba(0, 0, 0, .05); }
+    .table th { border-top: none; border-bottom: 2px solid #dee2e6; }
+    .btn-light { background-color: #f8f9fa; border-color: #f8f9fa; }
+    .btn-light:hover { background-color: #e9ecef; border-color: #e9ecef; }
+    .rounded-circle { width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; }
+    .badge { padding: 0.35rem 0.65rem; font-weight: 500; display: inline-flex; align-items: center; }
+    .bg-primary-subtle { background-color: rgba(13, 110, 253, 0.1); }
+    .bg-info-subtle { background-color: rgba(13, 202, 240, 0.1); }
+    .bg-success-subtle { background-color: rgba(25, 135, 84, 0.1); }
+    .bg-warning-subtle { background-color: rgba(255, 193, 7, 0.1); }
+    .bg-danger-subtle { background-color: rgba(220, 53, 69, 0.1); }
 </style>
-<script>
-    window.addEventListener('open-delete-modal', () => {
-        const modal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
-        modal.show();
-    });
 
-    window.addEventListener('close-delete-modal', () => {
-        const modalEl = document.getElementById('deleteConfirmModal');
-        const modal = bootstrap.Modal.getInstance(modalEl);
-        if (modal) modal.hide();
-    });
+{{-- Scripts الخاصة بالمودال والـ Tooltip --}}
+<script>
+  window.addEventListener('open-delete-modal', () => {
+    const modal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+    modal.show();
+  });
+
+  window.addEventListener('close-delete-modal', () => {
+    const modalEl = document.getElementById('deleteConfirmModal');
+    const modal = bootstrap.Modal.getInstance(modalEl);
+    if (modal) modal.hide();
+  });
+
+  // تفعيل الـ Tooltips لو مستخدم Bootstrap 5
+  document.addEventListener('DOMContentLoaded', function () {
+      const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+      tooltipTriggerList.map(function (tooltipTriggerEl) {
+          return new bootstrap.Tooltip(tooltipTriggerEl)
+      })
+  });
 </script>

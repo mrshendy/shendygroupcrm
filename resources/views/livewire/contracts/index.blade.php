@@ -1,4 +1,4 @@
-<div class="container" dir="rtl">
+<div class="" dir="rtl">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="mb-0 text-secondary">
             <i class="mdi mdi-file-document-multiple-outline me-2"></i>قائمة العقود
@@ -6,7 +6,7 @@
         <div class="d-flex gap-2">
             @can('contract-create')
             <a href="{{ route('contracts.create') }}" class="btn btn-primary btn-sm rounded-pill">
-                <i class="mdi mdi-plus-circle-outline me-1"></i> عقد جديد 
+                <i class="mdi mdi-plus-circle-outline me-1"></i> عقد جديد
             </a>
             @endcan
         </div>
@@ -93,12 +93,12 @@
                 <div class="d-flex gap-2">
                     @can('contract-show')
                     <a href="{{ route('contracts.show', $c) }}" class="btn btn-sm btn-outline-primary rounded-pill">
-                        <i class="mdi mdi-eye-outline me-1"></i> عرض 
+                        <i class="mdi mdi-eye-outline me-1"></i> عرض
                     </a>
                     @endcan
                     @can('contract-edit')
                     <a href="{{ route('contracts.edit', $c) }}" class="btn btn-sm btn-outline-warning rounded-pill">
-                        <i class="mdi mdi-pencil-outline me-1"></i> تعديل 
+                        <i class="mdi mdi-pencil-outline me-1"></i> تعديل
                     </a>
                     @endcan
                     @can('contract-delete')
@@ -119,17 +119,7 @@
                             <th style="width:200px" class="bg-light">العميل</th>
                             <td>{{ $c->client?->name }}</td>
                             <th class="bg-light">نوع العقد</th>
-                            <td>
-                                @php
-                                    $typeLabels = [
-                                        'software' => 'برمجيات',
-                                        'service'  => 'خدمات',
-                                        'consult'  => 'استشارات',
-                                        'other'    => 'أخرى'
-                                    ];
-                                @endphp
-                                {{ $typeLabels[$c->type] ?? $c->type }}
-                            </td>
+                            <td>{{ $c->type }}</td>
                         </tr>
                         <tr>
                             <th class="bg-light">المشروع</th>
@@ -146,25 +136,7 @@
                             </td>
                             <th class="bg-light">الحالة</th>
                             <td>
-                                @php
-                                    $statusLabels = [
-                                        'draft'     => 'مسودة',
-                                        'active'    => 'ساري',
-                                        'suspended' => 'موقوف',
-                                        'completed' => 'مكتمل',
-                                        'cancelled' => 'ملغي'
-                                    ];
-                                    $statusColors = [
-                                        'draft' => 'secondary',
-                                        'active' => 'success',
-                                        'suspended' => 'warning',
-                                        'completed' => 'info',
-                                        'cancelled' => 'danger'
-                                    ];
-                                @endphp
-                                <span class="badge bg-{{ $statusColors[$c->status] ?? 'secondary' }}">
-                                    {{ $statusLabels[$c->status] ?? $c->status }}
-                                </span>
+                                <span class="badge bg-secondary">{{ $c->status }}</span>
                             </td>
                         </tr>
                         <tr>
@@ -179,100 +151,6 @@
                         </tbody>
                     </table>
                 </div>
-
-                {{-- بنود العقد --}}
-                <div class="mb-4">
-                    <h6 class="fw-bold d-flex align-items-center mb-3">
-                        <i class="mdi mdi-format-list-checks me-2 text-primary"></i> بنود العقد
-                    </h6>
-                    <div class="table-responsive">
-                        <table class="table table-sm table-hover">
-                            <thead class="bg-light">
-                            <tr>
-                                <th>#</th>
-                                <th>الترتيب</th>
-                                <th>العنوان</th>
-                                <th>النص</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @forelse($c->items as $idx => $it)
-                                <tr>
-                                    <td>{{ $idx+1 }}</td>
-                                    <td>{{ $it->sort_order }}</td>
-                                    <td>{{ $it->title }}</td>
-                                    <td class="text-muted">{{ Str::limit($it->body, 50) }}</td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="4" class="text-center text-muted py-3">لا توجد بنود</td>
-                                </tr>
-                            @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                {{-- دفعات العقد --}}
-                <div class="mb-2">
-                    <h6 class="fw-bold d-flex align-items-center mb-3">
-                        <i class="mdi mdi-credit-card-outline me-2 text-primary"></i> دفعات العقد
-                    </h6>
-                    <div class="table-responsive">
-                        <table class="table table-sm table-hover">
-                            <thead class="bg-light">
-                            <tr>
-                                <th>#</th>
-                                <th>النوع</th>
-                                <th>العنوان</th>
-                                <th>المرحلة</th>
-                                <th>شرط التحصيل</th>
-                                <th>تاريخ الاستحقاق</th>
-                                <th>المبلغ</th>
-                                <th>ضريبة</th>
-                                <th>مدفوعة؟</th>
-                                <th>ملاحظات</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            @forelse($c->payments as $i => $p)
-                                <tr>
-                                    <td>{{ $i+1 }}</td>
-                                    <td>
-                                        @php
-                                            $payTypes = ['milestone' => 'مرحلية', 'monthly' => 'شهرية'];
-                                        @endphp
-                                        {{ $payTypes[$p->payment_type] ?? $p->payment_type }}
-                                    </td>
-                                    <td>{{ $p->title }}</td>
-                                    <td>{{ $p->stage ? \App\Models\ContractPayment::STAGES[$p->stage] : '—' }}</td>
-                                    <td>
-                                        @php
-                                            $condLabels = ['date' => 'بالتاريخ', 'stage' => 'بالمرحلة'];
-                                        @endphp
-                                        {{ $condLabels[$p->condition] ?? $p->condition }}
-                                    </td>
-                                    <td>{{ optional($p->due_date)->format('Y-m-d') }}</td>
-                                    <td class="fw-bold">{{ number_format($p->amount,2) }} ج.م</td>
-                                    <td>{!! $p->include_tax ? '<i class="mdi mdi-check text-success"></i>' : '<i class="mdi mdi-close text-danger"></i>' !!}</td>
-                                    <td>
-                                        @if($p->is_paid)
-                                            <span class="badge bg-success">مدفوعة</span>
-                                        @else
-                                            <span class="badge bg-warning text-dark">غير مدفوعة</span>
-                                        @endif
-                                    </td>
-                                    <td class="text-muted">{{ Str::limit($p->notes, 20) }}</td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="10" class="text-center text-muted py-3">لا توجد دفعات</td>
-                                </tr>
-                            @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
             </div>
         </div>
     @empty
@@ -282,45 +160,55 @@
     <div class="d-flex justify-content-center mt-4">
         {{ $contracts->links() }}
     </div>
-</div>
 
-<!-- Modal تأكيد الحذف -->
-<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true" wire:ignore.self>
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header border-0">
-        <h5 class="modal-title text-danger">
-          <i class="mdi mdi-alert-outline me-2"></i> تأكيد الحذف
-        </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        هل أنت متأكد من حذف هذا العقد؟ لا يمكن التراجع عن هذه العملية.
-      </div>
-      <div class="modal-footer border-0">
-        <button type="button" class="btn btn-light" data-bs-dismiss="modal">إلغاء</button>
-        <button type="button" class="btn btn-danger" wire:click="delete">
-          نعم، احذف
-        </button>
+    <!-- Modal تأكيد الحذف (داخل نفس الجذر) -->
+    <div wire:ignore.self class="modal fade" id="deleteConfirmModal" tabindex="-1"
+         aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header border-0">
+            <h5 class="modal-title text-danger">
+              <i class="mdi mdi-alert-outline me-2"></i> تأكيد الحذف
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                    wire:click="cancelDelete"></button>
+          </div>
+          <div class="modal-body">
+            هل أنت متأكد من حذف هذا العقد؟ لا يمكن التراجع عن هذه العملية.
+          </div>
+          <div class="modal-footer border-0">
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal"
+                    wire:click="cancelDelete">إلغاء</button>
+            <button type="button"
+                    class="btn btn-danger"
+                    wire:click="deleteConfirmed"
+                    wire:loading.attr="disabled"
+                    wire:target="deleteConfirmed">
+              <span wire:loading.remove wire:target="deleteConfirmed">نعم، احذف</span>
+              <span wire:loading wire:target="deleteConfirmed">
+                  <span class="spinner-border spinner-border-sm"></span> جارٍ الحذف...
+              </span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
 </div>
 
+
 <script>
-    window.addEventListener('open-delete-modal', () => {
-        const modal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
-        modal.show();
-    });
-
-    window.addEventListener('close-delete-modal', () => {
+    (function () {
         const modalEl = document.getElementById('deleteConfirmModal');
-        const modal = bootstrap.Modal.getInstance(modalEl);
-        if (modal) modal.hide();
-    });
+        let modal = null;
 
-    window.addEventListener('offer-deleted', () => {
-        alert("✅ تم حذف العرض بنجاح");
-    });
+        window.addEventListener('contracts-open-delete', () => {
+            if (!modal) modal = new bootstrap.Modal(modalEl);
+            modal.show();
+        });
+
+        window.addEventListener('contracts-close-delete', () => {
+            if (!modal) modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+            modal.hide();
+        });
+    })();
 </script>
-

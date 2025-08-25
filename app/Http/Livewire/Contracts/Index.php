@@ -3,7 +3,6 @@
 namespace App\Http\Livewire\Contracts;
 
 use App\Models\Contract;
-use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -11,88 +10,93 @@ class Index extends Component
 {
     use WithPagination;
 
+    // لو بتستخدم Bootstrap للـ pagination
     protected $paginationTheme = 'bootstrap';
 
+    // ===== فلاتر وخصائص الواجهة =====
     public $search = '';
     public $type = '';
     public $status = '';
     public $perPage = 10;
 
-    public $contractToDelete = null; // لتخزين ID العقد
+    // أنواع العقود لعرضها في الفلتر
+    public array $types = [];
 
-    protected $queryString = [
-        'search' => ['except' => ''],
-        'type'   => ['except' => ''],
-        'status' => ['except' => ''],
-        'page'   => ['except' => 1],
-    ];
+    // لتخزين الـ ID المطلوب حذفه
+    public ?int $deleteId = null;
 
-    /** إعادة ضبط الصفحة عند تحديث الفلاتر */
-    public function updatingSearch() { $this->resetPage(); }
-    public function updatingType()   { $this->resetPage(); }
-    public function updatingStatus() { $this->resetPage(); }
-    public function updatingPerPage(){ $this->resetPage(); }
+    // حماية من مشاكل old page عند تغيير الفلاتر
+    protected $updatesQueryString = ['search', 'type', 'status', 'perPage'];
 
-    /** فتح نافذة التأكيد */
-    public function confirmDelete(int $id): void
+    // إعادة ضبط الصفحة عند تغيير أي فلتر
+    public function updated($field)
     {
-        $this->contractToDelete = $id;
-        $this->dispatchBrowserEvent('open-delete-modal');
-    }
-
-    /** تنفيذ الحذف (Soft Delete) */
-    public function deleteConfirmed(): void
-    {
-        if ($this->contractToDelete) {
-            $contract = Contract::find($this->contractToDelete);
-
-            if ($contract) {
-                // Soft Delete
-                $contract->delete();
-                session()->flash('success', '✅ تم حذف العقد (Soft Delete) بنجاح.');
-            }
-
-            $this->contractToDelete = null;
-
-            // إعادة تحميل الصفحة
+        if (in_array($field, ['search', 'type', 'status', 'perPage'])) {
             $this->resetPage();
-
-            $this->dispatchBrowserEvent('close-delete-modal');
         }
     }
 
-    /** التحقق من وجود ملف العقد */
-    public function getFileExistsAttribute(): bool
+    public function mount()
     {
-        return $this->contract_file && Storage::disk('public')->exists($this->contract_file);
+        $this->types = \App\Models\Contract::TYPES;
     }
 
-    /** جلب رابط الملف */
-    public function getFileUrlAttribute(): ?string
+    // === فتح مودال الحذف
+    public function confirmDelete(int $id): void
     {
-        return $this->contract_file ? asset('storage/'.$this->contract_file) : null;
+        $this->deleteId = $id;
+        // Livewire v2
+        $this->dispatchBrowserEvent('contracts-open-delete');
+    }
+
+    // === إلغاء الحذف (اغلاق المودال)
+    public function cancelDelete(): void
+    {
+        $this->reset('deleteId');
+        $this->dispatchBrowserEvent('contracts-close-delete');
+    }
+
+    // === تنفيذ الحذف
+    public function deleteConfirmed(): void
+    {
+        if ($this->deleteId) {
+            $contract = Contract::find($this->deleteId);
+            if ($contract) {
+                $contract->delete(); // SoftDeletes
+                session()->flash('success', 'تم حذف العقد بنجاح.');
+            } else {
+                session()->flash('error', 'العقد غير موجود.');
+            }
+        } else {
+            session()->flash('error', 'لا يوجد عنصر محدد للحذف.');
+        }
+
+        $this->reset('deleteId');
+        $this->dispatchBrowserEvent('contracts-close-delete');
+        $this->resetPage();
     }
 
     public function render()
     {
-        $search = trim((string) $this->search);
-
-        $contracts = Contract::with(['client', 'project', 'offer', 'items', 'payments'])
-            ->when($search !== '', function ($q) use ($search) {
-                if (is_numeric($search)) {
-                    $q->where('id', (int) $search);
-                } else {
-                    $q->whereHas('client', fn ($c) => $c->where('name', 'like', "%{$search}%"));
-                }
+        $contracts = Contract::query()
+            ->with(['client', 'project', 'offer', 'items', 'payments'])
+            ->when($this->search, function ($q) {
+                $s = trim($this->search);
+                $q->where(function ($qq) use ($s) {
+                    $qq->where('id', $s)
+                       ->orWhereHas('client', function ($c) use ($s) {
+                           $c->where('name', 'like', "%{$s}%");
+                       });
+                });
             })
-            ->when($this->type !== '', fn ($q) => $q->where('type', $this->type))
-            ->when($this->status !== '', fn ($q) => $q->where('status', $this->status))
-            ->orderByDesc('id')
+            ->when($this->type, fn($q) => $q->where('type', $this->type))
+            ->when($this->status, fn($q) => $q->where('status', $this->status))
+            ->latest('id')
             ->paginate((int) $this->perPage);
 
         return view('livewire.contracts.index', [
             'contracts' => $contracts,
-            'types'     => \App\Models\Contract::TYPES ?? [],
-        ])->layout('layouts.master', ['title' => 'قائمة التعاقدات']);
+            'types'     => $this->types,
+        ]);
     }
 }

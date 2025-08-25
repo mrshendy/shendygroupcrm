@@ -70,12 +70,11 @@
                 <tbody>
                     @forelse($transactions as $i => $t)
                         @php $isExpense = $t->type === 'مصروفات'; @endphp
-                        <tr>
+                        <tr wire:key="transactions-row-{{ $t->id }}">
                             <td class="text-center text-muted">{{ $transactions->firstItem() + $i }}</td>
                             <td class="text-end">
                                 <div class="d-flex align-items-center justify-content-end">
-                                    <i class="mdi mdi-{{ $isExpense ? 'arrow-up' : 'arrow-down' }}-circle-outline me-2 
-                                        {{ $isExpense ? 'text-danger' : 'text-success' }}" style="font-size: 1.25rem"></i>
+                                    <i class="mdi mdi-{{ $isExpense ? 'arrow-up' : 'arrow-down' }}-circle-outline me-2 {{ $isExpense ? 'text-danger' : 'text-success' }}" style="font-size: 1.25rem"></i>
                                     <span class="fw-bold {{ $isExpense ? 'text-danger' : 'text-success' }}">
                                         {{ number_format($t->amount, 2) }} ج.م
                                     </span>
@@ -104,9 +103,9 @@
                                         <i class="mdi mdi-pencil-outline me-1"></i> تعديل
                                     </a>
                                     @endcan
+
                                     @can('finance-delete')
-                                    <button wire:click="confirmDelete({{ $t->id }})"
-                                        class="btn btn-sm btn-outline-danger rounded-pill">
+                                    <button type="button" wire:click="confirmDelete({{ $t->id }})" class="btn btn-sm btn-outline-danger rounded-pill">
                                         <i class="mdi mdi-delete-outline me-1"></i> حذف
                                     </button>
                                     @endcan
@@ -143,32 +142,67 @@
                 <h5 class="modal-title">
                     <i class="mdi mdi-alert-circle-outline me-2"></i> تأكيد الحذف
                 </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <p>هل أنت متأكد من رغبتك في حذف هذه الحركة المالية؟ لا يمكن التراجع بعد الحذف.</p>
             </div>
             <div class="modal-footer border-0">
                 <button type="button" class="btn btn-light" data-bs-dismiss="modal">إلغاء</button>
-                <button type="button" class="btn btn-danger" wire:click="$emit('deleteConfirmed')">
-                    <i class="mdi mdi-delete-outline me-1"></i> نعم، احذف
+                <button type="button" class="btn btn-danger" wire:click.prevent="delete" wire:loading.attr="disabled">
+                    <span class="spinner-border spinner-border-sm me-2" wire:loading></span>
+                    <span wire:loading.remove>نعم، احذف</span>
+                    <span wire:loading>جارٍ الحذف...</span>
                 </button>
             </div>
         </div>
     </div>
 </div>
 
-
+<!-- v2-safe script -->
 <script>
-    window.addEventListener('showDeleteModal', () => {
-        let modal = new bootstrap.Modal(document.getElementById('deleteModal'));
-        modal.show();
+document.addEventListener('livewire:load', function () {
+    const modalEl = document.getElementById('deleteModal');
+    let modalInstance = null;
+
+    function useBootstrapModal() {
+        return typeof bootstrap !== 'undefined' && bootstrap.Modal;
+    }
+    function ensureModal() {
+        if (!modalInstance && useBootstrapModal()) {
+            modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl, { backdrop: 'static' });
+        }
+        return modalInstance;
+    }
+
+    // أحداث المتصفح المرسلة من Livewire v2: $this->dispatchBrowserEvent(...)
+    window.addEventListener('showDeleteModal', function () {
+        if (useBootstrapModal()) {
+            ensureModal().show();
+        } else if (window.jQuery && typeof jQuery.fn.modal === 'function') {
+            jQuery('#deleteModal').modal('show'); // لو بتستخدم Bootstrap 4/jQuery
+        } else {
+            // Fallback تأكيد بسيط
+            if (confirm('تأكيد الحذف؟')) {
+                // استدعاء الميثود delete من نفس الكمبوننت
+                // في v2، أسهل طريقة هي الضغط على الزر برمجيًا:
+                const btn = modalEl.querySelector('button[wire\\:click\\.=delete], button[wire\\:click=delete]');
+                if (btn) btn.click();
+            }
+        }
     });
 
-    window.addEventListener('hideDeleteModal', () => {
-        let modalEl = document.getElementById('deleteModal');
-        let modal = bootstrap.Modal.getInstance(modalEl);
-        if (modal) modal.hide();
+    window.addEventListener('hideDeleteModal', function () {
+        if (useBootstrapModal()) {
+            ensureModal().hide();
+        } else if (window.jQuery && typeof jQuery.fn.modal === 'function') {
+            jQuery('#deleteModal').modal('hide');
+        }
     });
+
+    // تنظيف عند إغلاق المودال
+    modalEl.addEventListener('hidden.bs.modal', function () {
+        // لا شيء ضروري هنا
+    });
+});
 </script>
-
