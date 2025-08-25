@@ -33,12 +33,13 @@
                     <label class="form-label fw-bold">من <span class="text-danger">*</span></label>
                     <select wire:model.defer="from_account_id" class="form-select">
                         <option value="">— اختر الحساب —</option>
-                        @foreach($accounts as $a)
+                        @foreach ($accounts as $a)
                             <option value="{{ $a->id }}">{{ $a->name }}</option>
                         @endforeach
                     </select>
                     @error('from_account_id')
-                        <small class="text-danger d-block"><i class="mdi mdi-alert-circle-outline me-1"></i>{{ $message }}</small>
+                        <small class="text-danger d-block"><i
+                                class="mdi mdi-alert-circle-outline me-1"></i>{{ $message }}</small>
                     @enderror
                 </div>
 
@@ -47,12 +48,13 @@
                     <label class="form-label fw-bold">إلى <span class="text-danger">*</span></label>
                     <select wire:model.defer="to_account_id" class="form-select">
                         <option value="">— اختر الحساب —</option>
-                        @foreach($accounts as $a)
+                        @foreach ($accounts as $a)
                             <option value="{{ $a->id }}">{{ $a->name }}</option>
                         @endforeach
                     </select>
                     @error('to_account_id')
-                        <small class="text-danger d-block"><i class="mdi mdi-alert-circle-outline me-1"></i>{{ $message }}</small>
+                        <small class="text-danger d-block"><i
+                                class="mdi mdi-alert-circle-outline me-1"></i>{{ $message }}</small>
                     @enderror
                 </div>
 
@@ -61,21 +63,24 @@
                     <label class="form-label fw-bold">البند <span class="text-danger">*</span></label>
                     <select wire:model.defer="item_id" class="form-select">
                         <option value="">— اختر البند —</option>
-                        @foreach($items as $it)
+                        @foreach ($items as $it)
                             <option value="{{ $it->id }}">{{ $it->name }}</option>
                         @endforeach
                     </select>
                     @error('item_id')
-                        <small class="text-danger d-block"><i class="mdi mdi-alert-circle-outline me-1"></i>{{ $message }}</small>
+                        <small class="text-danger d-block"><i
+                                class="mdi mdi-alert-circle-outline me-1"></i>{{ $message }}</small>
                     @enderror
                 </div>
 
                 <!-- المبلغ -->
                 <div class="col-md-6">
                     <label class="form-label fw-bold">المبلغ <span class="text-danger">*</span></label>
-                    <input type="number" step="0.01" wire:model.defer="amount" class="form-control" placeholder="0.00">
+                    <input type="number" step="0.01" wire:model.defer="amount" class="form-control"
+                        placeholder="0.00">
                     @error('amount')
-                        <small class="text-danger d-block"><i class="mdi mdi-alert-circle-outline me-1"></i>{{ $message }}</small>
+                        <small class="text-danger d-block"><i
+                                class="mdi mdi-alert-circle-outline me-1"></i>{{ $message }}</small>
                     @enderror
                 </div>
 
@@ -84,40 +89,54 @@
                     <label class="form-label fw-bold">تاريخ الحركة <span class="text-danger">*</span></label>
                     <input type="date" wire:model.defer="transaction_date" class="form-control">
                     @error('transaction_date')
-                        <small class="text-danger d-block"><i class="mdi mdi-alert-circle-outline me-1"></i>{{ $message }}</small>
+                        <small class="text-danger d-block"><i
+                                class="mdi mdi-alert-circle-outline me-1"></i>{{ $message }}</small>
                     @enderror
                 </div>
 
-                <!-- ✅ حقول إضافية خاصة بالإيراد -->
-                @if($type === 'إيراد' || $type === 'تحصيل')
+                <!-- ✅ نوع التحصيل -->
+                @if ($type === 'إيراد' || $type === 'تحصيل')
                     <div class="col-md-6">
-                        <label class="form-label fw-bold">نوع الإيراد</label>
-                        <input type="text" wire:model.defer="collection_type" class="form-control" placeholder="مثال: تحصيل من عميل">
+                        <label class="form-label fw-bold">نوع التحصيل <span class="text-danger">*</span></label>
+                        <select wire:model="collection_type" class="form-select">
+                            <option value="">— اختر النوع —</option>
+                            <option value="تحصيل من عميل">تحصيل من عميل</option>
+                            <option value="أخرى">أخرى</option>
+                        </select>
                         @error('collection_type')
-                            <small class="text-danger d-block"><i class="mdi mdi-alert-circle-outline me-1"></i>{{ $message }}</small>
+                            <small class="text-danger d-block mt-1">
+                                <i class="mdi mdi-alert-circle-outline me-1"></i>{{ $message }}
+                            </small>
                         @enderror
                     </div>
 
-                    <div class="col-md-6">
-                        <label class="form-label fw-bold">العميل</label>
-                        <select wire:model.defer="client_id" class="form-select">
-                            <option value="">— اختر العميل —</option>
-                            @foreach($clients as $c)
-                                <option value="{{ $c->id }}">{{ $c->name }}</option>
-                            @endforeach
-                        </select>
-                        @error('client_id')
-                            <small class="text-danger d-block"><i class="mdi mdi-alert-circle-outline me-1"></i>{{ $message }}</small>
-                        @enderror
-                    </div>
+                    <!-- ✅ العميل يظهر فقط لو اخترت "تحصيل من عميل" -->
+                    @if ($collection_type === 'تحصيل من عميل')
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">العميل <span class="text-danger">*</span></label>
+                            <select wire:model.defer="client_id" class="form-select">
+                                <option value="">— اختر العميل —</option>
+                                @foreach ($clients as $c)
+                                    <option value="{{ $c->id }}">{{ $c->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('client_id')
+                                <small class="text-danger d-block mt-1">
+                                    <i class="mdi mdi-alert-circle-outline me-1"></i>{{ $message }}
+                                </small>
+                            @enderror
+                        </div>
+                    @endif
                 @endif
+
 
                 <!-- الملاحظات -->
                 <div class="col-12">
                     <label class="form-label fw-bold">ملاحظات</label>
                     <textarea wire:model.defer="notes" class="form-control" rows="3" placeholder="أدخل أي تفاصيل إضافية..."></textarea>
                     @error('notes')
-                        <small class="text-danger d-block"><i class="mdi mdi-alert-circle-outline me-1"></i>{{ $message }}</small>
+                        <small class="text-danger d-block"><i
+                                class="mdi mdi-alert-circle-outline me-1"></i>{{ $message }}</small>
                     @enderror
                 </div>
 
