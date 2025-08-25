@@ -16,36 +16,44 @@ class Index extends Component
 
     protected $paginationTheme = 'bootstrap';
 
+    protected $listeners = ['deleteConfirmed' => 'delete'];
+
     public function updatingSearch()
     {
         $this->resetPage();
     }
 
-   public function confirmDelete($id)
-{
-    $this->deleteId = $id;
-    $this->dispatchBrowserEvent('showDeleteModal');
-}
-
-public function deleteConfirmed(AccountService $accountService)
-{
-    if ($this->deleteId) {
-        $tx = Transaction::find($this->deleteId);
-
-        if ($tx) {
-            try {
-                $accountService->revertTransaction($tx);
-                $tx->delete();
-                session()->flash('message', 'تم حذف الحركة وتعديل الأرصدة بنجاح');
-            } catch (\Exception $e) {
-                session()->flash('error', $e->getMessage());
-            }
-        }
+    /** فتح المودال */
+    public function confirmDelete($id)
+    {
+        $this->deleteId = $id;
+        $this->dispatchBrowserEvent('showDeleteModal');
     }
 
-    $this->deleteId = null;
-    $this->dispatchBrowserEvent('hideDeleteModal');
-}
+    /** تنفيذ الحذف (Soft Delete) */
+    public function delete(AccountService $accountService)
+    {
+        if ($this->deleteId) {
+            $tx = Transaction::find($this->deleteId);
+
+            if ($tx) {
+                try {
+                    // إرجاع تأثير العملية قبل الحذف
+                    $accountService->revertTransaction($tx);
+
+                    // Soft Delete بدل الحذف النهائي
+                    $tx->delete();
+
+                    session()->flash('message', '✅ تم حذف الحركة (Soft Delete) وتعديل الأرصدة بنجاح');
+                } catch (\Exception $e) {
+                    session()->flash('error', 'حدث خطأ أثناء الحذف: ' . $e->getMessage());
+                }
+            }
+        }
+
+        $this->deleteId = null;
+        $this->dispatchBrowserEvent('hideDeleteModal');
+    }
 
     public function render()
     {

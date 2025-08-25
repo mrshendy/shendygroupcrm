@@ -4,10 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
 
 class Offer extends Model
 {
-    use HasFactory;
+        use HasFactory, SoftDeletes;
+
 
     // توحيد الحالات كـ Constants
     const STATUS_NEW           = 'new';

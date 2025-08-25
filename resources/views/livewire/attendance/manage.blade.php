@@ -46,11 +46,17 @@
                                         {{ $attendance->check_out ?? '-' }}
                                     </span>
                                 </td>
-                                <td>
-                                    <span class="badge bg-warning bg-opacity-10 text-warning px-3 py-2">
-                                        {{ $attendance->hours ?? '0' }}
-                                    </span>
-                                </td>
+                              <td>
+    @php
+        $totalMinutes = (int) round(($attendance->hours ?? 0) * 60); // تحويل الساعات إلى دقائق
+        $h = floor($totalMinutes / 60);
+        $m = $totalMinutes % 60;
+    @endphp
+    <span class="badge bg-warning bg-opacity-10 text-warning px-3 py-2">
+        {{ sprintf('%02d:%02d', $h, $m) }}
+    </span>
+</td>
+
                                 <td>{{ $attendance->attendance_date }}</td>
                                 <td class="text-center">
                                     <a href="{{ route('attendance.attendanceedit', $attendance->id) }}"

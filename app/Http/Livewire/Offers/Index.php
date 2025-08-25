@@ -10,45 +10,51 @@ class Index extends Component
     public $offers;
     public $totalOffers, $newOffers, $rejectedOffers, $closedOffers;
     public $offerToDelete = null;
-
-    protected $listeners = ['deleteConfirmed' => 'delete'];
+    public $confirmingDelete = false; // ✅ للتحكم في إظهار المودال
 
     public function mount()
     {
         $this->loadStats();
-        $this->offers = Offer::with(['client', 'project'])->latest()->get();
+        $this->offers = Offer::with(['client', 'project'])
+            ->latest()
+            ->get();
     }
 
-    public function loadStats()
+    private function loadStats()
     {
-        $this->totalOffers    = Offer::count();
+        $this->totalOffers    = Offer::count(); // بدون المحذوفين Soft
         $this->newOffers      = Offer::where('status', 'new')->count();
         $this->rejectedOffers = Offer::where('status', 'rejected')->count();
         $this->closedOffers   = Offer::where('status', 'closed')->count();
     }
 
-    /** يفتح نافذة التأكيد */
+    /** فتح مودال التأكيد */
     public function confirmDelete($id)
     {
         $this->offerToDelete = $id;
-        $this->dispatchBrowserEvent('show-delete-confirmation');
+        $this->confirmingDelete = true;
+        $this->dispatchBrowserEvent('open-delete-modal');
     }
 
-    /** ينفذ الحذف */
+    /** تنفيذ الحذف (Soft Delete) */
     public function delete()
     {
         if ($this->offerToDelete) {
             $offer = Offer::find($this->offerToDelete);
-            if ($offer) {
-                $offer->delete();
-            }
-            $this->offerToDelete = null;
 
-            // إعادة تحميل البيانات
+            if ($offer) {
+                $offer->delete(); // ✅ soft delete
+            }
+
+            $this->offerToDelete = null;
+            $this->confirmingDelete = false;
+
+            // تحديث البيانات
             $this->offers = Offer::with(['client', 'project'])->latest()->get();
             $this->loadStats();
 
-            $this->dispatchBrowserEvent('offer-deleted');
+            $this->dispatchBrowserEvent('close-delete-modal');
+            session()->flash('success', '✅ تم حذف العرض بنجاح');
         }
     }
 

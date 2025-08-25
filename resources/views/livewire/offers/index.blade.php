@@ -16,6 +16,20 @@
         @endcan
     </div>
 
+    
+    @if(session('success'))
+        <div class="alert alert-success d-flex align-items-center">
+            <i class="mdi mdi-check-circle-outline me-2 fs-4"></i>
+            {{ session('success') }}
+        </div>
+    @endif
+    @if(session('error'))
+        <div class="alert alert-danger d-flex align-items-center">
+            <i class="mdi mdi-alert-circle-outline me-2 fs-4"></i>
+            {{ session('error') }}
+        </div>
+    @endif
+
     <!-- Stats Cards -->
     <div class="row g-4 mb-4">
         <div class="col-xl-3 col-md-6">
@@ -90,7 +104,6 @@
                 <h5 class="mb-0 fw-semibold">
                     <i class="mdi mdi-table me-2"></i>قائمة العروض
                 </h5>
-
             </div>
         </div>
         <div class="card-body p-0">
@@ -194,12 +207,12 @@
                                             </a>
                                         @endcan
                                         @can('offer-delete')
-                                            <button wire:click="confirmDelete({{ $offer->id }})"
-                                                class="btn btn-sm btn-light rounded-circle" title="حذف">
-                                                <i class="mdi mdi-delete-outline"></i>
+                                            <button type="button" wire:click="confirmDelete({{ $offer->id }})"
+                                                class="btn btn-sm btn-light rounded-circle" data-bs-toggle="tooltip"
+                                                title="حذف">
+                                                <i class="mdi mdi-delete-outline text-danger"></i>
                                             </button>
                                         @endcan
-
 
 
                                         <div class="dropdown">
@@ -234,7 +247,29 @@
                 </table>
             </div>
         </div>
+    </div>
+</div>
 
+<!-- Modal تأكيد الحذف -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmLabel"
+    aria-hidden="true" wire:ignore.self>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title"><i class="mdi mdi-alert-outline me-2"></i> تأكيد الحذف</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                هل أنت متأكد أنك تريد حذف هذا العرض؟ لا يمكن التراجع عن العملية.
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">إلغاء</button>
+                <button type="button" class="btn btn-danger" wire:click="delete" wire:loading.attr="disabled">
+                    <span wire:loading.remove>نعم، احذف</span>
+                    <span wire:loading>جارٍ الحذف...</span>
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -317,31 +352,14 @@
     }
 </style>
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    // تأكيد الحذف
-    window.addEventListener('show-delete-confirmation', () => {
-        if (confirm("هل أنت متأكد أنك تريد حذف هذا العرض؟")) {
-            Livewire.dispatch('deleteConfirmed'); // يستدعي delete() فى الكومبوننت
-        }
+    window.addEventListener('open-delete-modal', () => {
+        const modal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+        modal.show();
     });
 
-    // بعد الحذف
-    window.addEventListener('offer-deleted', () => {
-        alert('✅ تم حذف العرض بنجاح!');
+    window.addEventListener('close-delete-modal', () => {
+        const modalEl = document.getElementById('deleteConfirmModal');
+        const modal = bootstrap.Modal.getInstance(modalEl);
+        if (modal) modal.hide();
     });
-});
 </script>
-
-<!-- Toast Notification -->
-<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
-    <div id="deleteToast" class="toast align-items-center text-white bg-success border-0" role="alert"
-        aria-live="assertive" aria-atomic="true">
-        <div class="d-flex">
-            <div class="toast-body">
-                <i class="mdi mdi-check-circle-outline me-2"></i> تم حذف العرض بنجاح
-            </div>
-            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
-                aria-label="Close"></button>
-        </div>
-    </div>
-</div>

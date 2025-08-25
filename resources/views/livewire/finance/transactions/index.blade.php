@@ -99,11 +99,6 @@
                             <td>{{ \Carbon\Carbon::parse($t->transaction_date)->format('Y-m-d') }}</td>
                             <td class="text-center">
                                 <div class="d-flex gap-2 justify-content-center">
-                                    {{-- @can('finance-view')
-                                    <a href="{{ route('finance.accounts.show', $t->id) }}" class="btn btn-sm btn-outline-info rounded-pill">
-                                        <i class="mdi mdi-eye-outline me-1"></i> عرض
-                                    </a>
-                                    @endcan --}}
                                     @can('finance-edit')
                                     <a href="{{ route('finance.transactions.edit', $t->id) }}" class="btn btn-sm btn-primary rounded-pill">
                                         <i class="mdi mdi-pencil-outline me-1"></i> تعديل
@@ -155,7 +150,7 @@
             </div>
             <div class="modal-footer border-0">
                 <button type="button" class="btn btn-light" data-bs-dismiss="modal">إلغاء</button>
-                <button type="button" class="btn btn-danger" wire:click="deleteConfirmed">
+                <button type="button" class="btn btn-danger" wire:click="$emit('deleteConfirmed')">
                     <i class="mdi mdi-delete-outline me-1"></i> نعم، احذف
                 </button>
             </div>
@@ -163,7 +158,7 @@
     </div>
 </div>
 
-@push('scripts')
+
 <script>
     window.addEventListener('showDeleteModal', () => {
         let modal = new bootstrap.Modal(document.getElementById('deleteModal'));
@@ -176,4 +171,4 @@
         if (modal) modal.hide();
     });
 </script>
-@endpush
+

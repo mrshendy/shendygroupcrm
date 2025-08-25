@@ -18,8 +18,14 @@
             {{ session('success') }}
         </div>
     @endif
+    @if(session('error'))
+        <div class="alert alert-danger d-flex align-items-center">
+            <i class="mdi mdi-alert-circle-outline me-2 fs-4"></i>
+            {{ session('error') }}
+        </div>
+    @endif
 
-    {{-- فلاتر سريعة --}}
+    {{-- فلاتر --}}
     <div class="card mb-4 border-0 shadow-sm">
         <div class="card-body row g-3">
             <div class="col-md-4">
@@ -97,7 +103,7 @@
                     @endcan
                     @can('contract-delete')
                     <button class="btn btn-sm btn-outline-danger rounded-pill"
-                            onclick="if(confirm('حذف العقد؟')) @this.delete({{ $c->id }})">
+                            wire:click="confirmDelete({{ $c->id }})">
                         <i class="mdi mdi-delete-outline me-1"></i> حذف
                     </button>
                     @endcan
@@ -277,3 +283,44 @@
         {{ $contracts->links() }}
     </div>
 </div>
+
+<!-- Modal تأكيد الحذف -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true" wire:ignore.self>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title text-danger">
+          <i class="mdi mdi-alert-outline me-2"></i> تأكيد الحذف
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        هل أنت متأكد من حذف هذا العقد؟ لا يمكن التراجع عن هذه العملية.
+      </div>
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">إلغاء</button>
+        <button type="button" class="btn btn-danger" wire:click="delete">
+          نعم، احذف
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    window.addEventListener('open-delete-modal', () => {
+        const modal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+        modal.show();
+    });
+
+    window.addEventListener('close-delete-modal', () => {
+        const modalEl = document.getElementById('deleteConfirmModal');
+        const modal = bootstrap.Modal.getInstance(modalEl);
+        if (modal) modal.hide();
+    });
+
+    window.addEventListener('offer-deleted', () => {
+        alert("✅ تم حذف العرض بنجاح");
+    });
+</script>
+

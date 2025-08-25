@@ -150,10 +150,20 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <button class="btn btn-sm btn-outline-primary">
-                                        <a href="{{ route('finance.items.edit', $item->id) }}">تعديل</a>
-                                        <span class="mdi mdi-pencil-outline me-1"></span>
-                                    </button>
+                                    <div class="d-flex gap-2">
+                                        {{-- زر التعديل --}}
+                                        <a href="{{ route('finance.items.edit', $item->id) }}" 
+                                           class="btn btn-sm btn-outline-primary d-flex align-items-center">
+                                            <i class="mdi mdi-pencil-outline me-1"></i> تعديل
+                                        </a>
+
+                                        {{-- زر الحذف --}}
+                                        <button type="button" 
+                                                wire:click="confirmDelete({{ $item->id }})" 
+                                                class="btn btn-sm btn-outline-danger d-flex align-items-center">
+                                            <i class="mdi mdi-delete-outline me-1"></i> حذف
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         @empty
@@ -181,3 +191,39 @@
         </div>
     </div>
 </div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true" wire:ignore.self>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white border-0">
+                <h5 class="modal-title">
+                    <i class="mdi mdi-alert-circle-outline me-2"></i> تأكيد الحذف
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                هل أنت متأكد أنك تريد حذف هذا البند؟ لا يمكن التراجع بعد الحذف.
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">إلغاء</button>
+                <button type="button" class="btn btn-danger" wire:click="deleteConfirmed">
+                    نعم، احذف
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    window.addEventListener('showDeleteModal', () => {
+        let modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        modal.show();
+    });
+
+    window.addEventListener('hideDeleteModal', () => {
+        let modalEl = document.getElementById('deleteModal');
+        let modal = bootstrap.Modal.getInstance(modalEl);
+        if (modal) modal.hide();
+    });
+</script>

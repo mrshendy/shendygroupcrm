@@ -14,52 +14,60 @@ class Index extends Component
     protected $paginationTheme = 'bootstrap';
 
     public $search = '';
-
     public $type = '';
-
     public $status = '';
-
     public $perPage = 10;
+
+    public $contractToDelete = null; // لتخزين ID العقد
 
     protected $queryString = [
         'search' => ['except' => ''],
-        'type' => ['except' => ''],
+        'type'   => ['except' => ''],
         'status' => ['except' => ''],
-        'page' => ['except' => 1],
+        'page'   => ['except' => 1],
     ];
 
-    public function updatingSearch()
+    /** إعادة ضبط الصفحة عند تحديث الفلاتر */
+    public function updatingSearch() { $this->resetPage(); }
+    public function updatingType()   { $this->resetPage(); }
+    public function updatingStatus() { $this->resetPage(); }
+    public function updatingPerPage(){ $this->resetPage(); }
+
+    /** فتح نافذة التأكيد */
+    public function confirmDelete(int $id): void
     {
-        $this->resetPage();
+        $this->contractToDelete = $id;
+        $this->dispatchBrowserEvent('open-delete-modal');
     }
 
-    public function updatingType()
+    /** تنفيذ الحذف (Soft Delete) */
+    public function deleteConfirmed(): void
     {
-        $this->resetPage();
+        if ($this->contractToDelete) {
+            $contract = Contract::find($this->contractToDelete);
+
+            if ($contract) {
+                // Soft Delete
+                $contract->delete();
+                session()->flash('success', '✅ تم حذف العقد (Soft Delete) بنجاح.');
+            }
+
+            $this->contractToDelete = null;
+
+            // إعادة تحميل الصفحة
+            $this->resetPage();
+
+            $this->dispatchBrowserEvent('close-delete-modal');
+        }
     }
 
-    public function updatingStatus()
-    {
-        $this->resetPage();
-    }
-
-    public function updatingPerPage()
-    {
-        $this->resetPage();
-    }
-
-    public function delete(int $id): void
-    {
-        Contract::findOrFail($id)->delete();
-        session()->flash('success', 'تم حذف العقد بنجاح.');
-        $this->resetPage();
-    }
-
+    /** التحقق من وجود ملف العقد */
     public function getFileExistsAttribute(): bool
     {
         return $this->contract_file && Storage::disk('public')->exists($this->contract_file);
     }
 
+    /** جلب رابط الملف */
     public function getFileUrlAttribute(): ?string
     {
         return $this->contract_file ? asset('storage/'.$this->contract_file) : null;
@@ -84,7 +92,7 @@ class Index extends Component
 
         return view('livewire.contracts.index', [
             'contracts' => $contracts,
-            'types' => \App\Models\Contract::TYPES ?? [],
+            'types'     => \App\Models\Contract::TYPES ?? [],
         ])->layout('layouts.master', ['title' => 'قائمة التعاقدات']);
     }
 }

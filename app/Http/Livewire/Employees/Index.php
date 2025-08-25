@@ -14,8 +14,6 @@ class Index extends Component
     public $deleteId = null; // لتخزين ID الموظف اللي عايز أحذفه
     protected $paginationTheme = 'bootstrap';
 
-    protected $listeners = ['deleteConfirmed' => 'delete']; 
-
     public function updatingSearch()
     {
         $this->resetPage();
@@ -25,18 +23,26 @@ class Index extends Component
     public function confirmDelete($id)
     {
         $this->deleteId = $id;
-        $this->dispatchBrowserEvent('show-delete-confirmation');
+        // هنا نفتح المودال
+        $this->dispatchBrowserEvent('showDeleteModal');
     }
 
     /** الحذف */
     public function delete()
     {
         if ($this->deleteId) {
-            $employee = Employee::findOrFail($this->deleteId);
-            $employee->delete();
+            $employee = Employee::find($this->deleteId);
+            if ($employee) {
+                $employee->delete();
+            }
 
             $this->deleteId = null;
-            $this->dispatchBrowserEvent('employee-deleted');
+
+            // غلق المودال بعد الحذف
+            $this->dispatchBrowserEvent('hideDeleteModal');
+
+            // رسالة نجاح
+            session()->flash('message', '✅ تم حذف الموظف بنجاح');
         }
     }
 
