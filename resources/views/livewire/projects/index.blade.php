@@ -4,6 +4,21 @@
         <h2 class="page-title">
             <i class="mdi mdi-clipboard-flow-outline me-2"></i>إدارة المشاريع
         </h2>
+
+        @if (session('success'))
+            <div class="alert alert-success d-flex align-items-center" role="alert">
+                <i class="mdi mdi-check-circle-outline me-2"></i>
+                <div>{{ session('success') }}</div>
+            </div>
+        @endif
+
+        @if (session('error'))
+            <div class="alert alert-danger d-flex align-items-center" role="alert">
+                <i class="mdi mdi-alert-circle-outline me-2"></i>
+                <div>{{ session('error') }}</div>
+            </div>
+        @endif
+
         <div class="d-flex justify-content-between align-items-center">
             <!-- Search Box -->
             <div class="search-box">
@@ -43,7 +58,7 @@
                     </thead>
                     <tbody>
                         @forelse($projects as $project)
-                            <tr class="align-middle">
+                            <tr class="align-middle" wire:key="row-{{ $project->id }}">
                                 <td class="ps-4 fw-semibold">
                                     <i class="mdi mdi-folder-outline text-success me-2"></i>
                                     {{ $project->name }}
@@ -71,45 +86,40 @@
                                     @endif
                                 </td>
                                 <td>
-    @php
-        $priorityColors = [
-            'low'      => 'bg-secondary text-dark',
-            'medium'   => 'bg-info text-white',
-            'high'     => 'bg-danger text-white',
-            'critical' => 'bg-dark text-white',
-        ];
-
-        $priorityLabels = [
-            'low'      => 'منخفضة',
-            'medium'   => 'متوسطة',
-            'high'     => 'عالية',
-            'critical' => 'حرجة',
-        ];
-    @endphp
-
-    <span class="badge {{ $priorityColors[$project->priority] ?? 'bg-light text-dark' }}">
-        {{ $priorityLabels[$project->priority] ?? 'غير محدد' }}
-    </span>
-</td>
+                                    @php
+                                        $priorityColors = [
+                                            'low'      => 'bg-secondary text-dark',
+                                            'medium'   => 'bg-info text-white',
+                                            'high'     => 'bg-danger text-white',
+                                            'critical' => 'bg-dark text-white',
+                                        ];
+                                        $priorityLabels = [
+                                            'low'      => 'منخفضة',
+                                            'medium'   => 'متوسطة',
+                                            'high'     => 'عالية',
+                                            'critical' => 'حرجة',
+                                        ];
+                                    @endphp
+                                    <span class="badge {{ $priorityColors[$project->priority] ?? 'bg-light text-dark' }}">
+                                        {{ $priorityLabels[$project->priority] ?? 'غير محدد' }}
+                                    </span>
+                                </td>
 
                                 <td>
                                     @php
                                         $statusBadges = [
-                                            'new' => ['text-danger', 'mdi-new-box', 'جديد'],
-                                            'in_progress' => ['text-warning', 'mdi-reload', 'جاري العمل'],
-                                            'completed' => ['text-success', 'mdi-check-circle-outline', 'مكتمل'],
-                                            'closed' => ['text-danger', 'mdi-close-circle-outline', 'مغلق'],
+                                            'new'         => ['text-danger',  'mdi-new-box',             'جديد'],
+                                            'in_progress' => ['text-warning', 'mdi-reload',               'جاري العمل'],
+                                            'completed'   => ['text-success', 'mdi-check-circle-outline', 'مكتمل'],
+                                            'closed'      => ['text-danger',  'mdi-close-circle-outline', 'مغلق'],
                                         ];
-                                        [$color, $icon, $label] = $statusBadges[$project->status] ?? [
-                                            'text-muted',
-                                            'mdi-help',
-                                            $project->status,
-                                        ];
+                                        [$color, $icon, $label] = $statusBadges[$project->status] ?? ['text-muted','mdi-help',$project->status];
                                     @endphp
                                     <span class="badge bg-opacity-10 {{ $color }}">
                                         <i class="mdi {{ $icon }} me-1"></i>{{ $label }}
                                     </span>
                                 </td>
+
                                 <td class="text-end pe-4">
                                     <div class="btn-group" role="group">
                                         @can('project-show')
@@ -118,6 +128,7 @@
                                                 <i class="mdi mdi-eye"></i>
                                             </a>
                                         @endcan
+
                                         @can('project-edit')
                                             <a href="{{ route('projects.edit', $project->id) }}"
                                                 class="btn btn-sm btn-outline-primary" title="تعديل">
@@ -125,13 +136,12 @@
                                             </a>
                                         @endcan
 
-                                          @can('project-delete')
-                            <button wire:click="confirmDelete({{ $project->id }})" 
-                                class="btn btn-sm btn-outline-danger">
-                                <i class="mdi mdi-trash-can"></i> 
-                            </button>
-                        @endcan
-
+                                        @can('project-delete')
+                                            <button wire:click="confirmDelete({{ $project->id }})"
+                                                class="btn btn-sm btn-outline-danger" title="حذف">
+                                                <i class="mdi mdi-trash-can"></i>
+                                            </button>
+                                        @endcan
                                     </div>
                                 </td>
                             </tr>
@@ -170,5 +180,45 @@
             @endif
         </div>
     </div>
-    
+
+    <!-- Modal تأكيد الحذف (داخل نفس الجذر - بدون wire:ignore) -->
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-labelledby="deleteConfirmLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header border-0">
+            <h5 class="modal-title" id="deleteConfirmLabel">
+                <i class="mdi mdi-alert-outline text-danger me-2"></i>تأكيد الحذف
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="إغلاق"></button>
+          </div>
+          <div class="modal-body">
+            <p class="mb-0">هل أنت متأكد من حذف هذا المشروع؟ لا يمكن التراجع عن هذه العملية.</p>
+          </div>
+          <div class="modal-footer border-0">
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal">إلغاء</button>
+            <button type="button"
+                    class="btn btn-danger"
+                    wire:click.prevent="delete"
+                    wire:loading.attr="disabled"
+                    wire:target="delete">
+                <span wire:loading.remove wire:target="delete">نعم، احذف</span>
+                <span wire:loading wire:target="delete">جارٍ الحذف...</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
 </div>
+
+<script>
+    window.addEventListener('open-delete-modal', () => {
+        const modal = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+        modal.show();
+    });
+
+    window.addEventListener('close-delete-modal', () => {
+        const el = document.getElementById('deleteConfirmModal');
+        const modal = bootstrap.Modal.getInstance(el);
+        if (modal) modal.hide();
+    });
+</script>

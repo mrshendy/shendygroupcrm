@@ -16,17 +16,17 @@ class Index extends Component
     public $confirmingDelete = false;
     public $projectToDelete = null;
 
-    // تحديث نتائج البحث
     public function updatingSearch()
     {
         $this->resetPage();
     }
 
-    // فتح نافذة تأكيد الحذف
+    // فتح مودال التأكيد
     public function confirmDelete($id)
     {
         $this->projectToDelete = $id;
         $this->confirmingDelete = true;
+        $this->dispatchBrowserEvent('open-delete-modal');
     }
 
     // تنفيذ الحذف
@@ -38,10 +38,15 @@ class Index extends Component
             if ($project) {
                 $project->delete();
                 session()->flash('success', '✅ تم حذف المشروع بنجاح');
+            } else {
+                session()->flash('error', '⚠️ لم يتم العثور على المشروع.');
             }
 
             $this->confirmingDelete = false;
             $this->projectToDelete = null;
+
+            // إغلاق المودال وتحديث الجدول
+            $this->dispatchBrowserEvent('close-delete-modal');
             $this->resetPage();
         }
     }
@@ -51,8 +56,10 @@ class Index extends Component
         $projects = Project::with(['client', 'country'])
             ->when($this->search, function ($query) {
                 $search = '%' . $this->search . '%';
-                $query->where('name', 'like', $search)
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', $search)
                       ->orWhere('description', 'like', $search);
+                });
             })
             ->latest()
             ->paginate(10);
